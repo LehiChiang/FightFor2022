@@ -40,33 +40,25 @@ import java.util.List;
  */
 class NestedIterator implements Iterator<Integer> {
 
-    private Iterator<Integer> iterator;
+    private LinkedList<NestedInteger> list;
     public NestedIterator(List<NestedInteger> nestedList) {
-        LinkedList<Integer> res = new LinkedList<>();
-        for (NestedInteger integer : nestedList) {
-            traverse(integer, res);
-        }
-        iterator = res.iterator();
-    }
-
-    private void traverse(NestedInteger integer, LinkedList<Integer> res) {
-        if (integer.isInteger()) {
-            res.add(integer.getInteger());
-            return;
-        }
-        for (NestedInteger nestedInteger : integer.getList()) {
-            traverse(nestedInteger, res);
-        }
+        list = new LinkedList<>(nestedList);
     }
 
     @Override
     public Integer next() {
-        return iterator.next();
+        return list.poll().getInteger();
     }
 
     @Override
     public boolean hasNext() {
-        return iterator.hasNext();
+        while (!list.isEmpty() && !list.peek().isInteger()) {
+            List<NestedInteger> first = list.poll().getList();
+            for (int i = first.size() - 1 ; i >= 0 ; i--) {
+                list.add(first.get(i));
+            }
+        }
+        return !list.isEmpty();
     }
 }
 
