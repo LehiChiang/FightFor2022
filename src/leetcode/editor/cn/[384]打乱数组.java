@@ -25,13 +25,16 @@ package leetcode.editor.cn;
 
 
 import java.util.Arrays;
+import java.util.Random;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class shuffleSolution {
 
     private int[] initial;
+    private int[] nums;
     public shuffleSolution(int[] nums) {
         initial = Arrays.copyOf(nums, nums.length);
+        this.nums = nums;
     }
     
     /** Resets the array to its original configuration and return it. */
@@ -41,7 +44,15 @@ class shuffleSolution {
     
     /** Returns a random shuffling of the array. */
     public int[] shuffle() {
-        return this.initial;
+        int length = nums.length;
+        Random rnd = new Random();
+        for (int i = length - 1 ; i > 0 ; i--) {
+            int j = rnd.nextInt(i + 1);
+            int tmp = nums[j];
+            nums[j] = nums[i];
+            nums[i] = tmp;
+        }
+        return nums;
     }
 }
 
