@@ -53,6 +53,46 @@ class threeSumSolution {
         return res;
     }
 
+//    public List<List<Integer>> threeSum(int[] nums) {
+//        Arrays.sort(nums);
+//        return nSumTarget(nums, 3, 0, 0);
+//    }
+//
+//    private List<List<Integer>> nSumTarget(int[] nums, int n, int start, int target) {
+//        int numsLen = nums.length;
+//        List<List<Integer>> res = new ArrayList<>();
+//        if (n < 2 || numsLen < n)
+//            return res;
+//        if (n == 2) {
+//            int low = start, high = numsLen - 1;
+//            while (low < high) {
+//                int sum = nums[low] + nums[high];
+//                int left = nums[low], right = nums[high];
+//                if (sum == target) {
+//                    ArrayList<Integer> temp = new ArrayList<>();
+//                    temp.add(nums[low]);
+//                    temp.add(nums[high]);
+//                    res.add(temp);
+//                    while (low < high && nums[low] == left) low++;
+//                    while (low < high && nums[high] == right) high--;
+//                } else if (sum < target) {
+//                    while (low < high && nums[low] == left) low++;
+//                } else while (low < high && nums[high] == right) high--;
+//            }
+//        } else {
+//            for (int i = start; i < numsLen; i++) {
+//                List<List<Integer>> sub = nSumTarget(nums, n - 1, i + 1, target - nums[i]);
+//                for (List<Integer> list : sub) {
+//                    list.add(nums[i]);
+//                    res.add(list);
+//                }
+//                // 控制在遍历排完序数组的时候防止相邻的重复元素使用
+//                while (i < numsLen - 1 && nums[i] == nums[i + 1]) i++;
+//            }
+//        }
+//        return res;
+//    }
+
     public static void main(String[] args) {
         threeSumSolution solution = new threeSumSolution();
         List<List<Integer>> res = solution.threeSum(new int[]{-1, 0, 1, 2, -1, -4});
