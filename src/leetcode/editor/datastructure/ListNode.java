@@ -21,4 +21,25 @@ public class ListNode {
         this.next = next;
     }
 
+    public static ListNode buildLinkedList(int[] nums) {
+        ListNode linkList = new ListNode(-1);
+        ListNode pointer = linkList;
+        for (int num : nums) {
+            pointer.next = new ListNode(num);
+            pointer = pointer.next;
+        }
+        return linkList.next;
+    }
+
+    public static void printLinkedList(ListNode linkList) {
+        ListNode pointer = linkList;
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        while (pointer != null) {
+            sb.append(pointer.val).append(',');
+            pointer = pointer.next;
+        }
+        sb.replace(sb.length() - 1, sb.length(), "]");
+        System.out.println(sb.toString());
+    }
 }
