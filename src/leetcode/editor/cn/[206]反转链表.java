@@ -24,7 +24,7 @@ import static leetcode.editor.datastructure.ListNode.buildLinkedList;
 import static leetcode.editor.datastructure.ListNode.printLinkedList;
 
 class reverseListSolution {
-    // 迭代法
+    // 迭代法一
 //    public ListNode reverseList(ListNode head) {
 //        ListNode newHead = new ListNode(-1), p = newHead.next;
 //        ListNode headp;
@@ -37,6 +37,7 @@ class reverseListSolution {
 //        }
 //        return newHead.next;
 //    }
+    // 迭代法二
 //    public ListNode reverseList(ListNode head) {
 //        ListNode pre = null;
 //        ListNode cur = head;
@@ -49,10 +50,29 @@ class reverseListSolution {
 //        return pre;
 //    }
 
+    // 递归法一
+//    public ListNode reverseList(ListNode head) {
+//        if (head == null || head.next == null)
+//            return head;
+//        ListNode newNode = reverseList(head.next);
+//        head.next.next = head;
+//        head.next = null;
+//        return newNode;
+//    }
+
+    // 递归法二
     public ListNode reverseList(ListNode head) {
-        if (head == null)
-            return null;
-        return null;
+        return reverse(null, head);
+    }
+
+    private ListNode reverse(ListNode pre, ListNode cur) {
+        if (cur == null)
+            return pre;
+        ListNode nextNode = cur.next;
+        cur.next = pre;
+        pre = cur;
+        cur = nextNode;
+        return reverse(pre, cur);
     }
 
     public static void main(String[] args) {
