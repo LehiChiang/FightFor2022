@@ -24,7 +24,6 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import jdk.nashorn.internal.ir.IfNode;
 import leetcode.editor.datastructure.ListNode;
 
 class addTwoNumbersSolution {
