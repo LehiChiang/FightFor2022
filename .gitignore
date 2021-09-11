@@ -1,4 +1,4 @@
 /.idea
 /out
 /*.iml
-/src/leetcode/editor/cn/doc/*
+/src/leetcode/editor/cn/doc
