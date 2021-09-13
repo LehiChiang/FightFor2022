@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class Solution {
+class lengthOfLongestSubstringSolution {
     public int lengthOfLongestSubstring1(String s) {
         Set<Character> set = new HashSet<>();
         int end = -1, res = 0;
@@ -56,7 +56,7 @@ class Solution {
     }
 
     public static void main(String[] args) {
-        Solution solution = new Solution();
+        lengthOfLongestSubstringSolution solution = new lengthOfLongestSubstringSolution();
         int res = solution.lengthOfLongestSubstring("bbbbbbb");
         System.out.println(res);
     }
