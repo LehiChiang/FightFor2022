@@ -9,12 +9,13 @@ class isValidSolution {
             if (c == '(') stack.push(')');
             else if (c == '{') stack.push('}');
             else if (c == '[') stack.push(']');
-            while (!stack.isEmpty()) {
-                if (stack.pop() == c)
-                    continue;
-                else return false;
-            }
+            else if (stack.isEmpty() || stack.pop() != c) return false;
         }
         return stack.isEmpty();
+    }
+
+    public static void main(String[] args) {
+        isValidSolution solution = new isValidSolution();
+        System.out.println(solution.isValid("]"));
     }
 }

@@ -28,6 +28,17 @@ public class ArrayUtils {
         System.out.println(sb.toString());
     }
 
+    public static void printStringArray(String[] array) {
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for (String c :
+                array) {
+            sb.append(c).append(',');
+        }
+        sb.replace(sb.length() - 1, sb.length(), "]");
+        System.out.println(sb.toString());
+    }
+
     public static void printIntArray2D(int[][] array) {
         for (int i = 0 ; i < array.length ; i++) {
             StringBuilder sb = new StringBuilder();
