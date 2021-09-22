@@ -31,6 +31,16 @@ public class ListNode {
         return linkList.next;
     }
 
+    public static ListNode buildLinkedListWithHead(int[] nums) {
+        ListNode linkList = new ListNode(-1);
+        ListNode pointer = linkList;
+        for (int num : nums) {
+            pointer.next = new ListNode(num);
+            pointer = pointer.next;
+        }
+        return linkList;
+    }
+
     public static void printLinkedList(ListNode linkList) {
         ListNode pointer = linkList;
         StringBuilder sb = new StringBuilder();
@@ -41,5 +51,10 @@ public class ListNode {
         }
         sb.replace(sb.length() - 1, sb.length(), "]");
         System.out.println(sb.toString());
+    }
+
+    @Override
+    public String toString() {
+        return "{" + val + ", " + next + '}';
     }
 }
