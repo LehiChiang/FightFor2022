@@ -131,7 +131,8 @@ numbers[0]=12; // oldNumbers[0]也等于12
 
 如果希望将一个数组的所有值拷贝到一个新的数组中去，就需要使用`Arrays`类的`copyOf`方法。
 
-一些其他的`API`：
+`java.util.Arrays`的一些其他的`API`：
+
 ```java
 // 二分搜索
 public static int binarySearch(int[] a, int key)
@@ -142,3 +143,16 @@ public static void fill(int[] a, int val)
 // 如果两个数组大小相同，并且下标相同的元素都对应相等，返回true
 public static boolean equals(int[] a, int[] a2)
 ```
+
+想快速打印数组，不管一维还是二维的。可以调用`Arrays.deepToString(object)`方法：
+
+```java
+Arrays.deepToString(new int[][]{{1,2},{3,4}})
+```
+
+输出：
+
+```java
+[[1, 2], [3, 4]]
+```
+
