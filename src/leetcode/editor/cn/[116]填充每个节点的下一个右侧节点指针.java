@@ -25,43 +25,43 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-class Node {
-    public int val;
-    public Node left;
-    public Node right;
-    public Node next;
-
-    public Node() {}
-    
-    public Node(int _val) {
-        val = _val;
-    }
-
-    public Node(int _val, Node _left, Node _right, Node _next) {
-        val = _val;
-        left = _left;
-        right = _right;
-        next = _next;
-    }
-}
-
-class fillRightPointTreeSolution {
-    public Node connect(Node root) {
-        if (root == null)
-            return root;
-        connectRight(root.left, root.right);
-        root.next = null;
-        return root;
-    }
-
-    private void connectRight(Node leftTree, Node rightTree) {
-        // 少了递归结束条件
-        if (leftTree == null || rightTree == null)
-            return;
-        leftTree.next = rightTree;
-        connectRight(leftTree.left, leftTree.right);
-        connectRight(rightTree.left, rightTree.right);//这句没写
-        connectRight(leftTree.right, rightTree.left);
-    }
-}
+//class Node {
+//    public int val;
+//    public Node left;
+//    public Node right;
+//    public Node next;
+//
+//    public Node() {}
+//
+//    public Node(int _val) {
+//        val = _val;
+//    }
+//
+//    public Node(int _val, Node _left, Node _right, Node _next) {
+//        val = _val;
+//        left = _left;
+//        right = _right;
+//        next = _next;
+//    }
+//}
+//
+//class fillRightPointTreeSolution {
+//    public Node connect(Node root) {
+//        if (root == null)
+//            return root;
+//        connectRight(root.left, root.right);
+//        root.next = null;
+//        return root;
+//    }
+//
+//    private void connectRight(Node leftTree, Node rightTree) {
+//        // 少了递归结束条件
+//        if (leftTree == null || rightTree == null)
+//            return;
+//        leftTree.next = rightTree;
+//        connectRight(leftTree.left, leftTree.right);
+//        connectRight(rightTree.left, rightTree.right);//这句没写
+//        connectRight(leftTree.right, rightTree.left);
+//    }
+//}
 //leetcode submit region end(Prohibit modification and deletion)

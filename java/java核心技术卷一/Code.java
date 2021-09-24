@@ -20,6 +20,7 @@ public class Code {
     private int id;
     private String name;
     private double salary;
+    private Position position = Position.PRODUCT;
 
      {
          id = nextId;
@@ -48,4 +49,8 @@ public class Code {
      public int hashCode() {
          return Objects.hash(id, name, salary);
      }
+ }
+
+ enum Position {
+    DEVELOPMENT, SALE, PRODUCT, SUPPORT
  }
