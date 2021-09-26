@@ -24,11 +24,11 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import leetcode.editor.datastructure.ListNode;
+import datastructure.ListNode;
 
 import java.util.Arrays;
 
-import static leetcode.editor.datastructure.ListNode.buildLinkedList;
+import static datastructure.ListNode.buildLinkedList;
 
 class splitListToPartsSolution {
     public ListNode[] splitListToParts(ListNode head, int k) {
@@ -61,7 +61,7 @@ class splitListToPartsSolution {
                 Arrays.deepToString(
                         solution.splitListToParts(
                                 buildLinkedList(
-                                        new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}), 5
+                                        new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, false), 5
                         )));
     }
 }

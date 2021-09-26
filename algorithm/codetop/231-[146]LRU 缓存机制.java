@@ -1,4 +1,4 @@
-package leetcode.editor.codetop;
+package codetop;
 //运用你所掌握的数据结构，设计和实现一个 LRU (最近最少使用) 缓存机制 。
 // 实现 LRUCache 类：
 // LRUCache(int capacity) 以正整数作为容量 capacity 初始化 LRU 缓存 
@@ -31,7 +31,6 @@ package leetcode.editor.codetop;
 
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class LRUCache {

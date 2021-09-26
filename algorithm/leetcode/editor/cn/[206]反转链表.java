@@ -18,10 +18,10 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import leetcode.editor.datastructure.ListNode;
+import datastructure.ListNode;
 
-import static leetcode.editor.datastructure.ListNode.buildLinkedList;
-import static leetcode.editor.datastructure.ListNode.printLinkedList;
+import static datastructure.ListNode.buildLinkedList;
+import static datastructure.ListNode.printLinkedList;
 
 class reverseListSolution {
     // 迭代法一
@@ -77,7 +77,7 @@ class reverseListSolution {
 
     public static void main(String[] args) {
         reverseListSolution solution = new reverseListSolution();
-        ListNode res = solution.reverseList(buildLinkedList(new int[]{1,2,3,4,5,6}));
+        ListNode res = solution.reverseList(buildLinkedList(new int[]{1,2,3,4,5,6}, false));
         printLinkedList(res);
     }
 }

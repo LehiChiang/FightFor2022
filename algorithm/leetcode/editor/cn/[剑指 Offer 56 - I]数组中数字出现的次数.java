@@ -11,9 +11,6 @@ package leetcode.editor.cn;
 // Related Topics 位运算 数组 
 // 👍 441 👎 0
 
-
-import static leetcode.editor.utils.ArrayUtils.printIntArray;
-
 //leetcode submit region begin(Prohibit modification and deletion)
 class singleNumbersSolution {
     public int[] singleNumbers(int[] nums) {
@@ -37,7 +34,6 @@ class singleNumbersSolution {
     public static void main(String[] args) {
         singleNumbersSolution solution = new singleNumbersSolution();
         int[] res = solution.singleNumbers(new int[]{1,2,10,4,1,4,3,3});
-        printIntArray(res);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

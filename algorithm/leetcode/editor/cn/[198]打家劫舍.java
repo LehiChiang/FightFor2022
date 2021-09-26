@@ -18,12 +18,11 @@ package leetcode.editor.cn;//你是一个专业的小偷，计划偷窃沿街的
 // 👍 1554 👎 0
 
 
-import static leetcode.editor.utils.ArrayUtils.newIntArray;
-import static leetcode.editor.utils.ArrayUtils.printIntArray;
+import utils.ArrayUtils;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class rob1Solution {
-    public int rob(int[] nums) {
+    public int rob(Integer[] nums) {
         int[] dp = new int[nums.length];
         if (nums.length == 1)
             return nums[0];
@@ -39,7 +38,7 @@ class rob1Solution {
 
     public static void main(String[] args) {
         rob1Solution solution = new rob1Solution();
-        int res = solution.rob(newIntArray(2,7,9,3,1));
+        int res = solution.rob(ArrayUtils.newArray(1,2));
         System.out.println(res);
     }
 }

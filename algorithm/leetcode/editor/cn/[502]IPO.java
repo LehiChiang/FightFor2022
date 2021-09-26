@@ -41,11 +41,7 @@ package leetcode.editor.cn;
 // Related Topics 贪心 数组 排序 堆（优先队列） 👍 154 👎 0
 
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.PriorityQueue;
-
-import static leetcode.editor.utils.ArrayUtils.printIntArray2D;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class findMaximizedCapitalSolution {

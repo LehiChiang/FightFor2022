@@ -1,4 +1,4 @@
-package leetcode.editor.datastructure;
+package datastructure;
 
 import java.util.List;
 

@@ -1,13 +1,22 @@
-package leetcode.editor.datastructure;
+package datastructure;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 public class TreeNode {
+
+    /**
+     * 树节点值
+     */
     public int val;
+    /**
+     * 左子树
+     */
     public TreeNode left;
+    /**
+     * 右子树
+     */
     public TreeNode right;
 
     TreeNode() {
@@ -25,7 +34,7 @@ public class TreeNode {
 
     /**
      * 外部调用前序遍历
-     * @param root
+     * @param root 要遍历的树
      */
     public void preTraverse(TreeNode root){
         System.out.print("Preorder Traversal: ");
@@ -44,7 +53,7 @@ public class TreeNode {
 
     /**
      * 外部调用中序遍历
-     * @param root
+     * @param root 要遍历的树
      */
     public void inTraverse(TreeNode root){
         System.out.print("Inorder Traversal: ");
@@ -63,7 +72,7 @@ public class TreeNode {
 
     /**
      * 外部调用后序遍历
-     * @param root
+     * @param root 要遍历的树
      */
     public void postTraverse(TreeNode root){
         System.out.print("Postorder Traversal: ");
@@ -82,7 +91,7 @@ public class TreeNode {
 
     /**
      * 外部调用层序遍历
-     * @param root
+     * @param root 要遍历的树
      */
     public void levelTraverse(TreeNode root){
         System.out.print("Levelorder Traversal: ");

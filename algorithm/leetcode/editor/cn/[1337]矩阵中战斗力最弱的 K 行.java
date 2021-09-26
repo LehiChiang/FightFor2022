@@ -46,10 +46,7 @@ package leetcode.editor.cn;
 // 👍 78 👎 0
 
 
-import java.util.Comparator;
 import java.util.PriorityQueue;
-
-import static leetcode.editor.utils.ArrayUtils.printIntArray;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class kWeakestRowsSolution {
@@ -93,7 +90,6 @@ class kWeakestRowsSolution {
                 {1,0,0,0,0},
                 {1,1,0,0,0},
                 {1,1,1,1,1}}, 3);
-        printIntArray(res);
     }
 
 }

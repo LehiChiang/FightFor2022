@@ -24,7 +24,7 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import leetcode.editor.datastructure.ListNode;
+import datastructure.ListNode;
 
 class addTwoNumbersSolution {
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {

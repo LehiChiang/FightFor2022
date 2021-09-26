@@ -1,6 +1,6 @@
-package leetcode.editor.codetop;
+package codetop;
 
-import leetcode.editor.datastructure.TreeNode;
+import datastructure.TreeNode;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

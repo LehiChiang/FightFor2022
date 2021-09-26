@@ -15,7 +15,7 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import leetcode.editor.datastructure.NestedInteger;
+import datastructure.NestedInteger;
 
 import java.util.Iterator;
 import java.util.LinkedList;

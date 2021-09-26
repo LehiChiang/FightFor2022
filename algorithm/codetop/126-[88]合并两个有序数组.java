@@ -1,8 +1,4 @@
-package leetcode.editor.codetop;
-
-import java.util.Arrays;
-
-import static leetcode.editor.utils.ArrayUtils.printIntArray;
+package codetop;
 
 class mergeTwoSortedArraySolution {
     public void merge(int[] nums1, int m, int[] nums2, int n) {

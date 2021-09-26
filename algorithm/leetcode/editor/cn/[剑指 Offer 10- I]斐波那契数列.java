@@ -17,8 +17,6 @@ package leetcode.editor.cn;
 // Related Topics 记忆化搜索 数学 动态规划 👍 214 👎 0
 
 
-import static leetcode.editor.utils.ArrayUtils.printIntArray;
-
 //leetcode submit region begin(Prohibit modification and deletion)
 class fibSolution {
     public int fib(int n) {
