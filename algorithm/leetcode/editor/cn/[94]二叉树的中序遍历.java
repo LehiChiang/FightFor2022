@@ -25,7 +25,7 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import leetcode.editor.datastructure.TreeNode;
+import datastructure.TreeNode;
 
 import java.util.ArrayList;
 import java.util.Deque;

@@ -25,8 +25,6 @@ package leetcode.editor.cn;
 
 import java.util.Arrays;
 
-import static leetcode.editor.utils.ArrayUtils.printIntArray;
-
 //leetcode submit region begin(Prohibit modification and deletion)
 class twoSumSolution {
     public int[] twoSum(int[] nums, int target) {
@@ -46,7 +44,6 @@ class twoSumSolution {
     public static void main(String[] args) {
         twoSumSolution solution = new twoSumSolution();
         int[] res = solution.twoSum(new int[]{3,2,4}, 6);
-        printIntArray(res);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

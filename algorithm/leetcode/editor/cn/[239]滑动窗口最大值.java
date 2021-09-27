@@ -37,8 +37,6 @@ package leetcode.editor.cn;
 import java.util.Deque;
 import java.util.LinkedList;
 
-import static leetcode.editor.utils.ArrayUtils.printIntArray;
-
 //leetcode submit region begin(Prohibit modification and deletion)
 class maxSlidingWindowSolution {
     public int[] maxSlidingWindow(int[] nums, int k) {
@@ -64,7 +62,6 @@ class maxSlidingWindowSolution {
     public static void main(String[] args) {
         maxSlidingWindowSolution solution = new maxSlidingWindowSolution();
         int[] res = solution.maxSlidingWindow(new int[]{1,-1}, 1);
-        printIntArray(res);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

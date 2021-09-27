@@ -19,9 +19,9 @@ package leetcode.editor.cn;
 // 👍 525 👎 0
 
 
-import java.util.ArrayList;
+import utils.ArrayUtils;
 
-import static leetcode.editor.utils.ArrayUtils.printIntArray2D;
+import java.util.ArrayList;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class setZeroesSolution {
@@ -88,7 +88,6 @@ class setZeroesSolution {
                         matrix[i][j] = 0;
                     }
         }
-        printIntArray2D(matrix);
     }
 
     public static void main(String[] args) {

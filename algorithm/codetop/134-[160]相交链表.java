@@ -1,6 +1,6 @@
-package leetcode.editor.codetop;
+package codetop;
 
-import leetcode.editor.datastructure.ListNode;
+import datastructure.ListNode;
 
 class getIntersectionNodeSolution {
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {

@@ -15,7 +15,7 @@ package leetcode.editor.cn;//输入一个链表，输出该链表中倒数第k�
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import leetcode.editor.datastructure.ListNode;
+import datastructure.ListNode;
 
 /**
  * Definition for singly-linked list.

@@ -1,8 +1,6 @@
-package leetcode.editor.codetop;
+package codetop;
 
 import java.util.HashMap;
-
-import static leetcode.editor.utils.ArrayUtils.printIntArray;
 
 /**
  * @author chestnut
@@ -21,6 +19,6 @@ class twoSumSolution {
 
     public static void main(String[] args) {
         twoSumSolution solution = new twoSumSolution();
-        printIntArray(solution.twoSum(new int[]{3,2,4}, 6));
+        solution.twoSum(new int[]{3,2,4}, 6);
     }
 }

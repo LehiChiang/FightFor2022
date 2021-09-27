@@ -17,7 +17,7 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import leetcode.editor.datastructure.ListNode;
+import datastructure.ListNode;
 
 class rotateRightSolution {
     public ListNode rotateRight(ListNode head, int k) {
@@ -49,7 +49,7 @@ class rotateRightSolution {
 
     public static void main(String[] args) {
         rotateRightSolution solution = new rotateRightSolution();
-        ListNode listNode = solution.rotateRight(ListNode.buildLinkedList(new int[]{1}), 1);
+        ListNode listNode = solution.rotateRight(ListNode.buildLinkedList(new int[]{1}, false), 1);
         System.out.println(listNode);
     }
 }

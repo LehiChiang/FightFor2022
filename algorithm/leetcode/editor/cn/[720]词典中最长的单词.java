@@ -29,8 +29,6 @@ package leetcode.editor.cn;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static leetcode.editor.utils.ArrayUtils.printStringArray;
-
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class longestWordSolution {
@@ -38,7 +36,6 @@ class longestWordSolution {
         Arrays.sort(words);
         HashSet<String> set = new HashSet<>();
         String res = "";
-        printStringArray(words);
         for (String word : words) {
             if (word.length() == 1 || set.contains(word.substring(0, word.length() - 1))) {
                 res = word.length() > res.length() ? word : res;

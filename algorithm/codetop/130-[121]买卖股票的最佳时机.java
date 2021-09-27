@@ -1,4 +1,4 @@
-package leetcode.editor.codetop;
+package codetop;
 
 class maxProfitSolution {
     public int maxProfit(int[] prices) {

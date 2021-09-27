@@ -1,6 +1,4 @@
-package leetcode.editor.codetop;
-
-import static leetcode.editor.utils.ArrayUtils.printIntArray;
+package codetop;
 
 /**
  * @author chestnut
@@ -34,6 +32,6 @@ class sortSolution {
 
     public static void main(String[] args) {
         sortSolution solution = new sortSolution();
-        printIntArray(solution.sortArray(new int[]{5,1,1,2,0,0}));
+        solution.sortArray(new int[]{5,1,1,2,0,0});
     }
 }

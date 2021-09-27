@@ -39,7 +39,7 @@ package leetcode.editor.cn;//给你两个单链表的头节点 headA 和 headB �
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import leetcode.editor.datastructure.ListNode;
+import datastructure.ListNode;
 
 class getIntersectionNodeSolution {
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {

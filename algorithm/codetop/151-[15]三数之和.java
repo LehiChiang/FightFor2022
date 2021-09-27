@@ -1,4 +1,4 @@
-package leetcode.editor.codetop;
+package codetop;
 
 import java.util.ArrayList;
 import java.util.Arrays;

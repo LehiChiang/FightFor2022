@@ -32,8 +32,6 @@ package leetcode.editor.cn;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import static leetcode.editor.utils.ArrayUtils.printIntArray2D;
-
 //leetcode submit region begin(Prohibit modification and deletion)
 class findMinArrowShotsSolution {
     public int findMinArrowShots(int[][] points) {

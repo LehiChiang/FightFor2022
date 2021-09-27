@@ -54,7 +54,7 @@ package leetcode.editor.cn;//给定一个链表，判断链表中是否有环。
 
 //leetcode submit region begin(Prohibit modification and deletion)
 
-import leetcode.editor.datastructure.ListNode;
+import datastructure.ListNode;
 
 /**
  * Definition for singly-linked list.

@@ -1,6 +1,5 @@
-package leetcode.editor.codetop;
+package codetop;
 
-import java.util.Comparator;
 import java.util.PriorityQueue;
 
 /**
