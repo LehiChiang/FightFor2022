@@ -598,3 +598,280 @@ var king = new Person("David") {
 
 
 #### 6.3.7 静态内部类
+
+如果不需要内部类有外部类对象的一个引用，那么可以将内部类声明为`static`，这样就不会生成那个引用。
+
+在静态方法中构建的内部类必须是静态的内部类。比如：
+
+```java
+public class code_6_3_7 {
+    public static void main(String[] args) {
+        var array = new int[20];
+        for (int i = 0; i < 20; i++)
+            array[i] = (int) (100 * Math.random());
+        ArrayAlg.Pair pair = ArrayAlg.minmax(array);
+        System.out.println(pair.getFirstNum());
+        System.out.println(pair.getSecondNum());
+    }
+}
+
+class ArrayAlg {
+
+    public static class Pair {
+        private int firstNum;
+        private int secondNum;
+        public Pair(int firstNum, int secondNum) {
+            this.firstNum = firstNum;
+            this.secondNum = secondNum;
+        }
+
+        public int getFirstNum() {
+            return firstNum;
+        }
+
+        public int getSecondNum() {
+            return secondNum;
+        }
+    }
+
+    public static Pair minmax(int[] array) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int v : array) {
+            if (min > v) min = v;
+            if (max < v) max = v;
+        }
+        return new Pair(min, max);
+    }
+}
+```
+
+
+
+### 6.5 代理
+
+三种代理方式：**静态代理，动态代理，`CGlib`代理**。
+
+#### **静态代理**
+
+```java
+import java.util.Date;
+
+interface PrintService {
+    void print();
+}
+
+/**
+ * 原始的PrintService接口实现类，但我们想对这里的功能进行扩展，并且想保持
+ * 这个实现类的封装性，所以我们使用静态代理类来扩展这个方法。
+ */
+class PrintServiceImpl implements PrintService {
+
+    @Override
+    public void print() {
+        System.out.println("Start printing!");
+    }
+}
+
+/**
+ * 代理类，对PrintServiceImpl类的封装和增强。代理类是对外开放的
+ */
+class PrintServiceProxy implements PrintService {
+
+    private PrintService printService;
+
+    public PrintServiceProxy() {
+        this.printService = new PrintServiceImpl();
+    }
+
+    @Override
+    public void print() {
+        // 在输入打印开始之前，增加日志输出时间
+        System.out.print(new Date().toString() + ": ");
+        printService.print();
+    }
+}
+
+public class code_6_5 {
+    public static void main(String[] args) {
+        PrintServiceProxy printServiceProxy = new PrintServiceProxy();
+        printServiceProxy.print();
+    }
+}
+```
+
+静态代理模式在不改变目标对象的前提下，实现了对目标对象的功能扩展。
+不足：静态代理实现了目标对象的所有方法，一旦目标接口增加方法，代理对象和目标对象都要进行相应的修改，增加维护成本。
+
+
+
+#### **动态代理**
+
+代理类包含以下方法：
+
+- 指定接口的全部方法
+- `Object`类中的全部方法，如`toString`, `equals`方法。
+
+要想不重复写记录日志的功能，**针对每一个接口实现一个代理类的做法肯定不可行了**，可不可以让这些代理类的对象**自动生成**呢？
+
+`JDK`提供了**`InvocationHandler`**接口和**`Proxy`**类，借助这两个工具可以达到我们想要的效果。
+
+ `InvocationHandler`接口上场：
+
+```java
+public interface InvocationHandler {
+    /**
+    * proxy:代理类代理的真实代理对象com.sun.proxy.$Proxy0
+    * method:我们所要调用某个对象真实的方法的Method对象
+    * args:指代代理对象方法传递的参数
+    */
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable;
+}
+```
+
+`Proxy`类上场，它里面有一个很重要的方法 `newProxyInstance`：
+
+```java
+public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler h)
+```
+
+**调用`Proxy`的`newProxyInstance`方法可以生成代理对象**
+
+接口`PrintService`和 该接口的实现类`PrintServiceImpl`的代码同前。
+
+实现一个类，该类用来创建代理对象，它实现了`InvocationHandler`接口：!!!
+
+```java
+class PrintServiceProxyHandler implements InvocationHandler {
+    // 被代理的对象
+    private Object proxyObject;
+
+    public PrintServiceProxyHandler(Object proxyObject) {
+        this.proxyObject = proxyObject;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.print(new Date().toString() + ": ");
+        return method.invoke(proxyObject);
+    }
+}
+```
+
+整体代码如下：
+
+```java
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Date;
+
+class PrintServiceProxyHandler implements InvocationHandler {
+    private Object proxyObject;
+
+    public PrintServiceProxyHandler(Object proxyObject) {
+        this.proxyObject = proxyObject;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.print(new Date().toString() + ": ");
+        return method.invoke(proxyObject);
+    }
+}
+
+/**
+ * 动态代理示例，自动生成代理类！
+ */
+public class code_6_5_2 {
+    public static void main(String[] args) {
+        // 被代理对象
+        PrintService printService = new PrintServiceImpl();
+        // 该类用来创建代理对象
+        PrintServiceProxyHandler proxyServiceHandler = new PrintServiceProxyHandler(printService);
+        // 返回一个代理对象
+        PrintService proxyService = (PrintService) Proxy.newProxyInstance(printService.getClass().getClassLoader(),
+                printService.getClass().getInterfaces(),
+                proxyServiceHandler);
+        proxyService.print();
+    }
+}
+```
+
+上面的代码还能简化成以下写法：
+
+
+
+**代理模式的定义：**代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用，通俗的来讲代理模式就是我们生活中常见的中介**，动态代理和静态代理的区别在于静态代理我们需要手动的去实现目标对象的代理类，而动态代理可以在运行期间动态的生成代理类。**
+
+
+
+再看一个示例，跟踪方法调用：
+
+```java
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.Random;
+
+class TraceHandler implements InvocationHandler {
+
+    private Object proxyObject;
+
+    public TraceHandler(Object proxyObject) {
+        this.proxyObject = proxyObject;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.print(proxyObject);
+        System.out.print("." + method.getName() + "(");
+        if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                System.out.print(args[0]);
+                if (i < args.length - 1)
+                    System.out.print(",");
+            }
+        }
+        System.out.println(")");
+        return method.invoke(proxyObject, args);
+    }
+}
+public class code_6_5_3 {
+    public static void main(String[] args) {
+        var array = new Object[100];
+        for (int i = 0; i < array.length; i++) {
+            Integer number = i + 1;
+            TraceHandler proxyHandler = new TraceHandler(number);
+            array[i] = Proxy.newProxyInstance(number.getClass().getClassLoader(), number.getClass().getInterfaces(), proxyHandler);
+        }
+
+        Integer key = new Random().nextInt(array.length) + 1;
+        int result = Arrays.binarySearch(array, key);
+        if (result >= 0)
+            System.out.println(array[result]);
+    }
+}
+```
+
+
+
+#### 6.5.3 代理类的特性
+
+所有的代理类都扩展`Proxy`类。一个代理类只有一个实例字段——即调用处理器。它在`Proxy`超类中定义。完成代理对象任务所需要的任何额外数据都必须存储在调用处理器中。
+
+所有的代理类都要覆盖`Object`类中的`toString`，`equals`，`hashCode`方法。如同其他方法一样，这些方法只是在调用处理器上调用`invoke`。`Object`类中其他方法（如`clone`和`getClass`）没有重新定义。
+
+对于一个特定的类加载器和预设的一组接口来说，只能有一个代理类。也就是说，如果使用同一个类加载器和接口数组调用两次`newProxyInstance`方法，将得到同一个类的两个对象。也可以使用`getProxyClass`方法获得这个类：
+
+```java
+Class proxyClass = Proxy.getProxyClass(null, interfaces);
+```
+
+检测一个特定的`Class`对象是不是表示一个代理类：
+
+```java
+public static boolean isProxyClass(Class<?> cl);
+```
+
