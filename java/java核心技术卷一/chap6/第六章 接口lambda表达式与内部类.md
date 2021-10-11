@@ -411,4 +411,190 @@ public class code_6_2_7 {
 
 一个内部类方法可以自由地访问自身的数据字段，也可以访问创建它的外围类对象的数据字段。
 
-因此，内部类的对象总有一个隐式引用，指向创建它的外部类对象。
+```java
+class TalkingClock {
+    private int interval;
+    private boolean beep;
+
+    public TalkingClock(int interval, boolean beep) {
+        this.interval = interval;
+        this.beep = beep;
+    }
+
+    public void start() {}
+
+    public class TimePrinter implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println(e.getWhen());
+            if (beep) Toolkit.getDefaultToolkit().beep();
+        }
+    }
+}
+```
+
+因此，内部类的对象总有一个隐式引用，指向创建它的外部类对象。内部类可以私有！
+
+```java
+public class code_6_3_1 {
+    public static void main(String[] args) {
+        var clock = new TalkingClock(1000, true);
+        clock.start();
+        JOptionPane.showMessageDialog(null, "Quit?");
+        System.exit(0);
+    }
+}
+
+class TalkingClock {
+    private int interval;
+    private boolean beep;
+
+    public TalkingClock(int interval, boolean beep) {
+        this.interval = interval;
+        this.beep = beep;
+    }
+
+    public void start() {
+        // 这个时候将外部类和内部类进行了关联。这个时候编译器就会将当前TalkingClock的this引用传递给这个构造器
+        var listener = new TimePrinter(this);
+        var time = new Timer(interval, listener);
+        time.start();
+    }
+
+    private class TimePrinter implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println(e.getWhen());
+            if (beep) Toolkit.getDefaultToolkit().beep();
+        }
+    }
+}
+```
+
+
+
+#### 6.3.2 内部类的特殊语法规则
+
+内部类还可以使用这样的方法访问外部的变量
+
+```java
+    private class TimePrinter implements ActionListener {
+        ...
+        if (TalkingClock.this.beep) Toolkit.getDefaultToolkit().beep();
+       ...
+    }
+```
+
+同时外部类在创建内部类对象时，也可以这么写
+
+```java
+    public void start() {
+        var listener = this.new TimePrinter();
+        ...
+    }
+```
+
+这样可以通过显示地命名将外围类的引用设置为其他的对象。
+
+如果`TimePrinter`是一个公共内部类，对于任意的`TalkingClock`都可以这样构造一个`TimePrinter`：
+
+```java
+var jabberer = new TalkingClock(100, true);
+TalkingClock.TimePrinter listener = jabberer.new TimePrinter();
+```
+
+**内部类中声明的所有静态字段都必须是`final`的，并初始化为一个编译时常量。**
+
+**内部类不能有`static`方法。**
+
+
+
+#### 6.3.3 内部类是否有用，必要和安全
+
+内部类是一个编译器现象，与虚拟机无关。编译器会将内部类转换为常规的类文件，用`$`分割外部类名与内部类名，而虚拟机对此一无所知。
+
+例如，`TalkingClock`类内部的`TimePrinter`类将被转化成常规的单独的类文件`TalkingClock$TimePrinter.class`。
+
+通过反射机制可以看到，在经过编译之后，`TimePrinter`会生成这样的字段：
+
+```java
+final innerClass.TalkingClock this$0;
+```
+
+编译器额外生成了实例字段`this$0`，对应外围类的引用。
+
+同理，通过反射可以看到编译后的`TalkingClock`会增加一个方法
+
+```java
+static boolean access$0(TalkingClock)
+```
+
+`boolean`类型对应返回的`beep`字段，内部类调用的方法
+
+```java
+if (beep)
+```
+
+实际会产生这样的调用
+
+```java
+if (TalkingClock.access$0(outer))
+```
+
+
+
+#### 6.3.4 局部内部类
+
+```java
+    public void start() {
+        class TimePrinter implements ActionListener {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(e.getWhen());
+                if (TalkingClock.this.beep) Toolkit.getDefaultToolkit().beep();
+            }
+        }
+        
+        var listener = new TimePrinter();
+        var time = new Timer(interval, listener);
+        time.start();
+    }
+```
+
+**可以在一个方法中局部定义这个类！局部内部类不能有访问权限符。作用域也只限定在这个`start`的代码块中。**
+
+
+
+#### 6.3.6 匿名内部类
+
+匿名内部类的语法如下：
+
+```java
+new SuperType(construction parameters) {
+	inner class methods and data
+}
+```
+
+其中，
+
+- `SuperType`是个接口，那么内部类在编译时要实现这个接口。并且不能有任何构造参数！内部类也不能有构造器。但仍然需要提供小括号。
+- `SuperType`是个类，内部类在编译时要扩展这个类。这个情况要注意！如下：
+
+```java
+var queen = new Person("Marry");
+// a Person object
+var king = new Person("David") {...};
+// an object of an inner class extending Person
+```
+
+尽管匿名类不能有构造器，但可以提供一个对象初始化块：
+
+```java
+var king = new Person("David") {
+    {initialization}
+};
+```
+
+
+
+#### 6.3.7 静态内部类
