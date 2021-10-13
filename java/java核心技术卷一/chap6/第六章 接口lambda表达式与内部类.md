@@ -14,7 +14,7 @@ public interface Comparable<T> {
 }
 ```
 
-**接口中的所有方法都自动是`public`方法。因此，在接口声明方法时，不必提供关键字`public`。**
+**接口中的所有方法都自动是`public abstract`方法。因此，在接口声明方法时，不必提供关键字`public`。**
 
 **接口可以定义常量；**
 
@@ -41,6 +41,25 @@ if (object instanceof Comparable) {...}
 
 
 #### 6.1.3 接口与抽象类
+
+与接口相比，抽象类通常是对同类事物相对具体的抽象，通常包含抽象方法，实体方法，属性变量。如果一个抽象类只有一个抽象方法，那么它就等同于一个接口。抽象类在被继承时体现的是`is-a`的关系，接口在被实现时体现的是`can-do`的关系。实现类要有能力去实现并执行接口中定义的行为。
+
+接口是顶级的“类”，虽然关键字是`interface`，但是编译之后的字节码扩展名还是`.class`。抽象类是二当家，接口位于顶层，而抽象类对各个接口进行了组合，然后实现部分接口行为。例如下面的最典型的抽象类：
+
+```java
+public abstract class AbstractCollection<E> implements Collection<E>{
+    // Collection中定义的抽象方法，但本类中没有实现
+    // size()这个方法对于链表和顺序表有不同的实现方式
+    public abstract int size();
+    
+    // 实现了Collection中定义的抽象方法，因为对于所有AbstractCollection子类，它们判空的方式是一致的。
+    public boolean isEmpty() {
+        return this.size() == 0;
+    }
+}
+```
+
+当纠结定义接口还是方法时，推荐定义接口，遵循接口隔离原则，这样做可方便后续的扩展和重构。
 
 
 
@@ -566,6 +585,22 @@ if (TalkingClock.access$0(outer))
 
 
 #### 6.3.6 匿名内部类
+
+匿名内部类使用数字进行编号，而局部内部类在类名前面还有一个编号来标识是哪个类。
+
+```java
+public class OuterClass {
+    public static void main(String[] args) {
+        // 两个匿名内部类，编译后的class文件名称为OuterClass$1和OuterClass$2
+        (new Thread(){}).start();
+        (new Thread(){}).start();
+        
+        // 两个局部内部类，编译后的class文件名称为OuterClass$1MethodClass1和OuterClass$1MethodClass2
+        class MethodClass1 {}
+        class MethodClass2 {}
+    }
+}
+```
 
 匿名内部类的语法如下：
 
