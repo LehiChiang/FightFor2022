@@ -117,4 +117,9 @@ public class TreeNode {
         }
         return res;
     }
+
+    @Override
+    public String toString() {
+        return levelTraverseBFS(this).toString();
+    }
 }
