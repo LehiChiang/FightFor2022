@@ -1,5 +1,7 @@
 package java核心技术卷一.chap8;
 
+import java.time.LocalDate;
+
 public class Pair<T> {
     private T firstNumber;
     private T secondNumber;
@@ -34,5 +36,16 @@ public class Pair<T> {
             if (min.compareTo(a[i]) > 0) min = a[i];
         }
         return new Pair<>(min, max);
+    }
+}
+
+class DateInterval extends Pair<LocalDate> {
+
+    public DateInterval(LocalDate firstNumber, LocalDate secondNumber) {
+        super(firstNumber, secondNumber);
+    }
+
+    public LocalDate getSecondNumber() {
+        return (LocalDate) super.getSecondNumber();
     }
 }
