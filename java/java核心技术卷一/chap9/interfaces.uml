@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>java.util.RandomAccess</OriginalElement>
+  <nodes>
+    <node x="413.0" y="395.0">java.util.Iterator</node>
+    <node x="11.5" y="240.0">java.util.SortedSet</node>
+    <node x="400.5" y="475.0">java.util.ListIterator</node>
+    <node x="174.5" y="80.0">java.util.Collection</node>
+    <node x="36.5" y="160.0">java.util.Set</node>
+    <node x="0.0" y="320.0">java.util.NavigableSet</node>
+    <node x="0.0" y="555.0">java.util.NavigableMap</node>
+    <node x="187.5" y="240.0">java.util.Deque</node>
+    <node x="183.0" y="0.0">java.lang.Iterable</node>
+    <node x="0.0" y="630.0">java.util.RandomAccess</node>
+    <node x="337.5" y="160.0">java.util.List</node>
+    <node x="127.5" y="395.0">java.util.Map</node>
+    <node x="216.5" y="475.0">java.util.Map.Entry</node>
+    <node x="187.5" y="160.0">java.util.Queue</node>
+    <node x="11.5" y="475.0">java.util.SortedMap</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="java.util.SortedMap" target="java.util.Map" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="104.0" y="450.0" />
+      <point x="161.25" y="450.0" />
+      <point x="-33.75" y="15.0" />
+    </edge>
+    <edge source="java.util.NavigableMap" target="java.util.SortedMap" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.Queue" target="java.util.Collection" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.Collection" target="java.lang.Iterable" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.Set" target="java.util.Collection" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="89.5" y="135.0" />
+      <point x="252.5" y="135.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.SortedSet" target="java.util.Set" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.List" target="java.util.Collection" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="391.0" y="135.0" />
+      <point x="252.5" y="135.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.Deque" target="java.util.Queue" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.ListIterator" target="java.util.Iterator" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.Map.Entry" target="java.util.Map" relationship="INNER_CLASS">
+      <point x="0.0" y="-15.0" />
+      <point x="286.0" y="450.0" />
+      <point x="228.75" y="450.0" />
+      <point x="33.75" y="15.0" />
+    </edge>
+    <edge source="java.util.NavigableSet" target="java.util.SortedSet" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="281.5" y="330.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>packageLocal</VISIBILITY>
+</Diagram>
+

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>java.util.AbstractMap</OriginalElement>
+  <nodes>
+    <node x="0.0" y="160.0">java.util.LinkedHashMap</node>
+    <node x="469.0" y="0.0">java.util.AbstractMap</node>
+    <node x="215.0" y="80.0">java.util.IdentityHashMap</node>
+    <node x="883.0" y="80.0">java.util.TreeMap</node>
+    <node x="693.0" y="80.0">java.util.EnumMap</node>
+    <node x="24.0" y="80.0">java.util.HashMap</node>
+    <node x="462.0" y="80.0">java.util.WeakHashMap</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="java.util.WeakHashMap" target="java.util.AbstractMap" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.EnumMap" target="java.util.AbstractMap" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="780.5" y="55.0" />
+      <point x="567.5" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.TreeMap" target="java.util.AbstractMap" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="967.0" y="55.0" />
+      <point x="567.5" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.LinkedHashMap" target="java.util.HashMap" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.IdentityHashMap" target="java.util.AbstractMap" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="328.5" y="55.0" />
+      <point x="567.5" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="java.util.HashMap" target="java.util.AbstractMap" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="109.5" y="55.0" />
+      <point x="567.5" y="55.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="528.0" y="95.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>packageLocal</VISIBILITY>
+</Diagram>
+
