@@ -30,8 +30,8 @@ import java.util.Random;
 //leetcode submit region begin(Prohibit modification and deletion)
 class shuffleSolution {
 
-    private int[] initial;
-    private int[] nums;
+    private final int[] initial;
+    private final int[] nums;
     public shuffleSolution(int[] nums) {
         initial = Arrays.copyOf(nums, nums.length);
         this.nums = nums;

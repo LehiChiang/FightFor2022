@@ -23,7 +23,7 @@ class PrintServiceImpl implements PrintService {
  */
 class PrintServiceProxy implements PrintService {
 
-    private PrintService printService;
+    private final PrintService printService;
 
     public PrintServiceProxy() {
         this.printService = new PrintServiceImpl();
@@ -31,7 +31,7 @@ class PrintServiceProxy implements PrintService {
 
     @Override
     public void print() {
-        System.out.print(new Date().toString() + ": ");
+        System.out.print(new Date() + ": ");
         printService.print();
     }
 }

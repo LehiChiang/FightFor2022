@@ -8,7 +8,7 @@ import java.util.Random;
 
 class TraceHandler implements InvocationHandler {
 
-    private Object proxyObject;
+    private final Object proxyObject;
 
     public TraceHandler(Object proxyObject) {
         this.proxyObject = proxyObject;

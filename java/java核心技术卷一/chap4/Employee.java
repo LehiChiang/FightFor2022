@@ -5,10 +5,10 @@ import java.util.Objects;
 public class Employee{
     private static int nextId;
 
-    private int id;
-    private String name;
-    private double salary;
-    private Position position = Position.PRODUCT;
+    private final int id;
+    private final String name;
+    private final double salary;
+    private final Position position = Position.PRODUCT;
 
     {
         id = nextId;

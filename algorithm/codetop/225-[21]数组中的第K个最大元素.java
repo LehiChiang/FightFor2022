@@ -36,7 +36,7 @@ class findKthLargestSolution {
     }
 
     // 这个函数要反复写
-    private int partition(int nums[], int start, int end) {
+    private int partition(int[] nums, int start, int end) {
         int pivot = nums[start];
         while (start < end) {
             while (start < end && nums[end] >= pivot) end--;
@@ -57,7 +57,7 @@ class findKthLargestSolution {
      * @param end
      * @return
      */
-    private int _partition(int nums[], int start, int end) {
+    private int _partition(int[] nums, int start, int end) {
         int i = start - 1;
         int r = nums[end];
         for (int j = start; j <= end - 1; j++) {

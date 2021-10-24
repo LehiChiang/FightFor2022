@@ -6,7 +6,7 @@ import java.lang.reflect.Proxy;
 import java.util.Date;
 
 class PrintServiceProxyHandler implements InvocationHandler {
-    private Object proxyObject;
+    private final Object proxyObject;
 
     public PrintServiceProxyHandler(Object proxyObject) {
         this.proxyObject = proxyObject;
@@ -14,7 +14,7 @@ class PrintServiceProxyHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.print(new Date().toString() + ": ");
+        System.out.print(new Date() + ": ");
         return method.invoke(proxyObject, args);
     }
 }

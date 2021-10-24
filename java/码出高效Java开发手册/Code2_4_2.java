@@ -3,7 +3,7 @@ package 码出高效Java开发手册;
 public class Code2_4_2 {
     public static int num = 10;
     public static String word = "love";
-    private static StringBuilder stringBuilder = new StringBuilder("hello");
+    private static final StringBuilder stringBuilder = new StringBuilder("hello");
 
     public static void method(int nums) {
         nums = 1000;

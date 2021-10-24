@@ -7,7 +7,7 @@ public class code_8_6_2 {
 }
 
 class Basket<T extends Comparable> {
-    private T item;
+    private final T item;
     public Basket(T t) {
         item = t;
     }

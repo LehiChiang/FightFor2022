@@ -14,8 +14,8 @@ public class code_6_3_7 {
 class ArrayAlg {
 
     public static class Pair {
-        private int firstNum;
-        private int secondNum;
+        private final int firstNum;
+        private final int secondNum;
         public Pair(int firstNum, int secondNum) {
             this.firstNum = firstNum;
             this.secondNum = secondNum;

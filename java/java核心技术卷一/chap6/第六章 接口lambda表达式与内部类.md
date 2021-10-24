@@ -432,8 +432,8 @@ public class code_6_2_7 {
 
 ```java
 class TalkingClock {
-    private int interval;
-    private boolean beep;
+    private final int interval;
+    private final boolean beep;
 
     public TalkingClock(int interval, boolean beep) {
         this.interval = interval;
@@ -465,8 +465,8 @@ public class code_6_3_1 {
 }
 
 class TalkingClock {
-    private int interval;
-    private boolean beep;
+    private final int interval;
+    private final boolean beep;
 
     public TalkingClock(int interval, boolean beep) {
         this.interval = interval;
@@ -653,8 +653,8 @@ public class code_6_3_7 {
 class ArrayAlg {
 
     public static class Pair {
-        private int firstNum;
-        private int secondNum;
+        private final int firstNum;
+        private final int secondNum;
         public Pair(int firstNum, int secondNum) {
             this.firstNum = firstNum;
             this.secondNum = secondNum;
@@ -713,7 +713,7 @@ class PrintServiceImpl implements PrintService {
  */
 class PrintServiceProxy implements PrintService {
 
-    private PrintService printService;
+    private final PrintService printService;
 
     public PrintServiceProxy() {
         this.printService = new PrintServiceImpl();
@@ -722,7 +722,7 @@ class PrintServiceProxy implements PrintService {
     @Override
     public void print() {
         // 在输入打印开始之前，增加日志输出时间
-        System.out.print(new Date().toString() + ": ");
+        System.out.print(new Date() + ": ");
         printService.print();
     }
 }
@@ -760,7 +760,7 @@ public interface InvocationHandler {
     * method:我们所要调用某个对象真实的方法的Method对象
     * args:指代代理对象方法传递的参数
     */
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable;
+    Object invoke(Object proxy, Method method, Object[] args) throws Throwable;
 }
 ```
 
@@ -779,7 +779,7 @@ public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces,
 ```java
 class PrintServiceProxyHandler implements InvocationHandler {
     // 被代理的对象
-    private Object proxyObject;
+    private final Object proxyObject;
 
     public PrintServiceProxyHandler(Object proxyObject) {
         this.proxyObject = proxyObject;
@@ -787,7 +787,7 @@ class PrintServiceProxyHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.print(new Date().toString() + ": ");
+        System.out.print(new Date() + ": ");
         return method.invoke(proxyObject);
     }
 }
@@ -802,7 +802,7 @@ import java.lang.reflect.Proxy;
 import java.util.Date;
 
 class PrintServiceProxyHandler implements InvocationHandler {
-    private Object proxyObject;
+    private final Object proxyObject;
 
     public PrintServiceProxyHandler(Object proxyObject) {
         this.proxyObject = proxyObject;
@@ -810,7 +810,7 @@ class PrintServiceProxyHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.print(new Date().toString() + ": ");
+        System.out.print(new Date() + ": ");
         return method.invoke(proxyObject);
     }
 }
@@ -852,7 +852,7 @@ import java.util.Random;
 
 class TraceHandler implements InvocationHandler {
 
-    private Object proxyObject;
+    private final Object proxyObject;
 
     public TraceHandler(Object proxyObject) {
         this.proxyObject = proxyObject;
@@ -873,6 +873,7 @@ class TraceHandler implements InvocationHandler {
         return method.invoke(proxyObject, args);
     }
 }
+
 public class code_6_5_3 {
     public static void main(String[] args) {
         var array = new Object[100];

@@ -34,7 +34,7 @@ import java.util.Iterator;
 
 class PeekingIterator implements Iterator<Integer> {
 
-	private Iterator<Integer> list;
+	private final Iterator<Integer> list;
 	private Integer currentNum;
 
 	public PeekingIterator(Iterator<Integer> iterator) {

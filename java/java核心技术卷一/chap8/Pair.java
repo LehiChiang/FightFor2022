@@ -46,6 +46,6 @@ class DateInterval extends Pair<LocalDate> {
     }
 
     public LocalDate getSecondNumber() {
-        return (LocalDate) super.getSecondNumber();
+        return super.getSecondNumber();
     }
 }

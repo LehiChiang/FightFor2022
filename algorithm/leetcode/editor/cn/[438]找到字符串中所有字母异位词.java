@@ -73,9 +73,7 @@ class findAnagramsSolution {
         for (int j = 0; j < substring.length(); j++) {
             winFreq[substring.charAt(j) - 'a']++;
         }
-        if (Arrays.equals(winFreq, pFreq))
-            return true;
-        else return false;
+        return Arrays.equals(winFreq, pFreq);
     }
 
     public static void main(String[] args) {

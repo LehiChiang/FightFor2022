@@ -14,7 +14,7 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class numTreesSolution {
-    int dp[][];
+    int[][] dp;
 
     public int numTrees(int n) {
         dp = new int[n + 1][n + 1];
