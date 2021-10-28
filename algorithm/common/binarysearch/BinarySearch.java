@@ -6,6 +6,26 @@ package common.binarysearch;
 public class BinarySearch {
 
     /**
+     * 二分搜索
+     * @param nums 二分搜索的数组
+     * @param target 待搜索的目标值
+     * @return 返回数组中最出现的目标值数字的索引，否则返回-1
+     */
+    public static int search(int[] nums, int target) {
+        int low = 0, high = nums.length;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] == target)
+                return mid;
+            else if (nums[mid] < target)
+                low = mid + 1;
+            else
+                high = mid;
+        }
+        return -1;
+    }
+
+    /**
      * 二分搜索左边界
      * @param nums 二分搜索的数组
      * @param target 搜索目标值

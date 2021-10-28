@@ -3,6 +3,7 @@ package datastructure;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class TreeNode {
 
@@ -30,6 +31,42 @@ public class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+
+    /**
+     * 字符串构造二叉树
+     * @param data
+     * @param SEP
+     * @param NULL
+     * @return
+     */
+    public static TreeNode deserialize(String data, String SEP, String NULL) {
+        if (data.isEmpty()) return null;
+        String[] values = data.split(SEP);
+        TreeNode root = new TreeNode(Integer.parseInt(values[0]));
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        for (int i = 1 ; i < values.length ; ){
+            TreeNode cur = queue.poll();
+            String ch = values[i++];
+            if (!ch.equals(NULL)){
+                TreeNode left = new TreeNode(Integer.parseInt(ch));
+                cur.left = left;
+                queue.offer(cur.left);
+            }else {
+                cur.left = null;
+            }
+
+            String ch2 = values[i++];
+            if (!ch2.equals(NULL)){
+                TreeNode right = new TreeNode(Integer.parseInt(ch2));
+                cur.right = right;
+                queue.offer(cur.right);
+            }else {
+                cur.right = null;
+            }
+        }
+        return root;
     }
 
     /**
