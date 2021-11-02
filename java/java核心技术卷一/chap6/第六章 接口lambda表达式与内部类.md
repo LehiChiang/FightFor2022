@@ -205,6 +205,29 @@ public interface Comparator<T> {
 
 **注意：只要这个接口中有一个抽象的方法就可以提供`lambda`表达式，不管这个接口中有没有默认方法！**
 
+`Java`中重要的函数接口：
+
+| 接口                 | 参数     | 返回类型    | 抽象方法名 | 示例                                     |
+| -------------------- | -------- | ----------- | ---------- | ---------------------------------------- |
+| `Predicate<T>`       | **T**    | **boolean** | test       | 用来判断真假的函数接口                   |
+| `Consumer<T>`        | **T**    | **void**    | accept     | 用于处理参数的函数接口                   |
+| `Runnable`           | **None** | **void**    | run        | 用于多线程中啊                           |
+| `Supplier<T>`        | **None** | **T**       | get        | 用于提供一个类型为T的函数接口            |
+| `Function<T, R>`     | **T**    | **R**       | apply      | 接受一个T类型的变量，返回一个R类型的变量 |
+| `UnaryOperator<T>`   | **T**    | **T**       | apply      | 类型T上的一元操作符                      |
+| `BinaryOperation<T>` | **T,T**  | **T**       | apply      | 类型T上的二元操作符                      |
+
+```java
+public static void main(String[] args) {
+    BinaryOperator<Integer> binaryOperator = (x, y) -> x + y;
+    processBinaryOperator(binaryOperator);
+}
+
+private static void processBinaryOperator(BinaryOperator<Integer> binaryOperator) {
+    System.out.println(binaryOperator.apply(3, 5));
+}
+```
+
 
 
 #### 6.2.4 方法引用
