@@ -42,7 +42,6 @@ class mergeTwoListsSolution {
 
     public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
         ListNode newHead = new ListNode();
-
         ListNode pre = newHead;
         while (l1 != null && l2 != null) {
             if (l1.val < l2.val) {

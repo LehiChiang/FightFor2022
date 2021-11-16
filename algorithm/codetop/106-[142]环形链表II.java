@@ -2,7 +2,7 @@ package codetop;
 
 import datastructure.ListNode;
 
-class Solution {
+class detectCycleSolution {
     public ListNode detectCycle(ListNode head) {
         ListNode slow = head, fast = head;
         boolean hasCycle = false;

@@ -27,10 +27,15 @@ public class TreeNode {
         this.val = val;
     }
 
-    TreeNode(int val, TreeNode left, TreeNode right) {
+    public TreeNode(int val, TreeNode left, TreeNode right) {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+
+
+    public static TreeNode deserialize(String data) {
+        return deserialize(data, ",", "null");
     }
 
     /**
@@ -71,12 +76,11 @@ public class TreeNode {
 
     /**
      * 外部调用前序遍历
-     * @param root 要遍历的树
      */
-    public void preTraverse(TreeNode root){
+    public void preTraverse(){
         System.out.print("Preorder Traversal: ");
         List<String> res = new ArrayList<>();
-        preTraverseRecur(root, res);
+        preTraverseRecur(this, res);
         System.out.println(res);
     }
 
@@ -90,12 +94,11 @@ public class TreeNode {
 
     /**
      * 外部调用中序遍历
-     * @param root 要遍历的树
      */
-    public void inTraverse(TreeNode root){
+    public void inTraverse(){
         System.out.print("Inorder Traversal: ");
         List<String> res = new ArrayList<>();
-        inTraverseRecur(root, res);
+        inTraverseRecur(this, res);
         System.out.println(res);
     }
 
@@ -109,12 +112,11 @@ public class TreeNode {
 
     /**
      * 外部调用后序遍历
-     * @param root 要遍历的树
      */
-    public void postTraverse(TreeNode root){
+    public void postTraverse(){
         System.out.print("Postorder Traversal: ");
         List<String> res = new ArrayList<>();
-        postTraverseRecur(root, res);
+        postTraverseRecur(this, res);
         System.out.println(res);
     }
 
@@ -128,11 +130,10 @@ public class TreeNode {
 
     /**
      * 外部调用层序遍历
-     * @param root 要遍历的树
      */
-    public void levelTraverse(TreeNode root){
+    public void levelTraverse(){
         System.out.print("Levelorder Traversal: ");
-        List<String> res = levelTraverseBFS(root);
+        List<String> res = levelTraverseBFS(this);
         System.out.println(res);
     }
 

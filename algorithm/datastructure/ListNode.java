@@ -21,7 +21,7 @@ public class ListNode {
      * @param val 节点值
      * @param next 指向的下一个节点
      */
-    ListNode(int val, ListNode next) {
+    public ListNode(int val, ListNode next) {
         this.val = val;
         this.next = next;
     }
