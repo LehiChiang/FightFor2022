@@ -39,29 +39,27 @@ import java.util.LinkedList;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class maxSlidingWindowSolution {
+    public static void main(String[] args) {
+        maxSlidingWindowSolution solution = new maxSlidingWindowSolution();
+        int[] res = solution.maxSlidingWindow(new int[]{7, 2, 4}, 2);
+    }
+
     public int[] maxSlidingWindow(int[] nums, int k) {
         int n = nums.length;
         if (n == 0)
             return new int[]{};
-        // 存放下标
         Deque<Integer> queue = new LinkedList<>();
         int[] res = new int[n - k + 1];
         for (int i = 0; i < n; i++) {
-            while (!queue.isEmpty() && nums[i] >= nums[queue.peekFirst()])
-                queue.pollFirst();
+            while (!queue.isEmpty() && nums[i] >= nums[queue.peekLast()])
+                queue.pollLast();
             queue.offerLast(i);
-            // 维持窗口大小
             if (queue.peek() <= i - k)
                 queue.pollFirst();
             if (i + 1 >= k)
                 res[i - k + 1] = nums[queue.peekFirst()];
         }
         return res;
-    }
-
-    public static void main(String[] args) {
-        maxSlidingWindowSolution solution = new maxSlidingWindowSolution();
-        int[] res = solution.maxSlidingWindow(new int[]{1,-1}, 1);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

@@ -1,7 +1,7 @@
 package datastructure;
 
 /**
- * @author chestnut
+ * @author Lihao Jiang
  */
 
 public class ListNode {
