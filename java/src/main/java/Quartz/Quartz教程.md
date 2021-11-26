@@ -1,4 +1,4 @@
-# ch1 : 你了解 Quartz 吗？
+# ch 1 : 你了解 Quartz 吗？
 
 Quartz 是一个完全由 Java 编写的开源作业调度框架，为在 Java 应用程序中进行作业调度提供了简单却强大的机制。
 
@@ -36,7 +36,7 @@ Quartz 实现了作业和触发器的多对多的关系，还能把多个作业�
 - Quartz 可以作为一个独立的程序运行(其自己的 Java 虚拟机内)，可以通过 RMI 使用。
 - Quartz 可以被实例化，作为独立的项目集群(负载平衡和故障转移功能)，用于作业的执行。
 
-# ch2 : Quartz API，Jobs和Triggers
+# ch 2 : Quartz API，Jobs和Triggers
 
 ## Quartz API
 
@@ -131,7 +131,7 @@ Job 稍后被重新调度，而不用重新定义 Job；还有，可以修改或
 您现在有一个关于什么 Job
 和触发器的一般概念，您可以在[第3课中](http://www.quartz-scheduler.org/documentation/quartz-2.2.x/tutorials/tutorial-lesson-03.html)了解更多信息[有关作业和作业详细信息](http://www.quartz-scheduler.org/documentation/quartz-2.2.x/tutorials/tutorial-lesson-03.html)以及[第4课：有关触发器的更多信息](http://www.quartz-scheduler.org/documentation/quartz-2.2.x/tutorials/tutorial-lesson-03.html)。
 
-# ch3 : Job与JobDetail介绍
+# ch 3 : Job与JobDetail介绍
 
 正如你在[第2课](https://www.w3cschool.cn/project/quartz_doc/quartz_doc-kixe2cq3.html)中看到的，Jobs很容易实现，在接口中只有一个“execute”方法。本节主要关注：Job的特点、Job接口的execute方法以及JobDetail。
 
@@ -336,7 +336,7 @@ public class DumbJob implements Job {
 最后，是关于Job.execute(..)
 方法的一些额外细节。execute方法中仅允许抛出一种类型的异常（包括RuntimeExceptions），即JobExecutionException。因此，你应该将execute方法中的所有内容都放到一个”try-catch”块中。你也应该花点时间看看JobExecutionException的文档，因为你的job可以使用该异常告诉scheduler，你希望如何来处理发生的异常。
 
-# ch4 : Quartz中Triggers介绍
+# ch 4 : Quartz中Triggers介绍
 
 与[job](https://www.w3cschool.cn/quartz_doc/quartz_doc-h4ux2cq6.html)一样，trigger也很容易使用，但是还有一些扩展选项需要理解，以便更好地使用quartz。trigger也有很多类型，我们可以根据实际需要来选择。
 
@@ -424,7 +424,7 @@ Trigger t2 = newTrigger()
 
 接下来的几个课程将介绍触发器的施工/建造细节。现在，只要认为上面的代码创建了两个触发器，每个触发器都计划每天触发。然而，在日历所排除的期间内发生的任何发射都将被跳过。
 
-# ch5 : Simple Trigger
+# ch 5 : Simple Trigger
 
 SimpleTrigger可以满足的调度需求是：在具体的时间点执行一次，或者在具体的时间点执行，并且以指定的间隔重复执行若干次。比如，你有一个trigger，你可以设置它在2015年1月13日的上午11:23:
 54准时触发，或者在这个时间点触发，并且每隔2秒触发一次，一共重复5次。
@@ -540,11 +540,396 @@ MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT
 在使用SimpleTrigger构造trigger时，misfire策略作为基本调度(simple schedule)的一部分进行配置(通过SimpleSchedulerBuilder设置)：
 
 ```java
-    trigger = newTrigger()
-        .withIdentity("trigger7", "group1")
+    trigger=newTrigger()
+        .withIdentity("trigger7","group1")
         .withSchedule(simpleSchedule()
-            .withIntervalInMinutes(5)
-            .repeatForever()
-            .withMisfireHandlingInstructionNextWithExistingCount())
+        .withIntervalInMinutes(5)
+        .repeatForever()
+        .withMisfireHandlingInstructionNextWithExistingCount())
         .build();
 ```
+
+# ch 6 : CronTrigger
+
+<p>格式：<strong>[秒] [分] [小时] [日] [月] [周] [年]</strong></p>
+
+<div class="table-box"><table border="0" cellpadding="2" cellspacing="2"><thead><tr><th>序号</th><th>说明</th><th>是否必填</th><th>允许填写的值</th><th>允许的通配符</th></tr></thead><tbody><tr><td>1</td><td>秒</td><td>是</td><td>0-59</td><td>, - * /</td></tr><tr><td>2</td><td>分</td><td>是</td><td>0-59</td><td>, - * /</td></tr><tr><td>3</td><td>小时</td><td>是</td><td>0-23</td><td>, - * /</td></tr><tr><td>4</td><td>日</td><td>是</td><td>1-31</td><td>, - * ? / L W</td></tr><tr><td>5</td><td>月</td><td>是</td><td>1-12 or JAN-DEC</td><td>, - * /</td></tr><tr><td>6</td><td>周</td><td>是</td><td>1-7 or SUN-SAT</td><td>, - * ? / L #</td></tr><tr><td>7</td><td>年</td><td>否</td><td>empty 或 1970-2099</td><td>, - * /</td></tr></tbody></table></div>
+<p><strong>通配符说明:</strong></p>
+
+<p><span style="color:#f33b45;"><strong>*&nbsp;</strong></span>表示所有值. 例如:在分的字段上设置 "*",表示每一分钟都会触发。</p>
+
+<p><span style="color:#f33b45;"><strong><strong>?</strong></strong>&nbsp;</span>表示不指定值。使用的场景为不需要关心当前设置这个字段的值。例如:要在每月的10号触发一个操作，但不关心是周几，所以需要周位置的那个字段设置为"?" 具体设置为 0 0 0 10&nbsp;*&nbsp;?</p>
+
+<p><span style="color:#f33b45;"><strong><strong>-</strong></strong></span>&nbsp;表示区间。例如 在小时上设置 "10-12",表示 10,11,12点都会触发。</p>
+
+<p><span style="color:#f33b45;"><strong>,</strong>&nbsp;</span>表示指定多个值，例如在周字段上设置 "MON,WED,FRI" 表示周一，周三和周五触发</p>
+
+<p><span style="color:#f33b45;"><strong><strong><strong>/</strong></strong></strong></span>&nbsp;用于递增触发。如在秒上面设置"5/15" 表示从5秒开始，每增15秒触发(5,20,35,50)。在月字段上设置'1/3'所示每月1号开始，每隔三天触发一次。</p>
+
+<p><span style="color:#f33b45;"><strong>L</strong></span>&nbsp;表示最后的意思。在日字段设置上，表示当月的最后一天(依据当前月份，如果是二月还会依据是否是润年[leap]), 在周字段上表示星期六，相当于"7"或"SAT"。如果在"L"前加上数字，则表示该数据的最后一个。例如在周字段上设置"6L"这样的格式,则表示“本月最后一个星期五"</p>
+
+<p><span style="color:#f33b45;"><strong><strong>W</strong></strong></span>&nbsp;表示离指定日期的最近那个工作日(周一至周五). 例如在日字段上设置"15W"，表示离每月15号最近的那个工作日触发。如果15号正好是周六，则找最近的周五(14号)触发, 如果15号是周未，则找最近的下周一(16号)触发.如果15号正好在工作日(周一至周五)，则就在该天触发。如果指定格式为 "1W",它则表示每月1号往后最近的工作日触发。如果1号正是周六，则将在3号下周一触发。(注，"W"前只能设置具体的数字,不允许区间"-").</p>
+
+<blockquote> 
+ <p><strong>小提示：</strong>'L'和 'W'可以一组合使用。如果在日字段上设置"LW",则表示在本月的最后一个工作日触发（一般指发工资）&nbsp;。</p> 
+</blockquote>
+
+<p><span style="color:#f33b45;"><strong>#</strong></span>&nbsp;序号(表示每月的第几个周几)，例如在周字段上设置"6#3"表示在每月的第三个周六.注意如果指定"#5",正好第五周没有周六，则不会触发该配置(用在母亲节和父亲节再合适不过了)</p>
+
+<blockquote> 
+ <p><strong>小提示：</strong>周字段的设置，若使用英文字母是不区分大小写的&nbsp;MON&nbsp;与mon相同。</p> 
+</blockquote>
+
+<p>可通过在线生成Cron表达式的工具：<a href="http://cron.qqe2.com/">http://cron.qqe2.com/</a>&nbsp;来生成自己想要的表达式。</p>
+
+<p><strong>常用示例：</strong></p>
+
+<div class="table-box"><table><tbody><tr><td>0 0 12 * * ?</td><td>每天12点触发</td></tr><tr><td>0 15 10 ? * *</td><td>每天10点15分触发</td></tr><tr><td>0 15 10 * * ?</td><td>每天10点15分触发</td></tr><tr><td>0 15 10 * * ? *</td><td>每天10点15分触发</td></tr><tr><td>0 15 10 * * ? 2005</td><td>2005年每天10点15分触发</td></tr><tr><td>0 * 14 * * ?</td><td>每天下午的 2点到2点59分每分触发</td></tr><tr><td>0 0/5 14 * * ?</td><td>每天下午的 2点到2点59分(整点开始，每隔5分触发)</td></tr><tr><td>0 0/5 14,18 * * ?</td><td>每天下午的 2点到2点59分(整点开始，每隔5分触发)每天下午的 18点到18点59分(整点开始，每隔5分触发)</td></tr><tr><td>0 0-5 14 * * ?</td><td>每天下午的 2点到2点05分每分触发</td></tr><tr><td>0 10,44 14 ? 3 WED</td><td>3月分每周三下午的 2点10分和2点44分触发</td></tr><tr><td>0 15 10 ? * MON-FRI</td><td>从周一到周五每天上午的10点15分触发</td></tr><tr><td>0 15 10 15 * ?</td><td>每月15号上午10点15分触发</td></tr><tr><td>0 15 10 L * ?</td><td>每月最后一天的10点15分触发</td></tr><tr><td>0 15 10 ? * 6L</td><td>每月最后一周的星期五的10点15分触发</td></tr><tr><td>0 15 10 ? * 6L 2002-2005</td><td>从2002年到2005年每月最后一周的星期五的10点15分触发</td></tr><tr><td>0 15 10 ? * 6#3</td><td>每月的第三周的星期五开始触发</td></tr><tr><td>0 0 12 1/5 * ?</td><td>每月的第一个中午开始每隔5天触发一次</td></tr><tr><td>0 11 11 11 11 ?</td><td>每年的11月11号 11点11分触发(光棍节)</td></tr></tbody></table></div>
+
+# ch 7 : TriggerListeners和JobListeners
+
+**Listeners**是您创建的对象，用于根据调度程序中发生的事件执行操作。您可能猜到，TriggerListeners接收到与触发器（trigger）相关的事件，JobListeners 接收与jobs相关的事件。
+
+与触发相关的事件包括：触发器触发，触发失灵（在本文档的“触发器”部分中讨论），并触发完成（触发器关闭的作业完成）。
+
+org.quartz.TriggerListener接口
+
+```java
+public interface TriggerListener {
+
+    public String getName();
+
+    public void triggerFired(Trigger trigger, JobExecutionContext context);
+
+    public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context);
+
+    public void triggerMisfired(Trigger trigger);
+
+    public void triggerComplete(Trigger trigger, JobExecutionContext context,
+                                int triggerInstructionCode);
+}
+```
+
+job相关事件包括：job即将执行的通知，以及job完成执行时的通知。
+
+org.quartz.JobListener接口
+
+```java
+public interface JobListener {
+
+    public String getName();
+
+    public void jobToBeExecuted(JobExecutionContext context);
+
+    public void jobExecutionVetoed(JobExecutionContext context);
+
+    public void jobWasExecuted(JobExecutionContext context,
+                               JobExecutionException jobException);
+
+}
+```
+
+### 使用自己的Listeners
+
+要创建一个listener，只需创建一个实现org.quartz.TriggerListener和/或org.quartz.JobListener接口的对象。然后，listener在运行时会向调度程序注册，并且必须给出一个名称（或者，他们必须通过他们的getName（）方法来宣传自己的名字）。
+
+为了方便起见，实现这些接口，您的类也可以扩展JobListenerSupport类或TriggerListenerSupport类，并且只需覆盖您感兴趣的事件。
+
+listener与调度程序的ListenerManager一起注册，并配有描述listener希望接收事件的job/触发器的Matcher。
+
+```java
+Listener在运行时间内与调度程序一起注册，并且不与jobs和触发器一起存储在JobStore中。这是因为听众通常是与应用程序的集成点。因此，每次运行应用程序时，都需要重新注册该调度程序。
+```
+
+**添加对特定job感兴趣的JobListener：**
+
+```java
+scheduler.getListenerManager().addJobListener(myJobListener，KeyMatcher.jobKeyEquals(new JobKey("myJobName"，"myJobGroup")));
+```
+
+您可能需要为匹配器和关键类使用静态导入，这将使您定义匹配器更简洁：
+
+```java
+import static org.quartz.JobKey.*;
+import static org.quartz.impl.matchers.KeyMatcher.*;
+import static org.quartz.impl.matchers.GroupMatcher.*;
+import static org.quartz.impl.matchers.AndMatcher.*;
+import static org.quartz.impl.matchers.OrMatcher.*;
+import static org.quartz.impl.matchers.EverythingMatcher.*;
+...etc.
+```
+
+这将上面的例子变成这样：
+
+```java
+scheduler.getListenerManager().addJobListener(myJobListener,jobKeyEquals(jobKey("myJobName","myJobGroup")));
+```
+
+添加对特定组的所有job感兴趣的JobListener：
+
+```java
+scheduler.getListenerManager().addJobListener(myJobListener,jobGroupEquals("myJobGroup"));
+```
+
+添加对两个特定组的所有job感兴趣的JobListener：
+
+```java
+scheduler.getListenerManager().addJobListener(myJobListener,or(jobGroupEquals("myJobGroup"),jobGroupEquals("yourGroup")));
+```
+
+添加对所有job感兴趣的JobListener：
+
+```java
+scheduler.getListenerManager().addJobListener(myJobListener,allJobs());
+```
+
+注册TriggerListeners的工作原理相同。
+
+Quartz的大多数用户并不使用Listeners，但是当应用程序需求创建需要事件通知时不需要Job本身就必须明确地通知应用程序，这些用户就很方便。
+
+# ch 8 : SchedulerListeners
+
+2018-09-15 11:02 更新
+
+SchedulerListeners非常类似于TriggerListeners和JobListeners，除了它们在Scheduler本身中接收到事件的通知 - 不一定与特定触发器（trigger）或job相关的事件。
+
+与计划程序相关的事件包括：添加job/触发器，删除job/触发器，调度程序中的严重错误，关闭调度程序的通知等。
+
+org.quartz.SchedulerListener接口
+
+```java
+public interface SchedulerListener {
+
+    public void jobScheduled(Trigger trigger);
+
+    public void jobUnscheduled(String triggerName, String triggerGroup);
+
+    public void triggerFinalized(Trigger trigger);
+
+    public void triggersPaused(String triggerName, String triggerGroup);
+
+    public void triggersResumed(String triggerName, String triggerGroup);
+
+    public void jobsPaused(String jobName, String jobGroup);
+
+    public void jobsResumed(String jobName, String jobGroup);
+
+    public void schedulerError(String msg, SchedulerException cause);
+
+    public void schedulerStarted();
+
+    public void schedulerInStandbyMode();
+
+    public void schedulerShutdown();
+
+    public void schedulingDataCleared();
+}
+```
+
+SchedulerListeners注册到调度程序的ListenerManager。SchedulerListeners几乎可以实现任何实现org.quartz.SchedulerListener接口的对象。
+
+添加SchedulerListener：
+
+```java
+scheduler.getListenerManager().addSchedulerListener(mySchedListener);
+```
+
+删除SchedulerListener：
+
+```java
+scheduler.getListenerManager().removeSchedulerListener(mySchedListener);
+```
+
+# ch 9 : SpringBoot整合Quartz
+
+在SpringBoot中，我们需要引入quartz的依赖。
+
+```pom
+ <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+<!--quartz定时调度依赖-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-quartz</artifactId>
+</dependency>
+```
+
+首先定义定时具体执行逻辑Job，创建类QuartzJob1，这里集继承QuartzJobBean实现executeInternal即可，该方法即定时执行任务逻辑，这里简单打印了下当前时间。
+
+```java
+public class QuartzJob1 extends QuartzJobBean {
+
+    @Override
+    protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("QuartzJob1----" + sdf.format(new Date()));
+    }
+
+}
+```
+
+然后创建QuartzConfig，接着定义JobDetail，JobDetail由JobBuilder构建，同时关联了任务QuartzJob1。
+
+```java
+
+@Configuration
+public class QuartzConfig {
+
+    @Bean
+    public JobDetail jobDetail1() {
+        return JobBuilder.newJob(QuartzJob1.class).storeDurably().build();
+    }
+
+}
+```
+
+最后我们需要定义定时调度Trigger，简单实现类SimpleScheduleBuilder用于构建Scheduler，TriggerBuilder则用于构建Trigger，
+
+```java
+
+@Configuration
+public class QuartzConfig {
+
+    @Bean
+    public JobDetail jobDetail1() {
+        return JobBuilder.newJob(QuartzJob1.class).storeDurably().build();
+    }
+
+    @Bean
+    public Trigger trigger1() {
+        SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
+                                                                     .withIntervalInSeconds(1) //每一秒执行一次
+                                                                     .repeatForever(); //永久重复，一直执行下去
+        return TriggerBuilder.newTrigger()
+                             .forJob(jobDetail1())
+                             .withSchedule(scheduleBuilder)
+                             .build();
+    }
+
+}
+```
+
+这样一个Quartz定时任务就配置完成了。
+
+其实Job的定义也可以使用内部类，这样可以省去Job类的创建，例如下面定时任务2 jobDetail2和trigger2。
+
+```java
+@Bean
+public JobDetail jobDetail2(){
+        QuartzJobBean quartzJob2=new QuartzJobBean(){
+@Override
+protected void executeInternal(JobExecutionContext jobExecutionContext)throws JobExecutionException{
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("内部类quartzJob2----"+sdf.format(new Date()));
+        }
+        };
+        return JobBuilder.newJob(quartzJob2.getClass()).storeDurably().build();
+        }
+
+@Bean
+public Trigger trigger2(){
+        //JobDetail的bean注入不能省略
+        //JobDetail jobDetail3 = JobBuilder.newJob(QuartzJob2.class).storeDurably().build();
+        SimpleScheduleBuilder scheduleBuilder=SimpleScheduleBuilder.simpleSchedule()
+        .withIntervalInSeconds(2) //每2秒执行一次
+        .repeatForever(); //永久重复，一直执行下去
+        return TriggerBuilder.newTrigger()
+        .forJob(jobDetail2())
+        .withSchedule(scheduleBuilder).build();
+        }
+```
+
+启动程序，我们就可以看到控制台的时间输出了。
+
+![img](https://img2018.cnblogs.com/blog/1669484/201911/1669484-20191109230147899-858887690.png)
+
+同时Quartz是支持数据持久化的，可以将定时调度信息持久化到数据库。
+
+选择持久化到数据库，我们需要创建对应的表，建表语句可以在[Quartz官网](http://www.quartz-scheduler.org/downloads/)进行下载，解压后在docs\dbTables目录下寻找对应数据库的SQL脚本。
+
+为了方便，我也将该文件放在了项目源码resources里。
+
+操作数据库，我们引入相关的依赖。若有ORM框架，例如mybatis，hibernate或者jpa，则无需再引入jdbc依赖。
+
+```java
+<!--mysql连接-->
+<dependency>
+<groupId>mysql</groupId>
+<artifactId>mysql-connector-java</artifactId>
+<scope>runtime</scope>
+</dependency>
+
+<!--druid连接池-->
+<dependency>
+<groupId>com.alibaba</groupId>
+<artifactId>druid-spring-boot-starter</artifactId>
+<version>1.1.10</version>
+</dependency>
+
+<!--jdbc依赖-->
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
+```
+
+在application.yml配置文件中，我们对quartz持久化方式进行声明。
+
+```yml
+server:
+  port: 10900
+
+spring:
+  profiles:
+    active: dev
+  quartz:
+    job-store-type: jdbc #持久化到数据库
+    properties:
+      org:
+        quartz:
+          datasource:
+            # 新版驱动从com.mysql.jdbc.Driver变更为com.mysql.cj.jdbc.Driver
+            driver-class-name: com.mysql.cj.jdbc.Driver
+            # 数据源需要添加时间标准和指定编码格式解决乱码 You must configure either the server or JDBC driver (via the serverTimezone configuration property) to use a more specifc time zone value if you want to utilize time zone support.
+            url: jdbc:mysql://localhost:3306/springboot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+            username: root
+            password: 1234
+          scheduler:
+            instancName: clusteredScheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate #StdJDBCDelegate说明支持集群
+            tablePrefix: QRTZ_
+            isClustered: true
+            clusterCheckinInterval: 1000
+            useProperties: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 20
+            threadPriority: 5
+```
+
+这里主要就是job-store-type:
+jdbc，表示持久化到数据库，然后就是数据源，由于该演示项目没有其他ORM的数据源，所以这里将数据源信息定义在了quartz节点下的datasource节点，如果已经存在，可使用同一个属性配置，当然最关键的是QuartzDataSource声明。
+
+这里关键的是@QuartzDataSource，这个要和项目中已经存在的数据源区分开。
+
+```java
+//Error:EmbeddedDatabaseType class not found，Druid数据源初始化需要引入spring-jdbc依赖，JPA或mybatis依赖已经包含该依赖
+@Bean
+@QuartzDataSource
+@ConfigurationProperties(prefix = "spring.quartz.properties.org.quartz.datasource")
+DataSource quartzDataSource(){
+        return DruidDataSourceBuilder.create().build();
+        }
+```
+
+这样持久化就已经配置好了，我们执行sql，再启动项目，启动完成后，我们可以看到数据库中已经有我们的定时调度数据了。
+
+![img](https://img2018.cnblogs.com/blog/1669484/201911/1669484-20191109230148272-1932709898.png)
+
+源码地址：https://github.com/imyanger/springboot-project/tree/master/p25-springboot-quartz
