@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<config>
+    <className>designpattern.book.oricode.builder.AngelBuilder</className>
+</config>

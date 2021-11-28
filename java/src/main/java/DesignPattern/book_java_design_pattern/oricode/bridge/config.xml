@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<config>
-    <!--RefinedAbstraction-->
-    <className>DesignPattern.book_java_design_pattern.oricode.bridge.GIFImage</className>
-    <!--ConcreteImplementor-->
-    <className>DesignPattern.book_java_design_pattern.oricode.bridge.WindowsImp</className>
-</config>
