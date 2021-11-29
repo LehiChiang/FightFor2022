@@ -1,9 +1,6 @@
 //DesignPattern.book_java_design_pattern.oricode.facade.EncryptFacade.java
 package designpattern.book.oricode.facade;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-
 //��������ࣺ�����
 public class EncryptFacade {
     //ά�ֶ��������������

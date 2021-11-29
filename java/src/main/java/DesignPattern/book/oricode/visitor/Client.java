@@ -1,8 +1,6 @@
 //DesignPattern.book_java_design_pattern.oricode.visitor.Client.java
 package designpattern.book.oricode.visitor;
 
-import java核心技术卷一.chap4.Employee;
-
 public class Client {
     public static void main(String args[]) {
         EmployeeList list = new EmployeeList();

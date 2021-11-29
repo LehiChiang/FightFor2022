@@ -1,7 +1,6 @@
 //DesignPattern.book_java_design_pattern.oricode.visitor.ParttimeEmployee.java
 package designpattern.book.oricode.visitor;
 
-import java核心技术卷一.chap4.Employee;
 
 //��ְԱ���ࣺ����Ԫ����
 public class ParttimeEmployee implements Employee {

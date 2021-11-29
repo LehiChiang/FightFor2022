@@ -1,8 +1,6 @@
 //DesignPattern.book_java_design_pattern.oricode.mediator.ConcreteMediator.java
 package designpattern.book.oricode.mediator;
 
-import designpattern.book.code.ch5.widget.ComboBox;
-
 import java.awt.*;
 
 //�����н���

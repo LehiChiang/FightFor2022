@@ -1,7 +1,6 @@
 //DesignPattern.book_java_design_pattern.oricode.mediator.Client.java
 package designpattern.book.oricode.mediator;
 
-import designpattern.book.code.ch5.widget.ComboBox;
 
 public class Client {
     public static void main(String args[]) {

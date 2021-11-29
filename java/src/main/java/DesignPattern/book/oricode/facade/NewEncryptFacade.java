@@ -1,9 +1,6 @@
 //DesignPattern.book_java_design_pattern.oricode.facade.NewEncryptFacade.java
 package designpattern.book.oricode.facade;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-
 public class NewEncryptFacade extends AbstractEncryptFacade {
     private FileReader reader;
     private NewCipherMachine cipher;

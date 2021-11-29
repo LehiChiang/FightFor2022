@@ -1,7 +1,6 @@
 //DesignPattern.book_java_design_pattern.oricode.observer.ConcreteAllyControlCenter.java
 package designpattern.book.oricode.observer;
 
-import java.util.Observer;
 
 //����ս�ӿ��������ࣺ����Ŀ����
 public class ConcreteAllyControlCenter extends AllyControlCenter {

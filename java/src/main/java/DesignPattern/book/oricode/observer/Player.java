@@ -1,7 +1,6 @@
 //DesignPattern.book_java_design_pattern.oricode.observer.Player.java
 package designpattern.book.oricode.observer;
 
-import java.util.Observer;
 
 //ս�ӳ�Ա�ࣺ����۲�����
 public class Player implements Observer {

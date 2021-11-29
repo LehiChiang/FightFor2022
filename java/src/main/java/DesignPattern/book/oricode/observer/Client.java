@@ -1,7 +1,6 @@
 //DesignPattern.book_java_design_pattern.oricode.observer.Client.java
 package designpattern.book.oricode.observer;
 
-import java.util.Observer;
 
 public class Client {
     public static void main(String args[]) {

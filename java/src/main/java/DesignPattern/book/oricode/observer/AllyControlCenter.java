@@ -2,7 +2,6 @@
 package designpattern.book.oricode.observer;
 
 import java.util.ArrayList;
-import java.util.Observer;
 
 //ս�ӿ��������ࣺĿ����
 public abstract class AllyControlCenter {
