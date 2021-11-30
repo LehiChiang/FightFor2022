@@ -36,6 +36,15 @@ public class ListNode {
     /**
      * 构造链表
      * @param nums 构造链表的数组
+     * @return 构造无头结点链表
+     */
+    public static ListNode buildLinkedList(int[] nums) {
+        return buildLinkedList(nums, false);
+    }
+
+    /**
+     * 构造链表
+     * @param nums 构造链表的数组
      * @param withHead 是否需要头节点
      * @return 构造完成的链表
      */
