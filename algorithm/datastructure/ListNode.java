@@ -1,5 +1,7 @@
 package datastructure;
 
+import java.util.Arrays;
+
 /**
  * @author Lihao Jiang
  */
@@ -38,8 +40,11 @@ public class ListNode {
      * @param nums 构造链表的数组
      * @return 构造无头结点链表
      */
-    public static ListNode buildLinkedList(int[] nums) {
-        return buildLinkedList(nums, false);
+    public static ListNode buildLinkedList(int... nums) {
+        int[] newArray = new int[nums.length];
+        for (int i = 0; i < newArray.length; i++)
+            newArray[i] = nums[i];
+        return buildLinkedList(newArray, false);
     }
 
     /**

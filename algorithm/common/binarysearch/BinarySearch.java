@@ -43,7 +43,7 @@ public class BinarySearch {
             else if (nums[mid] < target)
                 left = mid + 1;
         }
-        return left;
+        return left < nums.length && nums[left] == target ? left : -1;
     }
 
     /**
@@ -64,6 +64,6 @@ public class BinarySearch {
             else if (nums[mid] > target)
                 right = mid;
         }
-        return left - 1;
+        return right > 0 && nums[right - 1] == target ? right - 1 : -1;
     }
 }
