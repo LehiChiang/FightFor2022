@@ -17,6 +17,9 @@ package leetcode.editor.cn;
 // Related Topics 数组 动态规划 矩阵 👍 1033 👎 0
 
 
+import java.util.Deque;
+import java.util.LinkedList;
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class minPathSumSolution {
     public int minPathSum(int[][] grid) {
@@ -37,7 +40,33 @@ class minPathSumSolution {
                 dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
             }
         }
+
+        int i = rows - 1, j = columns - 1;
+        Deque<Integer> queue = new LinkedList<>();
+        queue.offerFirst(grid[i][j]);
+        while (i > 0 || j > 0) {
+            int min_i = i - 1, min_j = j;
+            if (min_i < 0) {
+                min_i = 0;
+                min_j = j - 1;
+            }
+            if (dp[min_i][min_j] > dp[i][j - 1]){
+                min_i = i;
+                min_j = j - 1;
+            }
+            queue.offerFirst(grid[min_i][min_j]);
+            i = min_i;
+            j = min_j;
+        }
+        System.out.println(queue);
         return dp[rows - 1][columns - 1];
+    }
+
+    public static void main(String[] args) {
+        minPathSumSolution solution = new minPathSumSolution();
+        System.out.println(solution.minPathSum(new int[][]{
+                {1,3,1}, {1,5,1}, {4,2,1}
+        }));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
