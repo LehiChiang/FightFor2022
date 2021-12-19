@@ -72,10 +72,10 @@ public class ListNode {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         while (pointer != null) {
-            sb.append(pointer.val).append(',');
+            sb.append(pointer.val).append(", ");
             pointer = pointer.next;
         }
-        sb.replace(sb.length() - 1, sb.length(), "]");
+        sb.replace(sb.length() - 2, sb.length(), "]");
         System.out.println(sb);
     }
 
