@@ -31,86 +31,118 @@ package codetop;
 
 
 import java.util.HashMap;
+import java.util.Map;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class LRUCache {
 
-    class DoubleListNode {
-        int key;
-        int value;
-        DoubleListNode pre;
-        DoubleListNode next;
+    class DoubleLinkedList {
+        int key; //双链表中加入键的原因是方便在map中获得该节点
+        int val;
+        DoubleLinkedList preNode;
+        DoubleLinkedList nextNode;
 
-        DoubleListNode(int key, int value) {
+        public DoubleLinkedList() {}
+
+        public DoubleLinkedList(int key, int val) {
             this.key = key;
-            this.value = value;
+            this.val = val;
         }
     }
 
-    HashMap<Integer, DoubleListNode> map;
-    DoubleListNode head, tail;
-    int cap;
+    Map<Integer, DoubleLinkedList> map;
+    DoubleLinkedList head;
+    DoubleLinkedList tail;
+    int capacity;
     int size;
 
     public LRUCache(int capacity) {
+        this.capacity = capacity;
         map = new HashMap<>();
-        head = new DoubleListNode(-1, -1);
-        tail = new DoubleListNode(-1, -1);
-        head.next = tail;
-        tail.pre = head;
-        cap = capacity;
-        size = 0;
+        head = new DoubleLinkedList();
+        tail = new DoubleLinkedList();
+        head.nextNode = tail;
+        tail.preNode = head;
+        this.size = 0;
     }
 
     public int get(int key) {
-        DoubleListNode node = map.get(key);
-        if (node == null) {
+        if (map.containsKey(key)) {
+            moveToHead(map.get(key));
+            return map.get(key).val;
+        } else
             return -1;
-        } else {
-            moveToHead(node);
-            return node.value;
-        }
     }
 
     public void put(int key, int value) {
-        DoubleListNode node = map.get(key);
-        if (node != null) {
-            node.value = value;
-            moveToHead(node);
-        } else {
-            node = new DoubleListNode(key, value);
-            map.put(key, node);
-            addToHead(node);
-            ++size;
-            if (size > cap) {
-                DoubleListNode tail = removeTail();
-                map.remove(tail.key);
-                --size;
+        DoubleLinkedList node = map.get(key);
+        if (node == null) {
+            DoubleLinkedList newNode = new DoubleLinkedList(key, value);
+            map.put(key, newNode);
+            insertToHead(newNode);
+            size++;
+            if (size > capacity) {
+                DoubleLinkedList deletedNode = deleteFromTail();
+                map.remove(deletedNode.key);
+                size--;
             }
+        }
+        else {
+            moveToHead(node);
+            node.val = value;
         }
     }
 
-    private void moveToHead(DoubleListNode node) {
-        removeNode(node);
-        addToHead(node);
+    private DoubleLinkedList deleteFromTail() {
+        DoubleLinkedList delete = tail.preNode;
+        deleteNode(delete);
+        return delete;
     }
 
-    private void addToHead(DoubleListNode node) {
-        node.pre = head;
-        head.next.pre = node;
-        node.next = head.next;
-        head.next = node;
+    private void deleteNode(DoubleLinkedList delete) {
+        delete.nextNode.preNode = delete.preNode;
+        delete.preNode.nextNode = delete.nextNode;
     }
 
-    private void removeNode(DoubleListNode node) {
-        node.pre.next = node.next;
-        node.next.pre = node.pre;
+
+    private void insertToHead(DoubleLinkedList newNode) {
+        newNode.nextNode = head.nextNode;
+        head.nextNode.preNode = newNode;
+        head.nextNode = newNode;
+        head.nextNode.preNode = head;
     }
 
-    private DoubleListNode removeTail() {
-        DoubleListNode tailNode = tail.pre;
-        removeNode(tailNode);
-        return tailNode;
+    private void moveToHead(DoubleLinkedList doubleLinkedList) {
+        deleteNode(doubleLinkedList);
+        insertToHead(doubleLinkedList);
+    }
+
+    @Override
+    public String toString() {
+        DoubleLinkedList list = head.nextNode;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("LRUCache: ");
+        while (list != tail) {
+            stringBuilder.append("[" + list.key + "->" + list.val + "]");
+            list = list.nextNode;
+        }
+        return stringBuilder.toString();
+    }
+
+    public static void main(String[] args) {
+        LRUCache lruCache = new LRUCache(3);
+        lruCache.put(1,1);
+        System.out.println(lruCache);
+        lruCache.put(2,2);
+        System.out.println(lruCache);
+        lruCache.put(3,3);
+        System.out.println(lruCache);
+        lruCache.get(1);
+        System.out.println(lruCache);
+        lruCache.put(2, 5);
+        System.out.println(lruCache);
+        lruCache.put(4,4);
+        System.out.println(lruCache);
     }
 }
 
