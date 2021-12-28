@@ -61,28 +61,28 @@ package leetcode.editor.cn;
 //leetcode submit region begin(Prohibit modification and deletion)
 
 
-class Node {
+class FlatNode {
     public int val;
-    public Node prev;
-    public Node next;
-    public Node child;
+    public FlatNode prev;
+    public FlatNode next;
+    public FlatNode child;
 }
 
 class flattenSolution {
-    public Node flatten(Node head) {
+    public FlatNode flatten(FlatNode head) {
         flattenNode(head);
         return head;
     }
 
-    private Node flattenNode(Node head) {
-        Node last = head;
+    private FlatNode flattenNode(FlatNode head) {
+        FlatNode last = head;
         while (head != null) {
             if (head.child == null) {
                 last = head;
                 head = head.next;
             } else {
-                Node tmp = head.next;
-                Node childLast = flattenNode(head.child);
+                FlatNode tmp = head.next;
+                FlatNode childLast = flattenNode(head.child);
                 head.next = head.child;
                 head.child.prev = head;
                 head.child = null;
@@ -97,7 +97,7 @@ class flattenSolution {
 
     public static void main(String[] args) {
         flattenSolution solution = new flattenSolution();
-        System.out.println(solution.flatten(new Node()));
+        System.out.println(solution.flatten(new FlatNode()));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

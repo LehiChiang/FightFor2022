@@ -11,43 +11,15 @@ class buildTreeSolution {
                               int[] inorder) {
         for (int i = 0; i < inorder.length; i++)
             hashMap.put(inorder[i], i);
-        return buildFromPreInOrder(
-                preorder,
-                0,
-                preorder.length - 1,
-                inorder,
-                0,
-                inorder.length - 1
-        );
+        return buildFromPreInOrder(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
     }
 
-    private TreeNode buildFromPreInOrder(int[] preOrder,
-                                         int preStart,
-                                         int preEnd,
-                                         int[] inOrder,
-                                         int inStart,
-                                         int inEnd) {
-        if (preStart > preEnd)
-            return null;
-        TreeNode node = new TreeNode(preOrder[preStart]);
-        int rootValIndex = hashMap.get(preOrder[preStart]);
-        node.left = buildFromPreInOrder(
-                preOrder,
-                preStart + 1,
-                preStart + rootValIndex - inStart,
-                inOrder,
-                inStart,
-                rootValIndex - 1
+    private TreeNode buildFromPreInOrder(int[] preOrder, int preStart, int preEnd, int[] inOrder, int inStart, int inEnd) {
+        if (preStart > preEnd) return null;
+        return new TreeNode(preOrder[preStart],
+                buildFromPreInOrder(preOrder, preStart + 1, preStart + hashMap.get(preOrder[preStart]) - inStart, inOrder, inStart, hashMap.get(preOrder[preStart]) - 1),
+                buildFromPreInOrder(preOrder, preStart + hashMap.get(preOrder[preStart]) - inStart + 1, preEnd, inOrder, hashMap.get(preOrder[preStart]) + 1, inEnd)
         );
-        node.right = buildFromPreInOrder(
-                preOrder,
-                preStart + rootValIndex - inStart + 1,
-                preEnd,
-                inOrder,
-                rootValIndex + 1,
-                inEnd
-        );
-        return node;
     }
 
     public static void main(String[] args) {

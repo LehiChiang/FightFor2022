@@ -118,7 +118,7 @@ class minWindowSolution {
             // 缩小左边界！
 
             // check()是判断t中的所有字符都在winStateMap中有记录？返回true的话说明当前窗口里所有数值已经都包括
-            // 了t中的所有字符,那么就开始选择最小的覆盖子串。返回true的话说明当前窗口里所有数值没有包含t串的所有
+            // 了t中的所有字符,那么就开始选择最小的覆盖子串。返回false的话说明当前窗口里所有数值没有包含t串的所有
             // 字符还需要往里添加。
 
             while (checkTInWinMap() && start <= end) {

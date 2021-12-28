@@ -23,22 +23,21 @@ import utils.ArrayUtils;
 //leetcode submit region begin(Prohibit modification and deletion)
 class rob1Solution {
     public int rob(Integer[] nums) {
-        int[] dp = new int[nums.length];
-        if (nums.length == 1)
-            return nums[0];
-        if (nums.length == 2)
-            return Math.max(nums[0], nums[1]);
-        dp[0] = nums[0];
-        dp[1] = Math.max(nums[0], nums[1]);
-        for (int i = 2 ; i < nums.length ; i++) {
-            dp[i] = Math.max(dp[i-2] + nums[i], dp[i-1]);
+        int dp_i = 0;
+        int dp_j = nums[0];
+        int res = dp_j;
+        for (int i = 1 ; i < nums.length ; i++) {
+            int max = Math.max(dp_i + nums[i], dp_j);
+            res = Math.max(res, max);
+            dp_i = dp_j;
+            dp_j = max;
         }
-        return dp[dp.length - 1];
+        return res;
     }
 
     public static void main(String[] args) {
         rob1Solution solution = new rob1Solution();
-        int res = solution.rob(ArrayUtils.newArray(1,2));
+        int res = solution.rob(ArrayUtils.newArray(1));
         System.out.println(res);
     }
 }

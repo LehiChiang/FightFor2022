@@ -37,18 +37,18 @@ import java.util.Arrays;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class nextPermutationSolution {
-    public void nextPermutation(int[] nums) {
-        int i = nums.length - 2, j = i + 1;
-        while (i >= 0 && nums[i] >= nums[i + 1])
-            i--;
-        if (i >= 0) {
-            while (j > i && nums[j] <= nums[i])
-                j--;
-            swap(nums, i, j);
-        }
-        reverse(nums,i + 1);
-        System.out.println(Arrays.toString(nums));
-    }
+//    public void nextPermutation(int[] nums) {
+//        int i = nums.length - 2, j = i + 1;
+//        while (i >= 0 && nums[i] >= nums[i + 1])
+//            i--;
+//        if (i >= 0) {
+//            while (j > i && nums[j] <= nums[i])
+//                j--;
+//            swap(nums, i, j);
+//        }
+//        reverse(nums,i + 1);
+//        System.out.println(Arrays.toString(nums));
+//    }
 
     private void swap(int[] nums, int i, int j) {
         int temp = nums[i];
@@ -63,6 +63,19 @@ class nextPermutationSolution {
             left++;
             right--;
         }
+    }
+
+    public void nextPermutation(int[] nums) {
+        int i = nums.length - 2;
+        while (i >= 0 && nums[i] >= nums[i + 1])
+            i--;
+        if (i >= 0) {
+            int j = nums.length - 1;
+            while (j > i && nums[j] <= nums[i])
+                j--;
+            swap(nums, i, j);
+        }
+        reverse(nums, i + 1);
     }
 
     public static void main(String[] args) {

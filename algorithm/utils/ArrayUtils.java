@@ -51,14 +51,28 @@ public class ArrayUtils{
     }
 
     /**
-     * 打印二维数组（数值型）
-     * 数值型包括：整形，浮点型，字符串，字符型，布尔型
-     *
-     * @param <T>   无返回值，直接打印
-     * @param array 泛型数组
+     * 打印二维整型数组
      */
-    public static <T> void print2D(int[][] array) {
+    public static void print2D(int[][] array) {
         for (int[] subArray : array) {
+            System.out.println(Arrays.toString(subArray));
+        }
+    }
+
+    /**
+     * 打印二维浮点型数组
+     */
+    public static void print2D(double[][] array) {
+        for (double[] subArray : array) {
+            System.out.println(Arrays.toString(subArray));
+        }
+    }
+
+    /**
+     * 打印二维字符型数组
+     */
+    public static void print2D(char[][] array) {
+        for (char[] subArray : array) {
             System.out.println(Arrays.toString(subArray));
         }
     }

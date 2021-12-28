@@ -27,6 +27,8 @@ package leetcode.editor.cn;
 // Related Topics 字符串 动态规划 👍 1912 👎 0
 
 
+import utils.ArrayUtils;
+
 import java.util.Arrays;
 
 //leetcode submit region begin(Prohibit modification and deletion)
@@ -47,12 +49,13 @@ class minEditDistanceSolution {
                     dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i][j - 1], dp[i - 1][j])) + 1;
             }
         }
+        ArrayUtils.print2D(dp);
         return dp[len1][len2];
     }
 
     public static void main(String[] args) {
         minEditDistanceSolution solution = new minEditDistanceSolution();
-        System.out.println(solution.minDistance("sea", "eat"));
+        System.out.println(solution.minDistance("horse", "ros"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

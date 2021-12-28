@@ -19,15 +19,32 @@ public class QuickSort extends Sort {
         quicksort(nums, index + 1, end);
     }
 
+//    private int partition(int[] nums, int start, int end) {
+//        int pivot = nums[start];
+//        while (start < end) {
+//            while (start < end && nums[end] >= pivot) end--;
+//            nums[start] = nums[end];
+//            while (start < end && nums[start] <= pivot) start++;
+//            nums[end] = nums[start];
+//        }
+//        nums[end] = pivot;
+//        return end;
+//    }
+
     private int partition(int[] nums, int start, int end) {
-        int pivot = nums[start];
-        while (start < end) {
-            while (start < end && nums[end] >= pivot) end--;
-            nums[start] = nums[end];
-            while (start < end && nums[start] <= pivot) start++;
-            nums[end] = nums[start];
+        int i = start - 1, j = start, r = nums[end];
+        for (; j < end; j++) {
+            if (nums[j] <= r) {
+                swap(nums, ++i, j);
+            }
         }
-        nums[end] = pivot;
-        return end;
+        swap(nums, ++i, j);
+        return i;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
     }
 }

@@ -68,6 +68,18 @@ class findMedianSortedArraysSolution {
         // 在[0-m]区间找一个分界线分割
         int left = 0, right = m;
         while (left < right) {
+            int i = left + (right - left) / 2;
+            int j = leftSize - i;
+            if (nums1[i - 1] > nums2[j]) {
+                right = i - 1;
+            } else {
+                left = i;
+            }
+        }
+
+
+
+        while (left < right) {
             int i = left + (right - left + 1) / 2;
             int j = leftSize - i;
             if (nums1[i - 1] > nums2[j]) {
