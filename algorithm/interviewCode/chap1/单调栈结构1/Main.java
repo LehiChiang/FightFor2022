@@ -25,17 +25,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int count = scanner.nextInt();
-        scanner.nextLine();
-        String[] nums = scanner.nextLine().split(" ");
-        int[] array = new int[count];
-        for (int i = 0; i < count; i++) {
-            array[i] = Integer.parseInt(nums[i]);
-        }
-        int[][] res = Main.getNearLessNoRepeat(array);
+        int[][] res = Main.getNearLessNoRepeat(new int[]{4,1,2,6,2});
         for (int[] arr : res) {
-            System.out.println(arr[0] + " " + arr[1]);
+            System.out.println(arr[0] + "--" + arr[1]);
         }
     }
 }

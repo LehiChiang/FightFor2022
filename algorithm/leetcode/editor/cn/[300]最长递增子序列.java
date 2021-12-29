@@ -47,6 +47,9 @@ package leetcode.editor.cn;
 // Related Topics 数组 二分查找 动态规划 👍 1887 👎 0
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class lengthOfLISSolution {
 //    public int lengthOfLIS(int[] nums) {
@@ -67,34 +70,37 @@ class lengthOfLISSolution {
 //        return maxAns;
 //    }
 
+    private List<Integer> list;
     public int lengthOfLIS(int[] nums) {
-        if (nums.length == 0)
-            return 0;
-        int[] dp = new int[nums.length + 1];
-        int len = 1;
-        dp[len] = nums[0];
+        list = new ArrayList<>();
+        list.add(nums[0]);
         for (int i = 1; i < nums.length; i++) {
-            if (nums[i] > dp[len])
-                dp[++len] = nums[i];
-            else {
-                int left = 1, right = len, pos = 0;
-                while (left < right) {
-                    int mid = (left + right) >> 1;
-                    if (dp[mid] < nums[i]) {
-                        pos = mid;
-                        left = mid + 1;
-                    } else
-                        right = mid;
-                }
-                dp[pos + 1] = nums[i];
+            if (nums[i] > list.get(list.size() - 1)) {
+                list.add(nums[i]);
+            } else {
+                int index = binarysearch(list, nums[i]);
+                list.set(index, nums[i]);
             }
         }
-        return len;
+        return list.size();
+    }
+
+    private int binarysearch(List<Integer> list, int num) {
+        int left = 0, right = list.size() - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (list.get(mid) == num)
+                return mid;
+            else if (list.get(mid) > num)
+                right = mid;
+            else left = mid + 1;
+        }
+        return left;
     }
 
     public static void main(String[] args) {
         lengthOfLISSolution solution = new lengthOfLISSolution();
-        System.out.println(solution.lengthOfLIS(new int[]{10,9,2,5,3,7,101,18}));
+        System.out.println(solution.lengthOfLIS(new int[]{7,7,7,7,7,7}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

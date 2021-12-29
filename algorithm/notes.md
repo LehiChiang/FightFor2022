@@ -175,6 +175,48 @@ while (res > 0) res -= nums[maxIndex--];
 
 
 
+### 最大子矩阵和
+
+返回一个数组 `[r1, c1, r2, c2]`，其中 `r1, c1` 分别代表子矩阵左上角的行号和列号，`r2, c2` 分别代表右下角的行号和列号。若有多个满足条件的子矩阵，返回任意一个均可。
+
+将二维压缩成一维，然后计算每层累计的数组的最大和（和上一题一样）
+
+```java
+public int[] getMaxMatrix(int[][] matrix) {
+    int m = matrix.length, n = matrix[0].length;
+    int[] compress = new int[n];
+    int[] res = new int[4];
+    int startRow = 0, startCol = 0;
+    int maxSum = Integer.MIN_VALUE, sum;
+    for (int i = 0; i < m; i++) {
+        Arrays.fill(compress, 0);
+        for (int j = i; j < m; j++) {
+            sum = 0;
+            for (int k = 0; k < n; k++) {
+                compress[k] += matrix[j][k];
+                if (sum > 0) {
+                    sum += compress[k];
+                } else {
+                    sum = compress[k];
+                    startRow = i;
+                    startCol = k;
+                }
+                if (sum > maxSum) {
+                    maxSum = sum;
+                    res[0] = startRow;
+                    res[1] = startCol;
+                    res[2] = j;
+                    res[3] = k;
+                }
+            }
+        }
+    }
+    return res;
+}
+```
+
+
+
 ### 和为K的子数组
 
 ```java
@@ -195,7 +237,7 @@ public int subarraySum(int[] nums, int k) {
 
 
 
-### 最长上升子序列
+### 最长递增子序列
 
 ```java
 输入：nums = [10,9,2,5,3,7,101,18]
@@ -238,15 +280,71 @@ $$
         int left = 0, right = list.size() - 1;
         while (left < right) {
             int mid = left + (right - left) / 2;
-            if (list.get(mid) > num) {
+            if (list.get(mid) == num)
+                return mid;
+            else if (list.get(mid) > num)
                 right = mid;
-            } else {
-                left = mid + 1;
-            }
+            else left = mid + 1;
         }
         return left;
     }
 ```
+
+
+
+### 最长连续序列
+
+```java
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+```
+
+我们的做法可以是从当前元素`num`开始，一次查找`num+1, num+2, ... num+y`是否在数字中，如果都在那么个最后的答案就是`y`。那么这个其实不是最优的，因为如果当前元素是`num+2`的话，那么找到`num+y`，这算一次了。但是如果走到`num`，还要找一遍`num+1, num+2, ... num+y`。那么前面走的那一遍就白走了。所以我们就直接找的最小的元素`num`，从`num`开始`+1`的找。既然`num`是数组中的最小值，那么数组中肯定不存在`num-1`，所以`num-1`就是我们判断最小值的条件。如果`num-1`在数组里，`num`就不是最小值，跳过。如果`num-1`不在数组中，那么`num`就是最小值，这个时候开始往上找。
+
+
+
+### 最长连续不重复子序列(下标连续)
+
+```java
+输入: nums= [1,2,2,3,5]
+输出格式: 3
+解释：最长下标连续不重复的子序列是[2,3,5]。它的长度是3
+```
+
+双指针算法的模板一般都可以写成下面的形式(模板)：
+
+```java
+for (int i = 0, j = 0; i < n; i++)
+{
+    while (j < i && check(i, j)) j++;
+    // 每道题目的具体逻辑
+}
+```
+
+因为双指针算法是一种优化时间复杂度的方法，所以我们可以首先写出最朴素的**两层循环**的写法。然后考虑题目中是否具有**单调性**。即当其中一个指针 向后移动时，在希望得到答案的情况下，另一个指针 是不是只能向着一个方向移动。
+
+这道题我们只枚举`i`， `j`的话是每次看一下要不要往后走。如果有重复元素的话，就`j++`。一直移动到`j`和`i`之间没有重复元素为止，所以最多是`i`走`n`步，`j`走`n`步，一共走`2n`步。
+
+```java
+for (int start = 0, end = -1; start < s.length(); start++) {
+            if (end + 1 >= s.length())
+                break;
+            if (start != 0)
+                set.remove(s.charAt(start - 1));
+            while (end + 1 < s.length() && !set.contains(s.charAt(end + 1))) {
+                set.add(s.charAt(end + 1));
+                end++;
+            }
+            res = Math.max(res, end - start + 1);
+        }
+```
+
+
+
+### 最长不含重复字符的子字符串
+
+和上一题一样的思想！（也是滑动窗口）
 
 
 
@@ -356,6 +454,29 @@ while (low < high) {
             high = mid;
     }
 }
+```
+
+
+
+### 寻找旋转排序数组中的最小值 II
+
+和I一样，只拿`mid`的元素和`right`的元素比较 ，来判断。这里多了重复元素的情况，所以，如果`mid`元素和`right`元素相同，那么`right--`。因为总会有`mid`能兜住最小值。
+
+```java
+public int findMin(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < nums[right]) {
+                right = mid;
+            } else if (nums[mid] > nums[right]) {
+                left = mid + 1;
+            } else {
+                right--;
+            }
+        }
+        return nums[left];
+    }
 ```
 
 
@@ -545,6 +666,240 @@ for (int k = 0; k < nums.length; k++) {
 双指针，根据当前指针对应区间的相交情况，计算相交段计入结果并不断移动指针**（注意，每次选择A或B中的一个指针移动）**
 
 判断两个区间是否相交使用的是`&&`条件判断。
+
+
+
+### N皇后
+
+列表回溯法
+
+```java
+    private List<List<String>> res;
+    private Set<Integer> inColumns;
+    private Set<Integer> inRL;
+    private Set<Integer> inLR;
+    public List<List<String>> solveNQueens(int n) {
+        res = new ArrayList<>();
+        inColumns = new HashSet<>();
+        inRL = new HashSet<>();
+        inLR = new HashSet<>();
+        // queens表示皇后的位置queens[i] = j 表示皇后在第i行和第j列
+        int[] queens = new int[n];
+        Arrays.fill(queens, -1);
+        dfs(n, queens, 0);
+        return res;
+    }
+
+    // 行控制
+    private void dfs(int n, int[] queens, int row) {
+        if (row == n) {
+            res.add(generateBoard(queens, n));
+            return;
+        }
+        // 这里表示列
+        for (int col = 0; col < n; col++) {
+            if (inColumns.contains(col))
+                continue;
+            int rl = row - col;
+            if (inRL.contains(rl))
+                continue;
+            int lr = row + col;
+            if (inLR.contains(lr))
+                continue;
+            queens[row] = col;
+            inColumns.add(col);
+            inRL.add(rl);
+            inLR.add(lr);
+            dfs(n, queens, row + 1);
+            queens[row] = -1;
+            inColumns.remove(col);
+            inRL.remove(rl);
+            inLR.remove(lr);
+        }
+    }
+
+    private List<String> generateBoard(int[] queens, int n) {
+        List<String> stringList = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            char[] chars = new char[n];
+            Arrays.fill(chars, '.');
+            chars[queens[i]] = 'Q';
+            stringList.add(new String(chars));
+        }
+        return stringList;
+    }
+```
+
+
+
+### 单调栈
+
+如何求数组中当前元素左右最近的比当前的元素小的元素的索引？
+
+```java
+    public static int[][] getNearLessNoRepeat(int[] nums) {
+        int[][] res = new int[nums.length][2];
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < nums.length; i++) {
+            while (!stack.isEmpty() && nums[i] < nums[stack.peek()]) {
+                int index = stack.pop();
+                res[index][0] = stack.isEmpty() ? -1 : stack.peek();
+                res[index][1] = i;
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            int index = stack.pop();
+            res[index][0] = stack.isEmpty() ? -1 : stack.peek();
+            res[index][1] = -1;
+        }
+        return res;
+    }
+```
+
+寻找左右两边最大最小值的情况可以考虑使用单调栈结果，实现形式主要有以下三种：
+
+- 可以使用最大值，最小值数组辅助查询
+
+- 也可使用左右指针，`left, left_value, right, right_value`
+
+- 单调栈
+
+
+类似问题有以下几种：
+
+- 接雨水问题：就左右两边最大值的最小的
+
+
+
+### 柱状图中最大的矩形
+
+要求出柱状图中的最大矩形，可以枚举宽和高。固定宽枚举高或者固定高枚举宽。这里选择固定高枚举宽度比较方便。可以使用暴力的方法枚举出所能容纳的最小宽度范围，然后乘以高度即可得到面积。
+
+暴力法：
+
+```java
+    public int largestRectangleArea(int[] heights) {
+        int area = heights[0], leftMin = 0, rightMin = 0;
+        for (int height = 0; height < heights.length; height++) {
+            leftMin = height - 1;
+            while (leftMin >= 0 && heights[leftMin] >= heights[height])
+                leftMin--;
+
+            rightMin = height + 1;
+            while (rightMin < heights.length && heights[rightMin] >= heights[height])
+                rightMin++;
+
+            area = Math.max(area, (rightMin - leftMin - 1) * heights[height]);
+        }
+        return area;
+    }
+```
+
+那么寻找左右最小值的过程就可以引入单调栈了。
+
+单调栈解法：
+
+```java
+    public int largestRectangleArea(int[] heights) {
+        int area = heights[0], n = heights.length;
+        int[] leftMin = new int[n];
+        int[] rightMin = new int[n];
+        Arrays.fill(rightMin, n);
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && heights[stack.peek()] >= heights[i]) {
+                rightMin[stack.peek()] = i;
+                stack.pop();
+            }
+            leftMin[i] = !stack.isEmpty() ? stack.peek() : -1;
+            stack.push(i);
+        }
+        for (int i = 0; i < n; i++) {
+            area = Math.max(area, (rightMin[i] - leftMin[i] - 1) * heights[i]);
+        }
+        return area;
+    }
+```
+
+
+
+### 求区间最小数乘区间和的最大值
+
+首先来看一下面经原文
+
+> - 挑选一个区间，区间值为区间和乘以区间内最小的数的值，求区间值最大的区间（2021.1 字节跳动-国际化-前端）[2]
+> - 无序数组，求一个值最大的区间，区间计算方案为：区间和 * 区间最小值（2020.09 字节跳动-电商-后端）[3]
+> - [3,1,6,4,5,2]，对于任意子序列可以计算一个X值，X=sum(subArray) * min(subArray)，求最大X（2020.07 字节跳动-商业化-前端）[4]
+
+**这其实是18年头条的校招笔试题目！**
+
+题目描述
+
+给定一个数组，要求选出一个区间, 使得该区间是所有区间中经过如下计算的值最大的一个：区间中的最小数 * 区间所有数的和。
+
+数组中的元素都是非负数。
+
+输入两行，第一行n表示数组长度，第二行为数组序列。输出最大值。
+
+> > **输入**
+> > 3
+> > 6 2 1
+> > **输出**
+> > 36
+> > **解释：**满足条件区间是[6] = 6 * 6 = 36;
+
+题目分析
+
+方法一：暴力。题目是找max(区间和 * 区间最小值)，而满足的区间最小值一定是数组的某个元素。因此可以枚举数组，枚举的每个元素（设为x）作为区间最小值，在x左右两侧找到第一个比x小的元素，分别记录左右边界的下标为l,r，寻找边界时计算当前区间的和。那么以x为区间最小值的最大计算区间就是`[l+1,r-1]区间和*x`，枚举时更新最大值。整个算法的时间复杂度是
+方法二：单调栈。方法一中找每个元素左右边界的复杂度是O(N)，通过单调栈的数据结构可以将其优化为O(1)。因此优化后整个算法的时间复杂度可以达到O(N)。
+
+ps：本题实际就是上一题的改编题。
+
+参考代码
+
+```c++
+//单调栈，时间复杂度O(N)
+#include <iostream>
+#include <vector>
+#include <stack>
+using namespace std;
+const int N = 500000+10;
+int a[N];
+int dp[N];
+stack<int> s;
+int main()
+{
+    int n,res=0;
+    cin >> n;
+    for(int i = 0; i < n; i ++) cin >> a[i];
+    //前缀和便于快速求区间和，例如求[l,r]区间和=dp[r+1]-dp[l]。l和r的取值范围是[0,n)
+    for(int i = 1; i <= n; i ++) dp[i] = dp[i-1] + a[i-1]; 
+    for(int i = 0; i < n; i ++) {
+        while(!s.empty() && a[i] <= a[s.top()]) {
+            int peak = a[s.top()];
+            s.pop();
+            int l = s.empty()? -1 : s.top();
+            int r = i; 
+            //l和r是边界，因此区间是[l+1,r-1]，其区间和dp[r+1]-dp[l]
+            int dist = dp[r] - dp[l+1];
+            res = max(res,peak*dist);
+        }
+        s.push(i);
+    }
+    while(!s.empty())
+    {
+        int peak = a[s.top()];
+        s.pop();
+        int l = s.empty()? -1 : s.top();
+        int r = n; 
+        
+        int dist = dp[r] - dp[l+1];
+        res = max(res,peak*dist);
+    }
+    cout << res << endl; 
+}
+```
 
 
 
@@ -1110,6 +1465,92 @@ class UnionFind {
 
     boolean isConnected(int node1, int node2) {
         return find(node1) == find(node2);
+    }
+}
+```
+
+
+
+### 二叉搜索树迭代器
+
+迭代法的中序遍历
+
+```java
+    private Deque<TreeNode> queue;
+    private TreeNode tree;
+    public BSTIterator(TreeNode root) {
+        tree = root;
+        queue = new LinkedList<>();
+    }
+    
+    public int next() {
+        while (tree != null) {
+            queue.push(tree);
+            tree = tree.left;
+        }
+        TreeNode node = queue.pop();
+        tree = node.right;
+        return node.val;
+    }
+    
+    public boolean hasNext() {
+        return tree != null || !queue.isEmpty();
+    }
+```
+
+
+
+### Trie树
+
+```java
+class Trie {
+
+    private boolean isEnd;
+    private Trie[] children;
+
+    public Trie() {
+        this.children = new Trie[26];
+        this.isEnd = false;
+    }
+
+    public void insert(String word) {
+        Trie node = this;
+        for (int i = 0; i < word.length(); i++) {
+            char ch = word.charAt(i);
+            if (node.children[ch - 'a'] == null)
+                node.children[ch - 'a'] = new Trie();
+            node = node.children[ch - 'a'];
+        }
+        node.isEnd = true;
+    }
+
+    public boolean search(String word) {
+        Trie node = check(word);
+        return node == null ? false : node.isEnd;
+    }
+
+    public boolean startsWith(String prefix) {
+        Trie node = check(prefix);
+        return node == null ? false : true;
+    }
+
+    private Trie check(String word) {
+        Trie node = this;
+        for (int i = 0; i < word.length(); i++) {
+            char ch = word.charAt(i);
+            if (node.children[ch - 'a'] == null) {
+                return null;
+            }
+            node = node.children[ch - 'a'];
+        }
+        return node;
+    }
+
+    public static void main(String[] args) {
+        Trie trie = new Trie();
+        trie.insert("apple");
+        System.out.println(trie.search("apple"));
+        System.out.println(trie.startsWith("app"));
     }
 }
 ```
@@ -1864,6 +2305,84 @@ bfs邻接矩阵表示的
             node = parents[node];
         }
         return node;
+    }
+```
+
+
+
+### 判断二分图
+
+dfs
+
+```java
+private boolean isBipartite = true;
+    private boolean[] visited;
+    private boolean[] color;
+    public boolean isBipartite(int[][] graph) {
+        int n = graph.length;
+        visited = new boolean[n];
+        color = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                dfs(graph, i);
+            }
+        }
+        return isBipartite;
+    }
+
+    private void dfs(int[][] graph, int u) {
+        if (!isBipartite)
+            return;
+        visited[u] = true;
+        for (int v : graph[u]) {
+            if (!visited[v]) {
+                color[v] = !color[u];
+                dfs(graph, v);
+            } else {
+                if (color[u] == color[v])
+                    isBipartite = false;
+            }
+        }
+    }
+```
+
+bfs
+
+```java
+    private boolean isBipartite = true;
+    private boolean[] visited;
+    private boolean[] color;
+    private List<Integer>[] graph;
+    public boolean possibleBipartition(int n, int[][] dislikes) {
+        graph = buildGraph(n, dislikes);
+        visited = new boolean[n + 1];
+        color = new boolean[n + 1];
+        for (int i = 1; i <= n; i++) {
+            if (!visited[i]) {
+                bfs(graph, i);
+            }
+        }
+        return isBipartite;
+    }
+
+    private void bfs(List<Integer>[] graph, int u) {
+        Queue<Integer> queue = new LinkedList<>();
+        visited[u] = true;
+        queue.offer(u);
+        while (!queue.isEmpty() && isBipartite) {
+            int node = queue.poll();
+            for (int v : graph[node]) {
+                if (!isBipartite)
+                    break;
+                if (!visited[v]) {
+                    color[v] = !color[node];
+                    visited[v] = true;
+                    queue.offer(v);
+                } else {
+                    isBipartite = color[v] == color[node] ? false : true;
+                }
+            }
+        }
     }
 ```
 
