@@ -70,12 +70,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class Node {
+class RandomNode {
     int val;
-    Node next;
-    Node random;
+    RandomNode next;
+    RandomNode random;
 
-    public Node(int val) {
+    public RandomNode(int val) {
         this.val = val;
         this.next = null;
         this.random = null;
@@ -83,44 +83,44 @@ class Node {
 }
 
 class copyRandomListSolution {
-    public Node copyRandomList(Node head) {
+    public RandomNode copyRandomList(RandomNode head) {
         return getNodeInPlace(head);
     }
 
-    public Node getNodeInPlace(Node head) {
+    public RandomNode getNodeInPlace(RandomNode head) {
         if (head == null)
             return head;
         // 将复制的节点放置在源节点的后面 A -> A' -> B -> B'
-        for (Node node = head; node != null; node = node.next.next) {
-            Node newNode = new Node(node.val);
-            newNode.next = node.next;
-            node.next = newNode;
+        for (RandomNode randomNode = head; randomNode != null; randomNode = randomNode.next.next) {
+            RandomNode newRandomNode = new RandomNode(randomNode.val);
+            newRandomNode.next = randomNode.next;
+            randomNode.next = newRandomNode;
         }
         // 把random域串起来
-        for (Node node = head; node != null; node = node.next.next)
-            node.next.random = (node.random != null) ? node.random.next : null;
+        for (RandomNode randomNode = head; randomNode != null; randomNode = randomNode.next.next)
+            randomNode.next.random = (randomNode.random != null) ? randomNode.random.next : null;
         // 把源节点，复制节点分开成两个链表
-        Node newhead = head.next;
-        for (Node node = head; node != null; node = node.next) {
-            Node newNode = node.next;
-            node.next = node.next.next;
-            newNode.next = (newNode.next != null) ? newNode.next.next : null;
+        RandomNode newhead = head.next;
+        for (RandomNode randomNode = head; randomNode != null; randomNode = randomNode.next) {
+            RandomNode newRandomNode = randomNode.next;
+            randomNode.next = randomNode.next.next;
+            newRandomNode.next = (newRandomNode.next != null) ? newRandomNode.next.next : null;
         }
         return newhead;
     }
 
-    private Node getNodeByHashMap(Node head) {
+    private RandomNode getNodeByHashMap(RandomNode head) {
         if (head == null)
             return head;
-        Map<Node, Node> map = new HashMap<>();
-        Node node = head;
-        for (; node != null; node = node.next) {
-            map.put(node, new Node(node.val));
+        Map<RandomNode, RandomNode> map = new HashMap<>();
+        RandomNode randomNode = head;
+        for (; randomNode != null; randomNode = randomNode.next) {
+            map.put(randomNode, new RandomNode(randomNode.val));
         }
-        node = head;
-        for (; node != null; node = node.next) {
-            map.get(node).next = map.get(node.next);
-            map.get(node).random = map.get(node.random);
+        randomNode = head;
+        for (; randomNode != null; randomNode = randomNode.next) {
+            map.get(randomNode).next = map.get(randomNode.next);
+            map.get(randomNode).random = map.get(randomNode.random);
         }
         return map.get(head);
     }

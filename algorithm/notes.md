@@ -161,6 +161,22 @@ dp[i] = max(dp[i-1]+nums[i], nums[i]);
 res = max(dp[i], res);
 ```
 
+前缀和思想：
+
+```java
+    public int maxSubArray(int[] nums) {
+        int res = 0, preSum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] + preSum < nums[i])
+                preSum = nums[i];
+            else
+                preSum += nums[i];
+            res = Math.max(res, preSum);
+        }
+        return res;
+    }
+```
+
 如果返回最大子数组的话，确定最大子数组和的同时，保存这个最大和所在元素的索引。然后以此从后往前减掉`nums`中的元素，直到最大和为`0`。这样就确定了最大和数组的起始位置。从而确定了最大子数组。
 
 ```java
@@ -171,6 +187,38 @@ if (preSum > res) {
 int endIndex = maxIndex;
 while (res > 0) res -= nums[maxIndex--];
 // maxIndex + 为子数组起始索引，endIndex为结束的索引
+```
+
+
+
+### 环形子数组的最大和
+
+前缀和+最小值队列
+
+```java
+    public int maxSubarraySumCircular(int[] nums) {
+        int N = nums.length;
+        int[] preSum = new int[2 * N + 1];
+        for (int i = 0; i < 2 * N; i++)
+            preSum[i + 1] = preSum[i] + nums[i % N];
+
+        int res = nums[0];
+        // 最小值队列
+        Deque<Integer> queue = new ArrayDeque<>();
+        queue.offerLast(0);
+        for (int i = 1; i < preSum.length; i++) {
+            if (queue.peekFirst() < i - N)
+                queue.pollFirst();
+
+            res = Math.max(res, preSum[i] - preSum[queue.peekFirst()]);
+
+            while (!queue.isEmpty() && preSum[queue.peekLast()] >= preSum[i])
+                queue.pollLast();
+
+            queue.offerLast(i);
+        }
+        return res;
+    }
 ```
 
 
@@ -1016,6 +1064,49 @@ int main()
 
 
 
+### 数组中的逆序对
+
+归并排序并统计前一个元素大于后一个元素的数量
+
+```java
+    private int[] nums, tmp;
+    public int reversePairs(int[] nums) {
+        this.nums = nums;
+        this.tmp = new int[nums.length];
+        return mergeSort(0, nums.length - 1);
+
+    }
+
+    private int mergeSort(int l, int r) {
+        if (l >= r)
+            return 0;
+        int mid = l + (r - l) / 2;
+        return mergeSort(l, mid) + mergeSort(mid + 1, r) + merge(l, mid, r);
+    }
+
+    private int merge(int l, int mid, int r) {
+        int res = 0;
+        for (int i = l ; i <= r; i++)
+            tmp[i] = nums[i];
+        int p1 = l, p2 = mid + 1, p = l;
+        while (p1 <= mid && p2 <= r) {
+            if (tmp[p1] > tmp[p2]) {
+                nums[p++] = tmp[p2++];
+                res += mid - p1 + 1;
+            }
+            else
+                nums[p++] = tmp[p1++];
+        }
+        while (p1 <= mid)
+            nums[p++] = tmp[p1++];
+        while (p2 <= r)
+            nums[p++] = tmp[p2++];
+        return res;
+    }
+```
+
+
+
 ## 二. 链表
 
 ### 复制带随机指针的链表
@@ -1183,6 +1274,36 @@ while (cur.next != null && cur.next.next != null) {
         } // 开始一个个删掉
     }
 }
+```
+
+
+
+### 二叉搜索树与双向循环链表的转换
+
+思路：二叉树搜索时中序遍历有序，那么我们从中序遍历开始。既然是双向循环链表，那么需要两个指针分别指向头部节点`head`，和尾部节点`tail`。双向链表的构造过程是`tail.right = cur; cur.left = tail;` 然后`tail = cur`。`tail`指针向后移动一个。最后`cur`指针为空时，所有节点的双向链构造完成，最后将头尾相连。
+
+```java
+    TreeListNode head, tail;
+    public TreeListNode treeToDoublyList(TreeListNode root) {
+        if (root == null)
+            return null;
+        dfs(root);
+        head.left = tail;
+        tail.right = head;
+        return head;
+    }
+
+    private void dfs(TreeListNode root) {
+        if (root == null) return;
+        dfs(root.left);
+        if (tail != null)
+            tail.right = root;
+        else
+            head = root;
+        root.left = tail;
+        tail = root;
+        dfs(root.right);
+    }
 ```
 
 
@@ -1356,6 +1477,49 @@ return res;
   ```
 
   上面类似的情况，如果把判断符号和空格的操作放在主体循环里面，也会返回包含的数字。这是不符合题目条件的。题目严格要求空格 符号 数字 这三个顺序。
+
+
+
+### 单词拆分
+
+这个题是带有查询的回溯
+
+一。 回溯法
+
+```java
+private boolean dfs(String s, int start) {
+        if (start == s.length())
+            return true;
+        if (map.containsKey(start))
+            return map.get(start);
+        for (int i = start; i < s.length(); i++) {
+            if (set.contains(s.substring(start, i + 1)) && dfs(s, i + 1)) {
+                map.put(start, true);
+                return true;
+            }
+        }
+        map.put(start, false);
+        return false;
+    }
+```
+
+二。 动态规划
+```java
+    private boolean dynamicProgramming(String s, List<String> wordDict) {
+        Set<String> wordDictSet = new HashSet(wordDict);
+        boolean[] dp = new boolean[s.length() + 1];
+        dp[0] = true;
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && wordDictSet.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+```
 
 
 
@@ -1952,7 +2116,7 @@ private void dfs(int n, StringBuilder path, int leftNum, int rightNum) {
 
 ## 七. 树
 
-### 非递归遍历（未完成）
+### 非递归遍历
 
 前序：
 
@@ -2001,6 +2165,49 @@ while (!stack.isEmpty() || root != null) {
         root = root.right;
     }
 }
+```
+
+
+
+### 序列化二叉树
+
+层序遍历序列化和深度优先遍历序列化
+
+```java
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        return rserialize(root, "");
+    }
+
+    private String rserialize(TreeNode root, String str) {
+        if (root == null)
+            str += "null,";
+        else {
+            str += root.val + ",";
+            str = rserialize(root.left, str);
+            str = rserialize(root.right, str);
+        }
+        return str;
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] nodeArray = data.split(",");
+        List<String> nodeList = new ArrayList<>(Arrays.asList(nodeArray));
+        return rdeserialize(nodeList);
+    }
+
+    private TreeNode rdeserialize(List<String> nodeList) {
+         if (nodeList.get(0).equals("null")) {
+             nodeList.remove(0);
+             return null;
+         }
+         TreeNode root = new TreeNode(Integer.parseInt(nodeList.get(0)));
+         nodeList.remove(0);
+         root.left = rdeserialize(nodeList);
+         root.right = rdeserialize(nodeList);
+         return root;
+    }
 ```
 
 
@@ -2076,6 +2283,24 @@ return isValidBST(root.left, min, root) && isValidBST(root.right, root, max);
 ### 验证平衡二叉树
 
 递归函数中，就是求左右子树的高度，如果左右子树的高度差的绝对值小于2，那么就返回左右子树的最大高度+ 1（就是正常求树的高度）；如果左右子树的高度差的绝对值大于等于2，就说明这个时候树已经不平衡了，那么递归函数返回-1（标志）。
+
+```java
+    public boolean isBalanced(TreeNode root) {
+        return treeDepth(root) != -1;
+    }
+
+    private int treeDepth(TreeNode root) {
+        if (root == null)
+            return 0;
+        int leftHeight = treeDepth(root.left);
+        if (leftHeight == -1) return -1;
+        int rightHeight = treeDepth(root.right);
+        if (rightHeight == -1) return -1;
+        if (Math.abs(leftHeight - rightHeight) > 1)
+            return -1;
+        else return Math.max(leftHeight, rightHeight) + 1;
+    }
+```
 
 
 
@@ -2158,7 +2383,7 @@ public boolean verifyPostorder(int[] postorder) {
     }
 ```
 
-将二叉搜索树结点的右子树全部放到单调栈中，这也意味着比该节点大的值都放在了单调栈中。所以一遇到比栈顶元素小的节点，也就意味着开始找到了左子树了。那么就找到改左子树的父节点（栈底元素）。那么左子树节点往前的所有节点都应该比根节点的值要小。否则就返回false。
+将二叉搜索树结点的右子树全部放到单调栈中，这也意味着比该节点大的值都放在了单调栈中。所以一遇到比栈顶元素小的节点，也就意味着开始找到了左子树了。那么就找到该左子树的父节点（栈底元素）。那么左子树节点往前的所有节点都应该比根节点的值要小。否则就返回false。
 
 
 
@@ -2503,6 +2728,145 @@ bfs
 
 ## 九. 背包问题
 
+### 01背包
+
+```java
+/**
+ * 0-1's Knapsack Problem
+ */
+public class knapsack_0_1 {
+
+    /**
+     * 0，1背包问题的动态规划解法
+     * @param N
+     * @param W
+     * @param wgt
+     * @param val
+     * @return
+     */
+    public int solutionForDP(int N, int W, int[] wgt, int[] val) {
+        int[][] dp = new int[N + 1][W + 1];
+        for (int i = 1; i <= N; i++) {
+            for (int w = 1; w <= W; w++) {
+                if (w - wgt[i - 1] < 0) {
+                    dp[i][w] = dp[i - 1][w];
+                } else {
+                    dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - wgt[i - 1]] + val[i - 1]);
+                }
+            }
+        }
+        return dp[N][W];
+    }
+
+    public static void main(String[] args) {
+        knapsack_0_1 solution = new knapsack_0_1();
+        System.out.println(solution.solutionForDP(3, 4, new int[]{2, 1, 3}, new int[]{4, 2, 3}));
+    }
+}
+
+```
+
+
+
+### 完全背包
+
+```java
+public class complete_knapsack {
+
+    /**
+     * 完全背包问题
+     * @param W
+     * @param weights
+     * @return
+     */
+    public int solutionForDP(int W, int[] weights) {
+        int[][] dp = new int[weights.length + 1][W + 1];
+        for (int i = 0; i <= weights.length; i++)
+            dp[i][0] = 1;
+
+        for (int i = 1; i <= weights.length; i++) {
+            for (int j = 1; j <= W; j++) {
+                if (j < weights[i - 1]) {
+                    dp[i][j] = dp[i - 1][j];
+                } else {
+                    /**
+                     * dp[i][j - weights[i - 1]]这个一定要注意，由于i的选取不止一次，所以
+                     * i的情况可分为（1）一次都不选（2）选一次的情况
+                     */
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - weights[i - 1]];
+                }
+            }
+        }
+        return dp[weights.length][W];
+    }
+
+    public static void main(String[] args) {
+        complete_knapsack solution = new complete_knapsack();
+        System.out.println(solution.solutionForDP(5, new int[]{1, 2, 5}));
+    }
+}
+```
+
+
+
+### 一和零
+
+```java
+class Solution {
+    public int findMaxForm(String[] strs, int m, int n) {
+        int[][][] dp = new int[strs.length + 1][m + 1][n + 1];
+        for (int i = 1; i <= strs.length; i++) {
+            int[] zerosAndOnes = getZerosAndOnes(strs[i - 1]);
+            int zeros = zerosAndOnes[0], ones = zerosAndOnes[1];
+            for (int j = 0; j <= m; j++) {
+                for (int k = 0; k <= n; k++) {
+                    dp[i][j][k] = dp[i - 1][j][k];
+                    if (j >= zeros && k >= ones)
+                        dp[i][j][k] = Math.max(dp[i][j][k], dp[i - 1][j - zeros][k - ones] + 1);
+                }
+            }
+        }
+        return dp[strs.length][m][n];
+    }
+
+    private int[] getZerosAndOnes(String bin) {
+        int[] res = new int[2];
+        for (int i = 0; i < bin.length(); i++) {
+            res[bin.charAt(i) - '0']++;
+        }
+        return res;
+    }
+} 
+```
+
+空间压缩版本
+
+```java
+class Solution {
+    public int findMaxForm(String[] strs, int m, int n) {
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= strs.length; i++) {
+            int[] zerosAndOnes = getZerosAndOnes(strs[i - 1]);
+            int zeros = zerosAndOnes[0], ones = zerosAndOnes[1];
+            for (int j = m; j >= zeros; j--) {
+                for (int k = n; k >= ones; k--) {
+                    dp[j][k] = Math.max(dp[j][k], dp[j - zeros][k - ones] + 1);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    private int[] getZerosAndOnes(String bin) {
+        int[] res = new int[2];
+        for (int i = 0; i < bin.length(); i++) {
+            res[bin.charAt(i) - '0']++;
+        }
+        return res;
+    }
+}
+```
+
 
 
 ## 十. 数学
@@ -2521,5 +2885,70 @@ public int[][] pow(int[][] a, int n) {
     }
     return ret;
 }
+```
+
+
+
+### 数字 1 的个数
+
+https://leetcode-cn.com/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/solution/mian-shi-ti-43-1n-zheng-shu-zhong-1-chu-xian-de-2/
+
+```java
+    public int countDigitOne(int n) {
+        int low = 0, digit = 1, res = 0;
+        int cur = n % 10, high = n / 10;
+        while (high != 0 || cur != 0) {
+            if (cur == 0) res += high * digit;
+            else if (cur == 1) res += high * digit + low + 1;
+            else res += (high + 1) * digit;
+            low = cur * digit + low;
+            cur = high % 10;
+            high /= 10;
+            digit *= 10;
+        }
+        return res;
+    }
+```
+
+
+
+### 第N位数字
+
+https://leetcode-cn.com/problems/nth-digit/solution/wei-ruan-zhao-pin-ing-400-di-n-wei-shu-z-hb7i/
+
+```java
+    public int findNthDigit(int n) {
+        int digit = 1;
+        int numDigit = 9;
+        // 开始求是几位数字
+        while (n > digit * numDigit) {
+            n -= numDigit * digit++;
+            numDigit *= 10;
+            if(Integer.MAX_VALUE / numDigit < digit){
+                break;
+            }
+        }
+        // 开始求是哪个数字num
+        int num = (int) (Math.pow(10, digit - 1)) + (n - 1) / digit;
+        // 开始求第几位iDigit
+        int iDigit = (n - 1) % digit;
+        // 那就是num的第iDigit位置(从高位计算)
+        return num / (int) (Math.pow(10, digit - iDigit - 1)) % 10;
+    }
+```
+
+
+
+### 约瑟夫环问题
+
+```java
+public int lastRemaining(int n, int m) {
+        int x = 0;
+        for (int i = 2; i <= n; i++) {
+            x = (x + m) % i;
+        }
+        return x;
+    }
+=
 ```
 
