@@ -1480,6 +1480,64 @@ return res;
 
 
 
+### 整数转换英文
+
+整个求解过程分为两部分，一个是求1000之内的表达，然后第二个就是求有多少个1000倍。
+
+```java
+class Solution {
+    private String[] thousands;
+    private String[] digits;
+    private String[] tens;
+    private String[] tys;
+
+    public Solution() {
+        thousands = new String[]{"", "Thousand", "Million", "Billion"};
+        digits = new String[]{"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"};
+        tens = new String[]{"Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+        tys = new String[]{"", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
+    }
+
+    public String numberToWords(int num) {
+        if (num == 0)
+            return "Zero";
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 3, unit = 1_000_000_000; i >= 0; i--, unit /= 1_000) {
+            int curNum = num / unit;
+            if (curNum != 0) {
+                String name = getHundredName(curNum);
+                stringBuilder.append(name).append(" ").append(thousands[i]).append(" ");
+                num %= unit;
+            }
+        }
+        return stringBuilder.toString().trim();
+    }
+
+    private String getHundredName(int num) {
+        StringBuilder sb = new StringBuilder();
+        if (num >= 100) {
+            sb.append(digits[num / 100]).append(" Hundred").append(" ");
+            num %= 100;
+        }
+        if (num >= 20 && num < 100) {
+            sb.append(tys[num / 10]).append(" ").append(digits[num % 10]).append(" ");
+        }
+        if (num >= 10 && num < 20) {
+            sb.append(tens[num % 10]).append(" ");
+        }
+        if (num > 0 && num < 10){
+            sb.append(digits[num]).append(" ");
+        }
+        if (num == 0){
+            sb.append(digits[num]);
+        }
+        return sb.toString().trim();
+    }
+}
+```
+
+
+
 ### 单词拆分
 
 这个题是带有查询的回溯
@@ -2942,13 +3000,51 @@ https://leetcode-cn.com/problems/nth-digit/solution/wei-ruan-zhao-pin-ing-400-di
 ### 约瑟夫环问题
 
 ```java
-public int lastRemaining(int n, int m) {
+    public int lastRemaining(int n, int m) {
         int x = 0;
         for (int i = 2; i <= n; i++) {
             x = (x + m) % i;
         }
         return x;
     }
-=
+```
+
+
+
+### 不用加减乘除实现加法
+
+用与运算实现进位，异或运算实现加法。知道算到进位为0即可。
+
+```java
+class Solution {
+    public int add(int a, int b) {
+        int carry = 0;
+        while (b != 0) {
+            carry = (a & b) << 1;
+            a ^= b;
+            b = carry;
+        
+        }
+        return a;
+    }
+}
+```
+
+
+
+### 整数除法
+
+```java
+    private int getDivide(long dividend, long divisor) {
+        if (dividend < divisor)
+            return 0;
+        int count = 1;
+        long num = divisor;
+        while (num + num <= dividend) {
+            num = num + num;
+            count = count + count;
+        }
+        return count + getDivide(dividend - num, divisor);
+    }
 ```
 
