@@ -1655,6 +1655,99 @@ private boolean dfs(String s, int start) {
 
 
 
+### 通配符匹配
+
+```java
+    public boolean isMatch(String s, String p) {
+        int m = s.length(), n = p.length();
+        boolean[][] dp = new boolean[m + 1][n + 1];
+        dp[0][0] = true;
+        for (int j = 1; j <= n; j++) {
+            if (p.charAt(j - 1) == '*')
+                dp[0][j] = true;
+            else break;
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (Character.isLetter(p.charAt(j - 1)))
+                    dp[i][j] = s.charAt(i - 1) == p.charAt(j - 1) && dp[i - 1][j - 1];
+                else if (p.charAt(j - 1) == '?')
+                    dp[i][j] = dp[i - 1][j - 1];
+                else if (p.charAt(j - 1) == '*')
+                    dp[i][j] = dp[i][j - 1] || dp[i - 1][j];
+            }
+        }
+        return dp[m][n];
+    }
+```
+
+
+
+### 数字解码为字母
+
+设当前位置为`i`，`s[i]`的选择分两种情况：
+
+第一种是，`s[i]`单独接在解码的后面，独立成帮派，那么这个时候的状态等于`dp[i] + dp[i - 1]`;
+
+第二种是，`s[i]`和`s[i - 1]`拼在一起接在解码的后面，这个时候`s[i - 1]s[i]`要在10-26之间（表示字母），那么这个时候还要加上`dp[i - 2]`的状态。
+
+```java
+    public int numDecodings(String s) {
+        int n = s.length();
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        for (int i = 1; i <=n; i++) {
+            int digit = s.charAt(i - 1) - '0';
+            if (digit != 0)
+                dp[i] = dp[i] + dp[i - 1];
+            if (i > 1 && (s.charAt(i - 2) - '0') * 10 + digit >= 10 && (s.charAt(i - 2) - '0') * 10 + digit <= 26)
+                dp[i] = dp[i] + dp[i - 2];
+        }
+        return dp[n];
+    }
+```
+
+
+
+### 字符串解码
+
+中括号内的字符串为要重复的内容，中括号前面的数字为重复次数，按照这个方式解码字符串
+
+```java
+输入：s = "2[abc]3[cd]ef"
+输出："abcabccdcdcdef"
+输入：s = "3[a2[c]]"
+输出："accaccacc"
+```
+
+既然涉及编码嵌套的问题，那么第一反应使用`递归或者栈`来做。下面的方法使用栈来实现。
+
+```java
+    public String decodeString(String s) {
+        Deque<Integer> nStack = new LinkedList<>();
+        Deque<String> sStack = new LinkedList<>(){{add("");}};
+        for (int i = 0; i < s.length(); i++) {
+            while (i < s.length() && Character.isLetter(s.charAt(i)))
+                sStack.push(sStack.pop() + s.charAt(i++));
+            if (i < s.length() && Character.isDigit(s.charAt(i))) {
+                int k = 0;
+                while (Character.isDigit(s.charAt(i)))
+                    k = k * 10 + s.charAt(i++) - '0';
+                nStack.push(k);
+            }
+            if (i < s.length() && s.charAt(i) == '[')
+                sStack.push("");
+            if (i < s.length() && s.charAt(i) == ']') {
+                String popedStr = sStack.pop();
+                sStack.push(sStack.pop() + popedStr.repeat(nStack.pop()));
+            }
+        }
+        return sStack.pop();
+    }
+```
+
+
+
 ## 五. 设计
 
 ### LRU
@@ -1960,6 +2053,57 @@ class Trie {
         trie.insert("apple");
         System.out.println(trie.search("apple"));
         System.out.println(trie.startsWith("app"));
+    }
+}
+```
+
+
+
+### O(1)时间插入，删除，随机访问一个元素
+
+既然`O(1)`的时间复杂度，那么可以想到的数据结构有`Map`，和`List`
+
+- `Map`可以在常数时间内进行插入和删除，不能常数级别获取随机元素，因为`Map`不支持索引访问
+
+- `List`可以在常数时间内进行插入和随机访问一个元素，不能常数级别删除元素，删除元素需要移动`list`。
+
+综合考虑，两者都使用！元素添加到`List`中，然后删除的时候只删除最后一个元素（将最后一个元素和要删除的元素交换位置，Map中的索引也换）。`Map`提供对删除数字的索引，所以`Map`中存的是元素和索引之间的映射。
+
+```java
+class RandomizedSet {
+    private Map<Integer, Integer> map;
+    private List<Integer> list;
+    private Random random;
+
+    public RandomizedSet() {
+        map = new HashMap<>();
+        list = new LinkedList<>();
+        random = new Random();
+    }
+    
+    public boolean insert(int val) {
+        if (map.containsKey(val))
+            return false;
+        list.add(val);
+        map.put(val, list.size() - 1);
+        return true;
+    }
+    
+    public boolean remove(int val) {
+        if (map.containsKey(val)) {
+            int index = map.get(val);
+            int lastNum = list.get(list.size() - 1);
+            list.set(index, lastNum);
+            map.put(lastNum, index);
+            map.remove(val);
+            list.remove(list.size() - 1);
+            return true;
+        }
+        return false;
+    }
+    
+    public int getRandom() {
+        return list.get(random.nextInt(list.size()));
     }
 }
 ```
@@ -2373,6 +2517,25 @@ private TreeNode delete(TreeNode root, int key) {
 
 
 
+### 二叉搜索树的最近公共祖先
+
+既然是二叉搜索树的祖先，那么按照二叉搜索树的规则，如果`p,q`两个节点都小于根节点，那么在左子树寻找；如果`p,q`两个节点都大于根节点，那么就在右子树中寻找；如果一个比根节点的值小，一个比根结点的值大，那么肯定就说明这`p,q`两个节点分别在不同的子树中，**当前根节点**就是他们的最近公共祖先。
+
+```java
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root.val == p.val || root.val == q.val)
+            return root;
+        if (p.val < root.val && q.val < root.val)
+            return lowestCommonAncestor(root.left, p, q);
+        if (p.val > root.val && q.val > root.val)
+            return lowestCommonAncestor(root.right, p, q);
+        else
+            return root;
+    }
+```
+
+
+
 ### 二叉树的最近公共祖先
 
 左右子树分别寻找`p`, `q`两个节点，找到了就返回当前的节点，没找到就返回`null`；
@@ -2606,6 +2769,45 @@ BFS版本的好理解
             map.put(root.right.val, root);
             findParent(root.right);
         }
+    }
+```
+
+
+
+### 恢复二叉搜索树
+
+具体来说，由于我们只关心中序遍历的值序列中每个相邻的位置的大小关系是否满足条件，且错误交换后最多两个位置不满足条件，因此在中序遍历的过程我们只需要维护当前中序遍历到的最后一个节点 `pred`，然后在遍历到下一个节点的时候，看两个节点的值是否满足前者小于后者即可，如果不满足说明找到了一个交换的节点，且在找到两次以后就可以终止遍历。
+
+这样我们就可以在中序遍历中直接找到被错误交换的两个节点 `x` 和 `y`，不用显式建立 `nums` 数组。
+
+```java
+  public void recoverTree(TreeNode root) {
+        Deque<TreeNode> stack = new LinkedList<>();
+        TreeNode node1 = null, node2 = null;
+        TreeNode preNode = new TreeNode(Integer.MIN_VALUE);
+        while (!stack.isEmpty() || root != null) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            if (root.val < preNode.val) {
+                node1 = root;
+                if (node2 == null) {
+                    node2 = preNode;
+                } else
+                    break;
+            }
+            preNode = root;
+            root = root.right;
+        }
+        swap(node1, node2);
+    }
+
+    private void swap(TreeNode node1, TreeNode node2) {
+        int tmp = node1.val;
+        node1.val = node2.val;
+        node2.val = tmp;
     }
 ```
 
