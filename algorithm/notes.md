@@ -1382,6 +1382,40 @@ while (cur.next != null && cur.next.next != null) {
 
 
 
+### 排序的循环链表中插入节点
+
+```java
+    public Node insert(Node head, int insertVal) {
+        if (head == null) {
+            Node node = new Node(insertVal);
+            node.next = node;
+            return node;
+        }
+        Node node = head;
+        Node insertedNode = new Node(insertVal);
+        while (true) {
+            // 情况一：在顺序位置插入新节点
+            if (node.next.val >= insertVal && node.val <= insertVal)
+                break;
+            // 情况二：在最大值和最小值中间
+            if (node.next.val < node.val) {
+                // 大于最大值的节点或者小于最小值的节点
+                if (node.val <= insertVal || node.next.val >= insertVal)
+                    break;
+            }
+            // 情况三：只有一个节点的情况下直接break
+            if (node.next == head)
+                break;
+            node = node.next;
+        }
+        insertedNode.next = node.next;
+        node.next = insertedNode;
+        return head;
+    }
+```
+
+
+
 ## 三. 排列组合
 
 ### 组合求和
@@ -1743,6 +1777,135 @@ private boolean dfs(String s, int start) {
             }
         }
         return sStack.pop();
+    }
+```
+
+
+
+### 字符串中的变位词
+
+```java
+    public boolean checkInclusion(String s1, String s2) {
+        int m = s1.length(), n = s2.length();
+        int[] win = new int[26];
+        for (int i = 0; i < m; i++)
+            --win[s1.charAt(i) - 'a'];
+        int left = 0;
+        for (int right = 0; right < n; right++) {
+            ++win[s2.charAt(right) - 'a'];
+            while (win[s2.charAt(right) - 'a'] > 0) {
+                --win[s2.charAt(left) - 'a'];
+                left++;
+            }
+            if (right - left + 1 == m)
+                return true;
+        }
+        return false;
+    }
+```
+
+
+
+### 字符串中的所有变位词
+
+```java
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> list = new ArrayList<>();
+        int[] sWin = new int[26];
+        int[] pwin = new int[26];
+        for (int i = 0; i < p.length(); i++) {
+            pwin[p.charAt(i) - 'a']++;
+        }
+        int start = 0;
+        for (int end = 0; end < s.length(); end++) {
+            sWin[s.charAt(end) - 'a']++;
+            while (sWin[s.charAt(end) - 'a'] > pwin[s.charAt(end) - 'a']) {
+                sWin[s.charAt(start) - 'a']--;
+                start++;
+            }
+            if (end - start + 1 == p.length())
+                list.add(start);
+        }
+        return list;
+    }
+```
+
+
+
+### 最长回文子串
+
+中心扩展法
+
+```java
+class Solution {
+    public String longestPalindrome(String s) {
+        if (s.length() == 0)
+            return "";
+        int start = 0, end = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int len1 = expendAroundCenter(s, i, i);
+            int len2 = expendAroundCenter(s, i, i + 1);
+            int len = Math.max(len1, len2);
+            if (len > end - start) {
+                start = i - (len - 1) / 2;
+                end = i + len / 2;
+            }
+        }
+        return s.substring(start, end + 1);
+    }
+
+    private int expendAroundCenter(String s, int start, int end) {
+        while (start >= 0 && end < s.length() && s.charAt(start) == s.charAt(end)) {
+            start--;
+            end++;
+        }
+        return end - start - 1;
+    }
+}
+```
+
+
+
+### 回文子串的个数
+
+动态规划法：如果`s[i] == s[j]`，那么`[i, j]`区间是否会构成回文串的条件是`s[i + 1, j - 1]`是不是回文串。并且考虑`[i, j]`区间长度小于2的时候是否是回文子串
+
+```java
+    public int countSubstrings(String s) {
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        int res = 0;
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i <= j; i++) {
+                if (s.charAt(i) == s.charAt(j) && ((j - i < 2 || dp[i + 1][j - 1]))) {
+                    dp[i][j] = true;
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+```
+
+中心扩张发：以`s[i]`和`s[i, i + 1]`作为核心，分别向两段扩张，如果两段的字符相等，那么这就是一个回文子串。
+
+```java
+    public int countSubstrings(String s) {
+        int res = 0;
+        for (int i = 0; i < s.length(); i++) {
+            res = getParCounts(s, res, i, i);
+            res = getParCounts(s, res, i, i + 1);
+        }
+        return res;
+    }
+
+    private int getParCounts(String s, int res, int left, int right) {
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+            res++;
+            left--;
+            right++;
+        }
+        return res;
     }
 ```
 

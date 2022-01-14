@@ -58,6 +58,22 @@ import java.util.Set;
 //leetcode submit region begin(Prohibit modification and deletion)
 class lengthOfLongestSubstringOffer2Solution {
     public int lengthOfLongestSubstring(String s) {
+        int res = 0;
+        Set<Character> set = new HashSet<>();
+        int end = 0;
+        for (int start = 0; start < s.length(); start++) {
+            if (start != 0)
+                set.remove(s.charAt(start - 1));
+            while (end < s.length() && !set.contains(s.charAt(end))) {
+                set.add(s.charAt(end));
+                end++;
+            }
+            res = Math.max(res, end - start);
+        }
+        return res;
+    }
+
+    private int getByHash(String s) {
         int res = 0, left = 0;
         Map<Character, Integer> map = new HashMap<>();
         for (int i = 0; i < s.length(); i++) {
