@@ -3,13 +3,13 @@ package leetcode.editor.cn;
 import java.util.*;
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class RandomizedSet {
+class RandomizedSetOffer2 {
 
     private Map<Integer, Integer> map;
     private List<Integer> list;
     private Random random;
 
-    public RandomizedSet() {
+    public RandomizedSetOffer2() {
         map = new HashMap<>();
         list = new LinkedList<>();
         random = new Random();
