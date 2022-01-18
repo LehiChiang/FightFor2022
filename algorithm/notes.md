@@ -3487,3 +3487,96 @@ class Solution {
     }
 ```
 
+
+
+## 十一. 动态规划
+
+### 完全平方和
+
+给定正整数 *n*，找到若干个完全平方数（比如 `1, 4, 9, 16, ...`）使得它们的和等于 *n*。你需要让组成和的完全平方数的个数最少。
+
+如何定义状态转移方程：
+
+首先，给定一个数`n`，它所能包含的完全平方数一定在`i`属于`[1, sqrt(n)]`之间。换句话说，想要得知`n`的完全平方和的最小个数，那就需要知道`dp[n - i*i]`分别需要多少个，最后`dp[n]`再加上`1`。这个`1`考虑的是平方数`i`的情况。
+
+```java
+    public int numSquares(int n) {
+        int[] dp = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            int min = Integer.MAX_VALUE;
+            for (int j = 1; j * j <= i; j++) {
+                min = Math.min(min, dp[i - j * j]);
+            }
+            dp[i] = min + 1;
+        }
+        return dp[n];
+    }
+```
+
+
+
+## 十二. 回溯
+
+### 删除无效的括号
+
+1. 先统计出有多少左右括号要删除
+2. 一次删除这些括号，查看删除后的是不是有效的括号
+3. 如果有效加入到结果集合里面。
+
+```java
+    private List<String> res;
+    public List<String> removeInvalidParentheses(String s) {
+        res = new ArrayList<>();
+        int leftRemove = 0, rightRemove = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(')
+                leftRemove++;
+            else if (c == ')') {
+                if (leftRemove == 0)
+                    rightRemove++;
+                else
+                    leftRemove--;
+            }
+        }
+        dfs(s, 0, leftRemove, rightRemove);
+        return res;
+    }
+
+    private void dfs(String s, int index, int leftRemove, int rightRemove) {
+        if (leftRemove == 0 && rightRemove == 0) {
+            if (isValidParentheses(s))
+                res.add(s);
+            return;
+        }
+
+        for (int i = index; i < s.length(); i++) {
+            if (index != i && s.charAt(i) == s.charAt(i - 1))
+                continue;
+            if (leftRemove + rightRemove > s.length() - i) {
+                return;
+            }
+            if (s.charAt(i) == '(' && leftRemove > 0)
+                dfs(s.substring(0, i) + s.substring(i + 1), i, leftRemove - 1, rightRemove);
+            if (s.charAt(i) == ')' && rightRemove > 0)
+                dfs(s.substring(0, i) + s.substring(i + 1), i, leftRemove, rightRemove - 1);
+        }
+    }
+
+    // 判断括号是否合法
+    private boolean isValidParentheses(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(')
+                count++;
+            else if (c == ')') {
+                count--;
+                if (count < 0)
+                    return false;
+            }
+        }
+        return count == 0;
+    }
+```
+

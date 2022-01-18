@@ -54,7 +54,7 @@ package leetcode.editor.cn;//给定一个非负整数 n ，请计算 0 到 n 之
 import java.util.Arrays;
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class countBitsSolution {
+class countBitsOffer2Solution {
     public int[] countBits(int n) {
         int[] res = new int[n + 1];
         for (int i = 1; i <=n; i++) {
@@ -64,7 +64,7 @@ class countBitsSolution {
     }
 
     public static void main(String[] args) {
-        countBitsSolution solution = new countBitsSolution();
+        countBitsOffer2Solution solution = new countBitsOffer2Solution();
         System.out.println(Arrays.toString(solution.countBits(5)));
     }
 }
