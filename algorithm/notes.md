@@ -509,6 +509,40 @@ for (int start = 0, end = -1; start < s.length(); start++) {
 
 
 
+### 最短无序连续子数组
+
+同时从前往后和从后往前遍历，分别得到要排序数组的右边界和左边界；
+**寻找右边界：**
+从前往后遍历的过程中，用`max`记录遍历过的最大值，如果`max`小于当前的`nums[i]`*（因为如果是排序了的话，数组元素值依次递增，`nums[i] > max`才对）*，说明`nums[i]`的位置不正确，属于需要排序的数组，因此将右边界更新为`left`，然后更新`max`；这样最终可以找到需要排序的数组的右边界，右边界之后的元素都大于`max`；
+**寻找左边界：**
+从后往前遍历的过程中，用`min`记录遍历过的最小值，如果`min`小于当前的`nums[j]`，说明`nums[j]`的位置不正确，应该属于需要排序的数组，因此将左边界更新为`right`，然后更新`min`；这样最终可以找到需要排序的数组的左边界，左边界之前的元素都小于`min`；
+
+```java
+    public int findUnsortedSubarray(int[] nums) {
+        int n = nums.length;
+        int left = 0, right = n - 1;
+        int max = nums[0], min = nums[n - 1];
+        // 从左往右寻找异常值的最远位置，异常值定义为数组连续递增性的破坏点
+        for (int i = 0; i < n ;i++) {
+            if (nums[i] >= max)
+                max = nums[i];
+            else left = i;
+        }
+        // 从右往左寻找异常值的最远位置，异常值定义为数组连续递减性的破坏点
+        for (int i = n - 1; i >= 0; i--) {
+            if (nums[i] <= min)
+                min = nums[i];
+            else right = i;
+        }
+        // 数字本身就是有序的情况，直接返回0；
+        if (left == 0 && right == n - 1)
+            return 0;
+        return left - right + 1;
+    }
+```
+
+
+
 ### 三数之和
 
 
@@ -542,6 +576,51 @@ public List<List<Integer>> threeSum(int[] nums) {
         return res;
     }
 ```
+
+
+
+### 最接近的三数之和
+
+```java
+class Solution {
+    public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        int best = 10000000;
+        for (int i = 0; i < n; ++i) {
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            int j = i + 1, k = n - 1;
+            while (j < k) {
+                int sum = nums[i] + nums[j] + nums[k];
+                if (sum == target) {
+                    return target;
+                }
+                if (Math.abs(sum - target) < Math.abs(best - target)) {
+                    best = sum;
+                }
+                if (sum > target) {
+                    int k0 = k - 1;
+                    while (j < k0 && nums[k0] == nums[k]) {
+                        --k0;
+                    }
+                    k = k0;
+                } else {
+                    int j0 = j + 1;
+                    while (j0 < k && nums[j0] == nums[j]) {
+                        ++j0;
+                    }
+                    j = j0;
+                }
+            }
+        }
+        return best;
+    }
+}
+```
+
+
 
 ### N数之和
 
@@ -3484,6 +3563,28 @@ class Solution {
             count = count + count;
         }
         return count + getDivide(dividend - num, divisor);
+    }
+```
+
+
+
+### Pow(x,n)
+
+快速幂法加迭代
+
+```java
+    public double myPow(double x, int n) {
+        if (x == 1)
+            return x;
+        return n < 0 ? 1.0 / getPow(x, -(long) n) : getPow(x, (long) n);
+    }
+
+    private double getPow(double x, long n) {
+        if (n == 0) {
+            return 1.0;
+        }
+        double y = getPow(x, n / 2);
+        return n % 2 == 0 ? y * y : y * y * x;
     }
 ```
 
