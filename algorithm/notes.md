@@ -3055,6 +3055,186 @@ BFS版本的好理解
 
 
 
+### 二叉树剪枝
+
+```java
+    public TreeNode pruneTree(TreeNode root) {
+        if (root == null) return root;
+        pruneTree(root.left);
+        if (!hasOne(root.left))
+            root.left = null;
+        pruneTree(root.right);
+        if (!hasOne(root.right))
+            root.right = null;
+        if (root.val == 0 && !hasOne(root))
+            root = null;
+        return root;
+    }
+
+    private boolean hasOne(TreeNode root) {
+        if (root == null)
+            return false;
+        return hasOne(root.left) || hasOne(root.right) || root.val == 1;
+    }
+```
+
+
+
+### 求根节点到叶节点数字之和
+
+递归法
+
+```java
+    public int sumNumbers(TreeNode root) {
+         return getSum(root, 0);
+    }
+
+    private int getSum(TreeNode root, int preSum) {
+        if (root == null)
+            return 0;
+        int sum = preSum * 10 + root.val;
+        if (root.left == null && root.right == null)
+            return sum;
+        else
+            return getSum(root.left, sum) + getSum(root.right, sum);
+    }
+```
+
+迭代法
+
+```java
+    public int sumNumbers(TreeNode root) {
+        if (root == null)
+            return 0;
+        Queue<TreeNode> nodeQueue = new LinkedList<>();
+        Queue<Integer> valQueue = new LinkedList<>();
+        nodeQueue.offer(root);
+        valQueue.offer(root.val);
+        int res = 0;
+        while (!nodeQueue.isEmpty() && !valQueue.isEmpty()) {
+            TreeNode node = nodeQueue.poll();
+            int val = valQueue.poll();
+            if (node.left == null && node.right == null) {
+                res += val;
+            }
+            if (node.left != null) {
+                nodeQueue.offer(node.left);
+                valQueue.offer(val * 10 + node.left.val);
+            }
+            if (node.right != null) {
+                nodeQueue.offer(node.right);
+                valQueue.offer(val * 10 + node.right.val);
+            }
+        }
+        return res;
+    }
+```
+
+
+
+### 二叉树的最大路径和
+
+思想：计算左右子树给根节点的最大贡献值，如果左子树或右子树给根节点的贡献值为负数，那么就将左右子树的贡献值设置为0。
+
+递归函数的本身是求这个最大贡献值的，那么这个最大路径和是在这其中顺便求出来的。
+
+```java
+private int maxPathSum = Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+        dfs(root);
+        return maxPathSum;
+    }
+
+    // 计算左右子树的贡献值
+    private int myDFS(TreeNode root) {
+        if (root == null)
+            return 0;
+        int leftSum = myDFS(root.left);
+        int rightSum = myDFS(root.right);
+        maxPathSum = Math.max(root.val, Math.max(leftSum + root.val + rightSum, maxPathSum));
+        return Math.max(0, root.val + Math.max(leftSum, rightSum));
+    }
+```
+
+
+
+### 展平二叉搜索树
+
+先建立一个哑节点，然后中序遍历的过程中，将该节点插入到哑节点中。
+
+```java
+class Solution {
+    private TreeNode resNode;
+    public TreeNode increasingBST(TreeNode root) {
+        TreeNode dummyNode = new TreeNode(-1);
+        resNode = dummyNode;
+        buildTreeNode(root);
+        return dummyNode.right;
+    }
+
+    private void buildTreeNode(TreeNode root) {
+        if (root == null)
+            return;
+        buildTreeNode(root.left);
+        resNode.right = root;
+        root.left = null;
+        resNode = root;
+        buildTreeNode(root.right);
+    }
+}
+```
+
+
+
+### 二叉树中序遍历的后继结点
+
+方法一：迭代式中序遍历
+
+```java
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        Deque<TreeNode> queue = new LinkedList<>();
+        TreeNode curNode = null;
+        while(!queue.isEmpty() || root != null) {
+            while (root != null) {
+                queue.offerLast(root);
+                root = root.left;
+            }
+            TreeNode node = queue.pollLast();
+            if (curNode != null)
+                return node;
+            if (node.val == p.val) {
+                if (node.right == null)
+                    return queue.pollLast();
+                else curNode = p;
+            }
+            root = node.right;
+        }
+        return null;
+    }
+```
+
+方法二：指针法
+
+`cur`节点指向当前节点，`res`节点指向`cur`的父节点。如果`cur`节点值大于`p`节点值，那么说明`p`的下一个节点可能就是`cur`，`res`指向`cur`。`cur`指向他左边的节点，以此寻找最小节点。如果`cur`节点值小于`p`节点值，那么`cur`就转向右子树搜索。
+
+```java
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        TreeNode cur = root;
+        TreeNode res = null;
+        while (cur != null) {
+           if (cur.val > p.val) {
+               res = cur;
+               cur = cur.left;
+           } else {
+               cur = cur.right;
+           }
+        }
+        return res;
+    }
+```
+
+
+
 ## 八. 图
 
 ### 拓扑排序
