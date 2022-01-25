@@ -1219,6 +1219,40 @@ int main()
 
 
 
+### 和最小的K个数对
+
+```
+输入: nums1 = [1,7,11], nums2 = [2,4,6], k = 3
+输出: [1,2],[1,4],[1,6]
+解释: 返回序列中的前 3 对数：
+     [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]
+```
+
+不用求出全部的数对然后崽选出k个。先放一部分。
+
+```java
+    public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
+        List<List<Integer>> res = new ArrayList<>();
+        Queue<int[]> queue = new PriorityQueue<>(Comparator.comparingInt(indexPair -> nums1[indexPair[0]] + nums2[indexPair[1]]));
+        int m = nums1.length, n = nums2.length;
+        for (int i = 0; i < Math.min(m, k); i++)
+            queue.offer(new int[]{i, 0});
+        while (k-- > 0 && !queue.isEmpty()) {
+            int[] pair = queue.poll();
+            List<Integer> list = new ArrayList<>();
+            list.add(nums1[pair[0]]);
+            list.add(nums2[pair[1]]);
+            res.add(list);
+            if (pair[1] + 1 < n) {
+                queue.offer(new int[]{pair[0], pair[1] + 1});
+            }
+        }
+        return res;
+    }
+```
+
+
+
 ## 二. 链表
 
 ### 复制带随机指针的链表
@@ -2352,6 +2386,31 @@ class RandomizedSet {
 
 
 
+### 日程安排
+
+安排不同时间段的任务，又开始时间和结束时间。时间不冲突的往集合添加，时间重叠的不添加到集合里面。
+
+```java
+    private TreeMap<Integer, Integer> map;
+
+    public MyCalendar() {
+        map = new TreeMap<>();
+    }
+
+    public boolean book(int start, int end) {
+        Map.Entry<Integer, Integer> leftSchedule = map.floorEntry(start);
+        Map.Entry<Integer, Integer> rightSchedule = map.ceilingEntry(start);
+        if ((leftSchedule == null || start >= leftSchedule.getValue()) &&
+                (rightSchedule == null || end <= rightSchedule.getKey())) {
+            map.put(start, end);
+            return true;
+        }
+        return false;
+    }
+```
+
+
+
 ## 六. 栈
 
 ### 出栈顺序的判断
@@ -3232,6 +3291,12 @@ class Solution {
         return res;
     }
 ```
+
+
+
+### 二叉树的两数之和
+
+ 得借助`O(n)`的空间复杂度`set`或`list`。然后`DFS`或者`BFS`搜索，判断当前节点值是否在辅助空间里，在就返回，不在就将该节点插入到辅助空间里。
 
 
 
