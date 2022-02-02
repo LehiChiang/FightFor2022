@@ -1253,6 +1253,82 @@ int main()
 
 
 
+### 最大的异或值
+
+异或运算的性质
+
+解决这个问题，我们首先需要利用异或运算的一个性质：**如果 a ^ b = c 成立，那么a ^ c = b 与 b ^ c = a 均成立。**
+
+这道题找最大值的思路是这样的：因为两两异或可以得到一个值，在所有的两两异或得到的值中，一定有一个最大值，我们推测这个最大值应该是什么样的？即根据“最大值”的存在性解题（一定存在）。于是有如下思考：
+
+1、二进制下，我们希望一个数尽可能大，即希望越高位上越能够出现“1”，这样这个数就是所求的最大数，这是贪心算法的思想。
+
+2、于是，我们可以从最高位开始，到最低位，首先假设高位是 “1”，把这 n 个数全部遍历一遍，看看这一位是不是真的可以是“1”，否则这一位就得是“0”，判断的依据是上面“异或运算的性质”，即下面的第 3 点；
+
+3、如果 a ^ b = max 成立 ，max 表示当前得到的“最大值”，那么一定有 max ^ b = a 成立。我们可以先假设当前数位上的值为 “1”，再把当前得到的数与这个 n 个数的 前缀（因为是从高位到低位看，所以称为“前缀”）进行异或运算，放在一个哈希表中，再依次把所有 前缀 与这个假设的“最大值”进行异或以后得到的结果放到哈希表里查询一下，如果查得到，就说明这个数位上可以是“1”，否则就只能是 0（看起来很晕，可以看代码理解）。
+
+一种极端的情况是，这 n 个数在某一个数位上全部是 0 ，那么任意两个数异或以后都只能是 0，那么假设当前数位是 1 这件事情就不成立。
+
+4、如何得到前缀，可以用掩码（mask），掩码可以进行如下构造，将掩码与原数依次进行 “与” 运算，就能得到前缀。
+
+```java
+    public int findMaximumXOR(int[] nums) {
+        int mask = 0, res = 0;
+        for (int i = 30; i >= 0; i--) {
+            mask = mask | (1 << i);
+            Set<Integer> set = new HashSet<>();
+            for (int num : nums) {
+                set.add(num & mask);
+            }
+            int targetMax = res | (1 << i);
+            for (int prefix : set) {
+                if (set.contains(targetMax ^ prefix)) {
+                    res = targetMax;
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+```
+
+
+
+### 排序数组中只出现一次的数字
+
+方法一：位运算方法
+
+方法二：二分搜索
+
+难点是如何挪动左右指针！
+
+如果两个连续的数字相等，那么一定是第一个数在偶数的索引，第二个数在奇数索引的位置上。
+
+那么只出现一次的数字也是在偶数的索引上。
+
+那么只出现一次的数字打破这个规律后，两个连续相等的数字第一个数字一定是在奇数索引位置上，第二个数在偶数索引上。
+
+所以就是看当前位置是偶数索引还是奇数索引来决定移动哪个指针？
+
+```java
+    public int singleNonDuplicate(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == nums[mid + 1]) {
+                if (mid % 2 == 1) right = mid;
+                else left = mid + 1;
+            } else {
+                if (mid % 2 == 0) right = mid;
+                else left = mid + 1;
+            }
+        }
+        return nums[left];
+    }
+```
+
+
+
 ## 二. 链表
 
 ### 复制带随机指针的链表
@@ -2406,6 +2482,47 @@ class RandomizedSet {
             return true;
         }
         return false;
+    }
+```
+
+
+
+### 按权重生成随机数
+
+给定一个正整数数组 `w` ，其中 `w[i]` 代表下标 `i` 的权重（下标从 `0` 开始），请写一个函数 `pickIndex` ，它可以随机地获取下标 `i`，选取下标 `i` 的概率与 `w[i]` 成正比。
+
+设数组 w 的权重之和为 total。根据题目的要求，我们可以看成将[1,total] 范围内的所有整数分成 n 个部分（其中 n 是数组 w 的长度），第 i个部分恰好包含 w[i] 个整数，并且这 n 个部分两两的交集为空。随后我们在 [1,total] 范围内随机选择一个整数 x，如果整数 x 被包含在第 i 个部分内，我们就返回 i。
+
+```java
+    private int[] preSum;
+    private int sum;
+    private Random random;
+    public Solution(int[] w) {
+        preSum = new int[w.length];
+        preSum[0] = w[0];
+        for (int i = 1; i < preSum.length; i++) {
+            preSum[i] = preSum[i - 1] + w[i];
+        }
+        sum = preSum[preSum.length - 1];
+        random = new Random();
+    }
+    
+    public int pickIndex() {
+        int randNum = random.nextInt(sum) + 1;
+        return getRandIndex(randNum);
+    }
+
+    private int getRandIndex(int randNum) {
+        int left = 0, right = preSum.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (preSum[mid] == randNum)
+                return mid;
+            else if (preSum[mid] < randNum)
+                left = mid + 1;
+            else right = mid;
+        }
+        return left;
     }
 ```
 

@@ -71,7 +71,7 @@ class Relation {
         return a == b;
     }
 }
-class Solution extends Relation {
+class findCelebritySolution extends Relation {
     public int findCelebrity(int n) {
         int cand = 0;
         for (int other = 1; other < n; other++) {
