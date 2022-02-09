@@ -2076,7 +2076,7 @@ class Solution {
     }
 ```
 
-中心扩张发：以`s[i]`和`s[i, i + 1]`作为核心，分别向两段扩张，如果两段的字符相等，那么这就是一个回文子串。
+中心扩张法：以`s[i]`和`s[i, i + 1]`作为核心，分别向两段扩张，如果两段的字符相等，那么这就是一个回文子串。
 
 ```java
     public int countSubstrings(String s) {
@@ -2095,6 +2095,138 @@ class Solution {
             right++;
         }
         return res;
+    }
+```
+
+
+
+### 最少回文分割
+
+给定一个字符串 `s`，请将 `s` 分割成一些子串，使每个子串都是回文串。
+
+返回符合要求的 **最少分割次数** 。
+
+**示例 1：**
+
+```
+输入：s = "aab"
+输出：1
+解释：只需一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
+```
+
+同样是两种方法：要求出最小的回文分割数，首先要确定能最少分割成多少个回文子串。最少回文串个数减去1就是最小回文分割数。
+
+**中心扩展法：**定义一个一维的`dp`数组，`dp`的一维数组只负责找最短的切割方法，即最少的回文子串。`i`是待判字符串的末端指针，`j`为待判字符串的起始指针，那么`dp[i]`代表字符串s中以i结尾的最小回文子串的数量。并且`dp[i]`的初始应改为`i`，代表最坏情况下字符串中每个字符都不一样，这样最小的回文串个数就是`i`个。如果`s[j, i]`是回文串的话，那么`dp[i]`应该为`dp[i]`和`dp[j]` + 1中最小的那一个。`dp[j]`表示上一个回文子串的个数，而`s[j, i]`是当前构成的回文子串。
+
+```java
+    public int minCut(String s) {
+        int[] dp = new int[s.length() + 1];
+        dp[0] = 0;
+        for (int i = 1; i <= s.length(); i++) {
+            dp[i] = i;
+            for (int j = 0; j < i; j++) {
+                if (isPalindrome(s, j, i - 1)) {
+                    dp[i] = Math.min(dp[j] + 1, dp[i]);
+                }
+            }
+        }
+        return dp[s.length()] - 1;
+    }
+
+    private boolean isPalindrome(String s, int left, int right) {
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right))
+                return false;
+            left++;
+            right--;
+        }
+        return true;
+    }
+```
+
+**二维`dp`法：**空间换时间，先构造二维数组，存所有`j到i（0<=j<=i）`范围判断是不是回文子串。
+
+```java
+    public int minCut(String s) {
+        // 这个就是空间换时间的部分，与上一解法的isPalindrome功能一样
+        boolean[][] dp_state = new boolean[s.length()][s.length()];
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j <= i; j++) {
+                if (s.charAt(j) == s.charAt(i) && (i - j <= 1 || dp_state[j + 1][i - 1])) {
+                    dp_state[j][i] = true;
+                }
+            }
+        }
+
+        int[] dp = new int[s.length() + 1];
+        dp[0] = 0;
+        for (int i = 1; i <= s.length(); i++) {
+            dp[i] = i;
+            for (int j = 0; j < i; j++) {
+                if (dp_state[j][i - 1]) {
+                    dp[i] = Math.min(dp[j] + 1, dp[i]);
+                }
+            }
+        }
+        return dp[s.length()] - 1;
+    }
+```
+
+
+
+### 分割所有的回文字符串
+
+给定一个字符串 `s` ，请将 `s` 分割成一些子串，使每个子串都是 **回文串** ，返回 s 所有可能的分割方案。
+
+```
+输入：s = "google"
+输出：[["g","o","o","g","l","e"],["g","oo","g","l","e"],["goog","l","e"]]
+```
+
+解决思路：求出字符串中所有的子回文串的情况，很显然使用回溯方法来做。还是得有一个辅助的数据结构或函数来判断`s[i, j]`是否是回文串，还是使用二维`dp`或者两边缩小法来判断。方便起见，这里只使用了二维`dp`的方法。
+
+**二维`dp`法：**
+
+```java
+    private List<List<String>> res;
+    private boolean[][] dp;
+    public String[][] partition(String s) {
+        res = new ArrayList<>();
+        char[] charArray = s.toCharArray();
+        // 构造二维状态
+        dp = new boolean[s.length()][s.length()];
+        for (int j = 0; j < s.length(); j++) {
+            for (int i = 0; i <= j; i++) {
+                if (charArray[i] == charArray[j] && (j - i <= 2 || dp[i + 1][j - 1]))
+                    dp[i][j] = true;
+            }
+        }
+        // 开始遍历所有情况
+        dfs(charArray, 0, new ArrayList<>());
+        
+        // 转化为结果
+        String[][] ans = new String[res.size()][];
+        for (int i = 0; i < res.size(); i++) {
+            ans[i] = new String[res.get(i).size()];
+            for (int j = 0; j < ans[i].length; j++) {
+                ans[i][j] = res.get(i).get(j);
+            }
+        }
+        return ans;
+    }
+
+    private void dfs(char[] charArray, int index, ArrayList<String> path) {
+        if (index == charArray.length) {
+            res.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = index; i < charArray.length; i++) {
+            if (dp[index][i]) {
+                path.add(new String(charArray, index, i - index + 1));
+                dfs(charArray, i + 1, path);
+                path.remove(path.size() - 1);
+            }
+        }
     }
 ```
 
@@ -2492,6 +2624,8 @@ class RandomizedSet {
 给定一个正整数数组 `w` ，其中 `w[i]` 代表下标 `i` 的权重（下标从 `0` 开始），请写一个函数 `pickIndex` ，它可以随机地获取下标 `i`，选取下标 `i` 的概率与 `w[i]` 成正比。
 
 设数组 w 的权重之和为 total。根据题目的要求，我们可以看成将[1,total] 范围内的所有整数分成 n 个部分（其中 n 是数组 w 的长度），第 i个部分恰好包含 w[i] 个整数，并且这 n 个部分两两的交集为空。随后我们在 [1,total] 范围内随机选择一个整数 x，如果整数 x 被包含在第 i 个部分内，我们就返回 i。
+
+
 
 ```java
     private int[] preSum;
@@ -3807,6 +3941,36 @@ class Solution {
 
 
 
+### 分割等和子集
+
+`dp[i][j]`的意义是判断能否从`0-i`个数字中选出和为`j`的组合。所以`dp`的选择就是选还是不选。
+
+```java
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        for (int num : nums)
+            sum += num;
+        if (sum % 2 != 0)
+            return false;
+        sum /= 2;
+        boolean[][] dp = new boolean[nums.length + 1][sum + 1];
+        // 当 j 等于 0 时，即背包容量为空，只要不选择物品就可以，所以 f(i, 0) 为 true。
+        for (int i = 1; i <= nums.length; i++)
+            dp[i][0] = true;
+        for (int i = 1; i <= nums.length; i++) {
+            for (int j = 1; j <= sum; j++) {
+                if (j - nums[i - 1] < 0)
+                    dp[i][j] = dp[i - 1][j];
+                else
+                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i - 1]];
+            }
+        }
+        return dp[nums.length][sum];
+    }
+```
+
+
+
 ## 十. 数学
 
 ### 矩阵快速幂
@@ -3978,6 +4142,310 @@ class Solution {
 
 
 
+### 使用最小花费爬楼梯
+
+给你一个整数数组 cost ，其中 cost[i] 是从楼梯第 i 个台阶向上爬需要支付的费用。一旦你支付此费用，即可选择向上爬一个或者两个台阶。你可以选择从下标为 0 或下标为 1 的台阶开始爬楼梯。请你计算并返回达到楼梯顶部的最低花费。
+
+```
+  输入：cost = [10,15,20]
+  输出：15
+  解释：你将从下标为 1 的台阶开始。支付 15 ，向上爬两个台阶，到达楼梯顶部。总花费为 15 。
+```
+
+  直接求出到达第i层的最小费用。然后返回的结果中判断起始状态从0和1台阶的最小费用，也就是`min(dp[cost.length - 1], dp[cost.length - 2])`。
+
+```java
+    public int minCostClimbingStairs(int[] cost) {
+        int[] dp = new int[cost.length];
+        dp[0] = cost[0];
+        dp[1] = cost[1];
+        for (int i = 2; i < cost.length; i++) {
+            dp[i] = Math.min(dp[i - 1] , dp[i - 2]) + cost[i];
+        }
+        return Math.min(dp[cost.length - 1], dp[cost.length - 2]);
+    }
+```
+
+
+
+### 最长的斐波那契子序列的长度
+
+将斐波那契式的子序列中的两个连续项 `A[i], A[j]` 视为单个结点 `(i, j)`，整个子序列是这些连续结点之间的路径。
+
+例如，对于斐波那契式的子序列 `(A[1] = 2, A[2] = 3, A[4] = 5, A[7] = 8, A[10] = 13)`，结点之间的路径为 `(1, 2) <-> (2, 4) <-> (4, 7) <-> (7, 10)`。
+
+这样做的动机是，只有当 `A[i] + A[j] == A[k]` 时，两结点 `(i, j)` 和 `(j, k)` 才是连通的，我们需要这些信息才能知道这一连通。现在我们得到一个类似于**最长上升子序列**的问题。
+
+设 `dp[i][j]` 是结束在 `[i][j]` 的最长路径。那么 如果 `(i, j)` 和 `(j, k)` 是连续成斐波那契的， `dp[j][k] = dp[i][j] + 1`。
+
+```java
+    public int lenLongestFibSubseq(int[] arr) {
+        Map<Integer, Integer> index = new HashMap<>();
+        for (int i = 0; i < arr.length; i++)
+            index.put(arr[i], i);
+        int ans = 0;
+        int[][] dp = new int[arr.length][arr.length];
+        for (int i = 0; i < arr.length - 2; i++) {
+            for (int j = i + 1; j < arr.length - 1; j++) {
+                int num = arr[i] + arr[j];
+                int k = index.getOrDefault(num, -1);
+                if (k > 0 && dp[j][k] == 0) {
+                    if (dp[i][j] == 0)
+                        dp[i][j] = 2;
+                    dp[j][k] = dp[i][j] + 1;
+                    ans = Math.max(ans, dp[j][k]);
+                }
+            }
+        }
+        return ans;
+    }
+```
+
+
+
+### 交叉字符串
+
+```java
+    public boolean isInterleave(String s1, String s2, String s3) {
+        int m = s1.length(), n = s2.length();
+        if (m + n != s3.length())
+            return false;
+        boolean[][] dp = new boolean[m + 1][n + 1];
+        dp[0][0] = true;
+        for (int i = 1; i <= m; i++)
+            dp[i][0] = s1.charAt(i - 1) == s3.charAt(i - 1) && dp[i - 1][0];
+        for (int j = 1; j <= n; j++)
+            dp[0][j] = s2.charAt(j - 1) == s3.charAt(j - 1) && dp[0][j - 1];
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[i][j] = (dp[i][j - 1] && s2.charAt(j - 1) == s3.charAt(i + j - 1)) ||
+                        (dp[i - 1][j] && s1.charAt(i - 1) == s3.charAt(i + j - 1));
+            }
+        }
+        return dp[m][n];
+    }
+```
+
+
+
+### 不同的子序列
+
+**示例 1：**
+
+```
+输入：s = "rabbbit", t = "rabbit"
+输出：3
+解释：
+如下图所示, 有 3 种可以从 s 中得到 "rabbit" 的方案。
+rabbbit
+rabbbit
+rabbbit
+```
+
+`dp[i][j]`代表 `T` 前 `i` 字符串可以由 `S` `j` 字符串组成最多个数。
+
+举个例子,如示例的
+
+<img src="pic\a3a1d30700be05cad2e60666f20ab261e7a04b85ed88b854dd1d8cb484909983-1561970400084.png" alt="a3a1d30700be05cad2e60666f20ab261e7a04b85ed88b854dd1d8cb484909983-1561970400084" style="zoom:67%;" />
+
+对于第一行, T 为空,因为空集是所有字符串子集, 所以我们第一行都是 1
+
+对于第一列, S 为空,这样组成 T 个数当然为 0 了
+
+```java
+    public int numDistinct(String s, String t) {
+        int m = s.length(), n = t.length();
+        int[][] dp = new int[n + 1][m + 1];
+        dp[0][0] = 1;
+        for (int j = 1; j <= m; j++)
+            dp[0][j] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (t.charAt(i - 1) == s.charAt(j - 1))
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i][j - 1];
+                else
+                    dp[i][j] = dp[i][j - 1];
+            }
+        }
+        return dp[n][m];
+    }
+```
+
+
+
+### 目标和
+
+递归
+
+```java
+class Solution {
+    public int findTargetSumWays(int[] nums, int target) {
+        return find(nums, 0, target);
+    }
+
+    private int find(int[] nums, int index, int target) {
+        if (index == nums.length)
+            return target == 0 ? 1 : 0;
+        return find(nums, index + 1, target + nums[index]) + find(nums, index + 1, target - nums[index]);
+    }
+}
+```
+
+背包问题
+
+```java
+class Solution {
+    public int findTargetSumWays(int[] nums, int target) {
+        int sum = 0;
+        for (int num : nums)
+            sum += num;
+        return sum < target || (sum & 1) != (target & 1) ? 0 : find(nums, (target + sum) / 2);
+    }
+
+    private int find(int[] nums, int target) {
+        if (target < 0)
+            return 0;
+        int[][] dp = new int[nums.length + 1][target + 1];
+        dp[0][0] = 1;
+        for (int i = 1; i <= nums.length; i++) {
+            for (int j = 0; j <= target; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (j - nums[i - 1] >= 0)
+                    dp[i][j] += dp[i - 1][j - nums[i - 1]];
+            }
+        }
+        return dp[nums.length][target];
+    }
+}
+```
+
+
+
+### 最少的硬币数目
+
+```java
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        for (int i = 1; i <= amount; i++) {
+            dp[i] = amount + 1;
+            for (int coin: coins) {
+                if (i >= coin)
+                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+            }
+        }
+        return dp[amount] == amount + 1 ? -1 : dp[amount];
+    }
+```
+
+
+
+### 组合总和
+
+给定一个由 **不同** 正整数组成的数组 `nums` ，和一个目标整数 `target` 。请从 `nums` 中找出并返回总和为 `target` 的元素组合的个数。数组中的数字可以在一次排列中出现任意次，但是顺序不同的序列被视作不同的组合。
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3], target = 4
+输出：7
+解释：
+所有可能的组合为：
+(1, 1, 1, 1)
+(1, 1, 2)
+(1, 2, 1)
+(1, 3)
+(2, 1, 1)
+(2, 2)
+(3, 1)
+请注意，顺序不同的序列被视作不同的组合。
+```
+
+```java
+    public int combinationSum4(int[] nums, int target) {
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int i = 1; i <= target; i++) {
+            for (int num : nums) {
+                if (num <= i)
+                    dp[i] = dp[i] + dp[i - num];
+            }
+        }
+        return dp[target];
+    }
+```
+
+
+
+### 将字符串翻转到单调递增
+
+如果一个由 `'0'` 和 `'1'` 组成的字符串，是以一些 `'0'`（可能没有 `'0'`）后面跟着一些 `'1'`（也可能没有 `'1'`）的形式组成的，那么该字符串是 **单调递增** 的。
+
+我们给出一个由字符 `'0'` 和 `'1'` 组成的字符串 s，我们可以将任何 `'0'` 翻转为 `'1'` 或者将 `'1'` 翻转为 `'0'`。
+
+返回使 s **单调递增** 的最小翻转次数。
+
+**示例 1：**
+
+```java
+输入：s = "00110"
+输出：1
+解释：我们翻转最后一位得到 00111.
+```
+
+**示例 2：**
+
+```java
+输入：s = "010110"
+输出：2
+解释：我们翻转得到 011111，或者是 000111。
+```
+
+**示例 3：**
+
+```java
+输入：s = "00011000"
+输出：2
+解释：我们翻转得到 00000000。
+```
+
+**难点在于`dp`的设计**
+
+写动态规划看状态转移方程，写状态转移方程看定义状态。
+
+定义`dp[i][0]`, `dp[i][0]`表示前`i`个元素递增且第`i`个元素为`0`的最小翻转次数，
+
+定义`dp[i][1]`， `dp[i][1]`表示前`i`个元素递增且第`i`个元素为`1`的最小翻转次数。
+
+由定义可知，如果前`i`个元素最后以`0`结尾且满足单调递增，那么前`i`个元素必须全部为`0`，由此可得`dp[i][0]`的状态转移如下：
+
+```java
+dp[i][0] = dp[i-1][0] + (s.charAt(i)=='0'?0:1);
+```
+
+由定义可知， `dp[i][1]`只要满足最后一个元素为`1`就行，那么前`i-1`个元素既可以为`0`，也可以为`1`，因此`dp[i][1]`的状态转移如下：
+
+```java
+dp[i][1] = min(dp[i-1][1], dp[i-1][0]) + (s.charAt(i)=='1'?0:1)；
+```
+
+最后取`dp[i][0]`,`dp[i][1]`中的较小的即可。
+
+```java
+    public int minFlipsMonoIncr(String s) {
+        int[][] dp = new int[s.length()][2];
+        dp[0][0] = s.charAt(0) == '0' ? 0 : 1;
+        dp[0][1] = s.charAt(0) == '1' ? 0 : 1;
+        for (int i = 1; i < s.length(); i++) {
+            dp[i][0] = dp[i - 1][0] + (s.charAt(i) == '0' ? 0 : 1);
+            dp[i][1] = Math.min(dp[i - 1][0], dp[i - 1][1]) + (s.charAt(i) == '1' ? 0 : 1);
+        }
+        return Math.min(dp[s.length() - 1][0], dp[s.length() - 1][1]);
+    }
+```
+
+
+
 ## 十二. 回溯
 
 ### 删除无效的括号
@@ -4040,6 +4508,56 @@ class Solution {
             }
         }
         return count == 0;
+    }
+```
+
+
+
+### 复原IP地址
+
+**输入：**s = "25525511135"
+
+**输出：**["255.255.11.135","255.255.111.35"]
+
+```java
+    private List<String> res;
+    private int[] segments;
+    public List<String> restoreIpAddresses(String s) {
+        res = new ArrayList<>();
+        if (s.length() < 4 || s.length() > 12)
+            return res;
+        segments = new int[4];
+        dfs(s, 0, 0);
+        return res;
+    }
+
+    private void dfs(String s, int segStart, int segId) {
+        if (segId == 4) {
+            if (segStart == s.length()) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < 3; i++) {
+                    stringBuilder.append(segments[i]).append(".");
+                }
+                res.add(stringBuilder.append(segments[3]).toString());
+            }
+            return;
+        }
+        if (segStart == s.length())
+            return;
+        if (s.charAt(segStart) == '0') {
+            segments[segId] = 0;
+            dfs(s, segStart + 1, segId + 1);
+        }
+        int ip = 0;
+        for (int i = segStart; i < s.length(); i++) {
+            ip = ip * 10 + s.charAt(i) - '0';
+            segments[segId] = ip;
+            if (ip > 0 && ip <= 0xFF) {
+                dfs(s, i + 1, segId + 1);
+            } else {
+                break;
+            }
+        }
     }
 ```
 
