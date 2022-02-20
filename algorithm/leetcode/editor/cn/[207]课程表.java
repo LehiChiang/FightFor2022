@@ -56,7 +56,7 @@ class canFinishCourseSolution {
             if (indeg[i] == 0) queue.offer(i);
         }
 
-        // 由于不需要输出序列，所以直接计数就行，遍历过的节点技术，不用使用数据结构保存
+        // 由于不需要输出序列，所以直接计数就行，遍历过的节点计数，不用使用数据结构保存
         int res = 0;
         while (!queue.isEmpty()) {
             res++;

@@ -3553,6 +3553,71 @@ class Solution {
 
 ## 八. 图
 
+### 所有的可能路径
+
+给定一个有 `n` 个节点的有向无环图，用二维数组 `graph` 表示，**请找到所有从 `0` 到 `n-1` 的路径并输出**（不要求按顺序）。
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/09/28/all_1.jpg)
+
+```java
+输入：graph = [[1,2],[3],[3],[]]
+输出：[[0,1,3],[0,2,3]]
+解释：有两条路径 0 -> 1 -> 3 和 0 -> 2 -> 3
+```
+
+注意哈，这道题给限定了条件，只能从`0`点开始遍历到`n-1`号节点。
+
+**`dfs`回溯法：**
+
+```java
+    List<List<Integer>> res;
+    public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        res = new LinkedList<>();
+        dfs(graph, 0, new LinkedList<>());
+        return res;
+    }
+
+    private void dfs(int[][] graph, int u, LinkedList<Integer> path) {
+        path.add(u);
+        if (u == graph.length - 1) {
+            res.add(new ArrayList<>(path));
+            return;
+        }
+        for (int v : graph[u]) {
+            dfs(graph, v, path);
+            path.removeLast();
+        }
+    }
+```
+
+**`bfs`广度优先搜索**，采用的方法是从中心向周围扩展的方法，周围有几个邻居，就创建几个`List`放在`Queue`里面。
+
+```java
+    public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        List<List<Integer>> res = new LinkedList<>();
+        Queue<List<Integer>> queue = new LinkedList<>();
+        queue.offer(new ArrayList<>(){{add(0);}});
+        while (!queue.isEmpty()) {
+            List<Integer> list = queue.poll();
+            int node = list.get(list.size() - 1);
+            if (node == graph.length - 1)
+                res.add(list);
+            else {
+                for (int v : graph[node]) {
+                    List<Integer> newPath = new ArrayList<>(list);
+                    newPath.add(v);
+                    queue.add(newPath);
+                }
+            }
+        }
+        return res;
+    }
+```
+
+
+
 ### 拓扑排序
 
 #### 深度优先算法
@@ -3793,6 +3858,61 @@ bfs
                 }
             }
         }
+    }
+```
+
+
+
+### 01矩阵（矩阵中的1到0的最短距离）
+
+给定一个由 `0` 和 `1` 组成的矩阵 `mat` ，请输出一个大小相同的矩阵，其中每一个格子是 `mat` 中对应位置元素到最近的 `0` 的距离。两个相邻元素间的距离为 `1` 。
+
+**示例 1：**
+
+<img src="https://pic.leetcode-cn.com/1626667201-NCWmuP-image.png" alt="img" style="zoom:50%;" />
+
+```
+输入：mat = [[0,0,0],[0,1,0],[0,0,0]]
+输出：[[0,0,0],[0,1,0],[0,0,0]]
+```
+
+**示例 2：**
+
+<img src="https://pic.leetcode-cn.com/1626667205-xFxIeK-image.png" alt="img" style="zoom:50%;" />
+
+```
+输入：mat = [[0,0,0],[0,1,0],[1,1,1]]
+输出：[[0,0,0],[0,1,0],[1,2,1]]
+```
+
+**思路：**首先把每个源点 `0` 入队，然后从各个 `0` 同时开始一圈一圈的向 `1` 扩散（每个 `1` 都是被离它最近的 `0` 扩散到的），扩散的时候可以设置 `int[][] dist` 来记录距离（即扩散的层次）并同时标志是否访问过。对于本题是可以直接修改原数组 `int[][] matrix` 来记录距离和标志是否访问的，这里要注意先把 `matrix` 数组中 `1` 的位置设置成 `-1` （设成`Integer.MAX_VALUE`啦，`m * n`啦，`10000`啦都行，只要是个无效的距离值来标志这个位置的 `1` 没有被访问过就行辣~）
+
+```java
+    public int[][] updateMatrix(int[][] mat) {
+        Queue<int[]> queue = new LinkedList<>();
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = 0; j < mat[0].length; j++) {
+                if (mat[i][j] == 0) {
+                    queue.offer(new int[]{i, j});
+                } else
+                    mat[i][j] = -1;
+            }
+        }
+        int[] dx = new int[] {-1, 1, 0, 0};
+        int[] dy = new int[] {0, 0, -1, 1};
+        while (!queue.isEmpty()) {
+            int[] point = queue.poll();
+            int x = point[0], y = point[1];
+            for (int i = 0; i < 4; i++) {
+                int newX = x + dx[i];
+                int newY = y + dy[i];
+                if (newX >= 0 && newX < mat.length && newY >= 0 && newY < mat[0].length && mat[newX][newY] == -1) {
+                    mat[newX][newY] = mat[x][y] + 1;
+                    queue.offer(new int[]{newX, newY});
+                }
+            }
+        }
+        return mat;
     }
 ```
 

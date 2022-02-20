@@ -46,39 +46,39 @@ package leetcode.editor.cn;//Trie（发音类似 "try"）或者说 前缀树 是
 
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class Trie {
+class MyTrie {
 
     private boolean isEnd;
-    private Trie[] children;
+    private MyTrie[] children;
 
-    public Trie() {
-        this.children = new Trie[26];
+    public MyTrie() {
+        this.children = new MyTrie[26];
         this.isEnd = false;
     }
 
     public void insert(String word) {
-        Trie node = this;
+        MyTrie node = this;
         for (int i = 0; i < word.length(); i++) {
             char ch = word.charAt(i);
             if (node.children[ch - 'a'] == null)
-                node.children[ch - 'a'] = new Trie();
+                node.children[ch - 'a'] = new MyTrie();
             node = node.children[ch - 'a'];
         }
         node.isEnd = true;
     }
 
     public boolean search(String word) {
-        Trie node = check(word);
+        MyTrie node = check(word);
         return node == null ? false : node.isEnd;
     }
 
     public boolean startsWith(String prefix) {
-        Trie node = check(prefix);
+        MyTrie node = check(prefix);
         return node == null ? false : true;
     }
 
-    private Trie check(String word) {
-        Trie node = this;
+    private MyTrie check(String word) {
+        MyTrie node = this;
         for (int i = 0; i < word.length(); i++) {
             char ch = word.charAt(i);
             if (node.children[ch - 'a'] == null) {
@@ -90,7 +90,7 @@ class Trie {
     }
 
     public static void main(String[] args) {
-        Trie trie = new Trie();
+        MyTrie trie = new MyTrie();
         trie.insert("apple");
         System.out.println(trie.search("apple"));
         System.out.println(trie.startsWith("app"));

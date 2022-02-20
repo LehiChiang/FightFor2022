@@ -91,7 +91,7 @@ class findOrderSolution {
     private Map<Integer, List<Integer>> graph;
 
     public int[] findOrder(int numCourses, int[][] prerequisites) {
-        return findOrderDFS(numCourses, prerequisites);
+        return findOrderBFS(numCourses, prerequisites);
     }
 
     public int[] findOrderDFS(int numCourses, int[][] prerequisites) {
@@ -133,7 +133,7 @@ class findOrderSolution {
 
     public static void main(String[] args) {
         findOrderSolution solution = new findOrderSolution();
-        System.out.println(Arrays.toString(solution.findOrder(2, new int[][]{{1,0},{0,1}})));
+        System.out.println(Arrays.toString(solution.findOrder(2, new int[][]{})));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
