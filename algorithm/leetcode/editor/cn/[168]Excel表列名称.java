@@ -62,6 +62,16 @@ class convertToTitleSolution {
         StringBuilder sb = new StringBuilder();
         while (columnNumber > 0) {
             int n = (columnNumber - 1) % 26 + 1;
+            sb.append((char)('A' + n - 1));
+            columnNumber = (columnNumber - n) / 26;
+        }
+        return sb.reverse().toString();
+    }
+
+    private String getString(int columnNumber) {
+        StringBuilder sb = new StringBuilder();
+        while (columnNumber > 0) {
+            int n = (columnNumber - 1) % 26 + 1;
             sb.append((char) ('A' + n - 1));
             columnNumber = (columnNumber - n) / 26;
         }

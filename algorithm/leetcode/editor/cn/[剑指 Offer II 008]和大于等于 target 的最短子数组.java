@@ -55,6 +55,21 @@ package leetcode.editor.cn;//给定一个含有 n 个正整数的数组和一个
 //leetcode submit region begin(Prohibit modification and deletion)
 class minSubArrayLenOffer2Solution {
     public int minSubArrayLen(int target, int[] nums) {
+        int length = nums.length;
+        int res = target + 1, left = 0, right = -1, sum = 0;
+        while (right < length) {
+            right++;
+            while (sum >= target) {
+                res = Math.min(res, right - left);
+                sum -= nums[left++];
+            }
+            if (right < length)
+                sum += nums[right];
+        }
+        return res == target + 1 ? 0 : res;
+    }
+
+    private int extracted(int target, int[] nums) {
         int len = nums.length;
         int end = -1, start = 0, res = target + 1, sum = 0;
         while (end < len - 1) {
@@ -70,7 +85,7 @@ class minSubArrayLenOffer2Solution {
 
     public static void main(String[] args) {
         minSubArrayLenOffer2Solution solution = new minSubArrayLenOffer2Solution();
-        System.out.println(solution.minSubArrayLen(7, new int[]{2,3,1,2,4,3}));
+        System.out.println(solution.minSubArrayLen(11, new int[]{1,1,1,1,1,1,1,1}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

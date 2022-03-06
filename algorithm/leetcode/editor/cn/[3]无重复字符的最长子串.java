@@ -30,23 +30,22 @@ import java.util.Set;
 class lengthOfLongestSubstringSolution {
     public int lengthOfLongestSubstring(String s) {
         Set<Character> set = new HashSet<>();
-        int end = -1, res = 0;
-        for (int start = 0; start < s.length(); start++){
-            if (start != 0){
-                set.remove(s.charAt(start - 1));
+        int right = 0, res = 0, left = 0;
+        while (right < s.length()){
+            if (right != 0)
+                set.remove(s.charAt(left++));
+            while (right < s.length() && !set.contains(s.charAt(right))) {
+                set.add(s.charAt(right));
+                right++;
             }
-            while (end + 1 < s.length() && !set.contains(s.charAt(end + 1))){
-                set.add(s.charAt(end + 1));
-                end++;
-            }
-            res = Math.max(res, end - start + 1);
+            res = Math.max(res, right - left);
         }
         return res;
     }
 
     public static void main(String[] args) {
         lengthOfLongestSubstringSolution solution = new lengthOfLongestSubstringSolution();
-        int res = solution.lengthOfLongestSubstring("pwwkew");
+        int res = solution.lengthOfLongestSubstring("bbbbb");
         System.out.println(res);
     }
 }

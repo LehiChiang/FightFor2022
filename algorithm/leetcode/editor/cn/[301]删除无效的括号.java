@@ -63,7 +63,7 @@ class removeInvalidParenthesesSolution {
 
     public static void main(String[] args) {
         removeInvalidParenthesesSolution solution = new removeInvalidParenthesesSolution();
-        System.out.println(solution.removeInvalidParentheses(")("));
+        System.out.println(solution.removeInvalidParentheses("()())()"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

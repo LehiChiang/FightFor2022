@@ -59,6 +59,42 @@ package leetcode.editor.cn;//给定两个大小分别为 m 和 n 的正序（从
 //leetcode submit region begin(Prohibit modification and deletion)
 class findMedianSortedArraysSolution {
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        int len1 = nums1.length, len2 = nums2.length;
+        if (len1 > len2) {
+            return findMedianSortedArrays(nums2, nums1);
+        }
+        int totalLen = len1 + len2;
+        if (totalLen % 2 == 1) {
+            return findKElement(nums1, 0, nums2, 0, (totalLen / 2) + 1);
+        } else {
+            int num1 = findKElement(nums1, 0, nums2, 0, totalLen / 2);
+            int num2 = findKElement(nums1, 0, nums2, 0, (totalLen / 2) + 1);
+            return (num1 + num2) / 2.0;
+        }
+    }
+
+    private int findKElement(int[] nums1, int start1, int[] nums2, int start2, int k) {
+        // len表示待选的数组长度
+        int len1 = nums1.length - start1;
+        int len2 = nums2.length - start2;
+        if (len1 > len2)
+            return findKElement(nums2, start2, nums1, start1, k);
+        if (len1 == 0) {
+            return nums2[start2 + k - 1];
+        }
+        if (k == 1) {
+            return Math.min(nums1[start1], nums2[start2]);
+        }
+        int i = start1 + Math.min(nums1.length - start1, k / 2) - 1;
+        int j = start2 + Math.min(nums2.length - start2, k / 2) - 1;
+        if (nums1[i] <= nums2[j]) {
+            return findKElement(nums1, i + 1, nums2, start2, k - (i - start1 + 1));
+        } else {
+            return findKElement(nums1, start1, nums2, j + 1, k - (j - start2 + 1));
+        }
+    }
+
+    private double partArray(int[] nums1, int[] nums2) {
         if (nums1.length > nums2.length)
             return findMedianSortedArrays(nums2, nums1);
         int m = nums1.length;
@@ -72,18 +108,6 @@ class findMedianSortedArraysSolution {
             int j = leftSize - i;
             if (nums1[i - 1] > nums2[j]) {
                 right = i - 1;
-            } else {
-                left = i;
-            }
-        }
-
-
-
-        while (left < right) {
-            int i = left + (right - left + 1) / 2;
-            int j = leftSize - i;
-            if (nums1[i - 1] > nums2[j]) {
-                right = i -1;
             } else {
                 left = i;
             }
@@ -103,8 +127,8 @@ class findMedianSortedArraysSolution {
 
     public static void main(String[] args) {
         findMedianSortedArraysSolution solution = new findMedianSortedArraysSolution();
-        int[] nums1 = {1,3,6,7,8};
-        int[] nums2 = {2,4,5,9,10};
+        int[] nums1 = {11};
+        int[] nums2 = {10};
         System.out.println(solution.findMedianSortedArrays(nums1, nums2));
     }
 }

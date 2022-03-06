@@ -28,48 +28,137 @@ while(left <= right){
 
 
 
-### 快排搜索边界
+### 快速选择
+
+给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。
+
+请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+
+示例 1:
+
+```
+输入: [3,2,1,5,6,4] 和 k = 2
+输出: 5
+```
+
+示例 2:
+
+```
+输入: [3,2,3,1,2,4,5,5,6] 和 k = 4
+输出: 4
+```
+
+代码：
 
 ```java
-quicksort(list, 0, list.length - 1);
+class Solution {
+    private Random random = new Random();
 
-int index = partition(nums, start, end);
-quicksort(nums, start, index - 1);
-quicksort(nums, index + 1, end);
-
-private int random_partition(int[] nums, int left, int right) {
-    int i = random.nextInt(right - left + 1) + left;
-    swap(nums, left, i);
-    return partition(nums, left, right);
-}
-
-private int partition(int[] nums, int start, int end) {
-    while (start < end) {
-        while (start < end && nums[end] >= pivot) end--;
-        nums[start] = nums[end];
-        while (start < end && nums[start] <= pivot) start++;
-        nums[end] = nums[start];
+    // 寻找nums中倒数第nums.length - k 位置上的数字
+    public int findKthLargest(int[] nums, int k) {
+        return quickSelect(nums, k, 0, nums.length - 1);
     }
-    nums[end] = pivot;
-    return end;
-}
 
-/**
- * i，j，r三个变量分别代表左半部分最后一个元素，未分区的元素的第一个元素，最后一个最为中枢的元素
- * @param nums
- * @param start
- * @param end
- * @return
- */
-private int partition(int[] nums, int start, int end) {
-    int i = start - 1, j = start, r = nums[end];
-    for (; j < end; j++) {
-        if (nums[j] <= r) {
-            swap(nums, ++i, j);
+    private int quickSelect(int[] nums, int k, int left, int right) {
+        int index = random_partition(nums, left, right);
+        if (index == nums.length - k)
+            return nums[nums.length - k];
+        else if (index < nums.length - k)
+            return quickSelect(nums, k, index + 1, right);
+        else
+            return quickSelect(nums, k, left, index - 1);
+    }
+
+    private int random_partition(int[] nums, int left, int right) {
+        int i = random.nextInt(right - left + 1) + left;
+        swap(nums, left, i);
+        return partition(nums, left, right);
+    }
+
+    private void swap(int[] nums, int left, int right) {
+        int temp = nums[left];
+        nums[left] = nums[right];
+        nums[right] = temp;
+    }
+
+    private int partition(int[] nums, int left, int right) {
+        int pivot = nums[left];
+        while (left < right) {
+            while (left < right && nums[right] >= pivot) right--;
+            nums[left] = nums[right];
+            while (left < right && nums[left] <= pivot) left++;
+            nums[right] = nums[left];
+        }
+        nums[left] = pivot;
+        return left;
+    }
+}
+```
+
+
+
+### 快速排序
+
+```java
+class Solution {
+
+    private Random random = new Random();
+    public int[] sortArray(int[] nums) {
+        quickSort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    private void quickSort(int[] nums, int start, int end) {
+        if (start < end) {
+            int mid = random_partition(nums, start, end);
+            quickSort(nums, start, mid - 1);
+            quickSort(nums, mid + 1, end);
         }
     }
-    swap(nums, ++i, j);
-    return i;
+
+    private int random_partition(int[] nums, int left, int right) {
+    	int i = random.nextInt(right - left + 1) + left;
+    	swap(nums, left, i);
+    	return partition(nums, left, right);
+	}
+    
+    // 第一种partition写法
+    private int partition(int[] nums, int low, int high) {
+        int pivot = nums[low];
+        while (low < high) {
+            while (low < high && nums[high] >= pivot) high--;
+            nums[low] = nums[high];
+            while (low < high && nums[low] <= pivot) low++;
+            nums[high] = nums[low];
+        }
+        nums[low] = pivot;
+        return low;
+    }
+    
+    // 第二种partition写法
+    /**
+     * i，j，r三个变量分别代表左半部分最后一个元素，未分区的元素的第一个元素，最后一个最为中枢的元素
+     * @param nums
+     * @param start
+     * @param end
+     * @return
+     */
+    private int partition(int[] nums, int start, int end) {
+        int i = start - 1, j = start, r = nums[end];
+        for (; j < end; j++) {
+            if (nums[j] <= r) {
+                swap(nums, ++i, j);
+            }
+        }
+        swap(nums, ++i, j);
+        return i;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
 }
 ```
 
@@ -193,6 +282,32 @@ while (res > 0) res -= nums[maxIndex--];
 
 ### 环形子数组的最大和
 
+这题一共有两种情况（也就是相当于比上一题多了一种最大子数组和是首尾连接的情况）
+下面的这个子数组指最大和的子数组
+
+第一种情况：这个子数组不是环状的，就是说首尾不相连。
+第二种情况：这个子数组一部分在首部，一部分在尾部，我们可以将这第二种情况转换成第一种情况
+
+所以这最大的环形子数组和 = `max(最大子数组和，数组总和-最小子数组和)`
+
+统一注释，`total`为数组的总和，`maxSum`为最大子数组和，`minSum`为最小子数组和，`curMax`为包含当前元素的最大子数组和，`curMin`为包含当前元素的最小子数组和
+
+```java
+    public int maxSubarraySumCircular(int[] nums) {
+        int sum = 0, maxSum = nums[0], minSum = nums[0], curMax = 0, curMin = 0;
+        for (int num : nums) {
+            curMax = Math.max(curMax + num, num);
+            maxSum = Math.max(maxSum, curMax);
+            curMin = Math.min(curMin + num, num);
+            minSum = Math.min(minSum, curMin);
+            sum += num;
+        }
+        return maxSum > 0 ? Math.max(sum - minSum, maxSum) : maxSum;
+    }
+```
+
+
+
 前缀和+最小值队列
 
 ```java
@@ -310,6 +425,46 @@ public int subarraySum(int[] nums, int k) {
 
 ### 连续的子数组和
 
+给你一个整数数组 `nums` 和一个整数 `k` ，编写一个函数来判断该数组是否含有同时满足下述条件的连续子数组：
+
+- 子数组大小 **至少为 2** ，且
+- 子数组元素总和为 `k` 的倍数。
+
+如果存在，返回 `true` ；否则，返回 `false` 。
+
+如果存在一个整数 `n` ，令整数 `x` 符合 `x = n * k` ，则称 `x` 是 `k` 的一个倍数。`0` 始终视为 `k` 的一个倍数。
+
+**示例 1：**
+
+```java
+输入：nums = [23,2,4,6,7], k = 6
+输出：true
+解释：[2,4] 是一个大小为 2 的子数组，并且和为 6 。
+```
+
+**示例 2：**
+
+```java
+输入：nums = [23,2,6,4,7], k = 6
+输出：true
+解释：[23, 2, 6, 4, 7] 是大小为 5 的子数组，并且和为 42 。 
+42 是 6 的倍数，因为 42 = 7 * 6 且 7 是一个整数。
+```
+
+**示例 3：**
+
+```java
+输入：nums = [23,2,6,4,7], k = 13
+输出：false
+```
+
+**提示：**
+
+- `1 <= nums.length <= 105`
+- `0 <= nums[i] <= 109`
+- `0 <= sum(nums[i]) <= 231 - 1`
+- `1 <= k <= 231 - 1`
+
 ```java
     public boolean checkSubarraySum(int[] nums, int k) {
         // 上一次出现这个余数的下标位置
@@ -332,6 +487,41 @@ public int subarraySum(int[] nums, int k) {
 
 
 ### 统计优美子数组
+
+给你一个整数数组 `nums` 和一个整数 `k`。
+
+如果某个 **连续** 子数组中恰好有 `k` 个奇数数字，我们就认为这个子数组是「**优美子数组**」。
+
+请返回这个数组中「优美子数组」的数目。
+
+**示例 1：**
+
+```
+输入：nums = [1,1,2,1,1], k = 3
+输出：2
+解释：包含 3 个奇数的子数组是 [1,1,2,1] 和 [1,2,1,1] 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,4,6], k = 1
+输出：0
+解释：数列中不包含任何奇数，所以不存在优美子数组。
+```
+
+**示例 3：**
+
+```
+输入：nums = [2,2,2,1,2,2,1,2,2,2], k = 2
+输出：16
+```
+
+**提示：**
+
+- `1 <= nums.length <= 50000`
+- `1 <= nums[i] <= 10^5`
+- `1 <= k <= nums.length`
 
 前缀和思想：
 
@@ -463,6 +653,28 @@ $$
 
 我们的做法可以是从当前元素`num`开始，一次查找`num+1, num+2, ... num+y`是否在数字中，如果都在那么个最后的答案就是`y`。那么这个其实不是最优的，因为如果当前元素是`num+2`的话，那么找到`num+y`，这算一次了。但是如果走到`num`，还要找一遍`num+1, num+2, ... num+y`。那么前面走的那一遍就白走了。所以我们就直接找的最小的元素`num`，从`num`开始`+1`的找。既然`num`是数组中的最小值，那么数组中肯定不存在`num-1`，所以`num-1`就是我们判断最小值的条件。如果`num-1`在数组里，`num`就不是最小值，跳过。如果`num-1`不在数组中，那么`num`就是最小值，这个时候开始往上找。
 
+```java
+public int longestConsecutive(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            set.add(num);
+        }
+        int res = 0;
+        for (int num : nums) {
+            if (!set.contains(num - 1)) {
+                int currentNum = num;
+                int currentLongest = 1;
+                while (set.contains(currentNum + 1)) {
+                    currentNum += 1;
+                    currentLongest += 1;
+                }
+                res = Math.max(res, currentLongest);
+            }
+        }
+        return res;
+    }
+```
+
 
 
 ### 最长连续不重复子序列(下标连续)
@@ -488,7 +700,10 @@ for (int i = 0, j = 0; i < n; i++)
 这道题我们只枚举`i`， `j`的话是每次看一下要不要往后走。如果有重复元素的话，就`j++`。一直移动到`j`和`i`之间没有重复元素为止，所以最多是`i`走`n`步，`j`走`n`步，一共走`2n`步。
 
 ```java
-for (int start = 0, end = -1; start < s.length(); start++) {
+public int lengthOfLongestSubstring(String s) {
+        Set<Character> set = new HashSet<>();
+        int res = 0;
+        for (int start = 0, end = -1; start < s.length(); start++) {
             if (end + 1 >= s.length())
                 break;
             if (start != 0)
@@ -499,6 +714,8 @@ for (int start = 0, end = -1; start < s.length(); start++) {
             }
             res = Math.max(res, end - start + 1);
         }
+        return res;
+    }
 ```
 
 
@@ -510,6 +727,40 @@ for (int start = 0, end = -1; start < s.length(); start++) {
 
 
 ### 最短无序连续子数组
+
+给你一个整数数组 `nums` ，你需要找出一个 **连续子数组** ，如果对这个子数组进行升序排序，那么整个数组都会变为升序排序。
+
+请你找出符合题意的 **最短** 子数组，并输出它的长度。
+
+**示例 1：**
+
+```
+输入：nums = [2,6,4,8,10,9,15]
+输出：5
+解释：你只需要对 [6, 4, 8, 10, 9] 进行升序排序，那么整个表都会变为升序排序。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,3,4]
+输出：0
+```
+
+**示例 3：**
+
+```
+输入：nums = [1]
+输出：0
+```
+
+**提示：**
+
+- `1 <= nums.length <= 104`
+
+- `-105 <= nums[i] <= 105`
+
+  
 
 同时从前往后和从后往前遍历，分别得到要排序数组的右边界和左边界；
 **寻找右边界：**
@@ -671,27 +922,49 @@ public List<List<Integer>> threeSum(int[] nums) {
 
 ### 搜索旋转排序数组
 
+**示例 1：**
+
+```
+输入：nums = [4,5,6,7,0,1,2], target = 0
+输出：4
+```
+
 查看当前 `mid` 为分割位置分割出来的两个部分 `[l, mid]` 和 `[mid + 1, r]` 哪个部分是有序的，并根据有序的那个部分确定我们该如何改变二分查找的上下界，因为我们能够根据有序的那部分判断出 `target` 在不在这个部分：
 
 - 如果 `[l, mid - 1]` 是有序数组，且 target 的大小满足 `[nums[l],nums[mid])`，则我们应该将搜索范围缩小至 `[l, mid - 1]`，否则在 `[mid + 1, r]` 中寻找。
 - 如果 `[mid, r]` 是有序数组，且 target 的大小满足 `(nums[mid+1],nums[r]]`，则我们应该将搜索范围缩小至 `[mid + 1, r]`，否则在 `[l, mid - 1]` 中寻找。
 
 ```java
-while (low < high) {
-    int mid = (low + high) / 2;
-    if (nums[mid] == target)
-        return mid;
-    if (nums[0] < nums[mid]) {
-        if (target >= nums[0] && target < nums[mid])
-            high = mid;
-        else
-            low = mid + 1;
-    }
-    else {
-        if (target > nums[mid] && target <= nums[high - 1])
-            low = mid + 1;
-        else
-            high = mid;
+class Solution {
+    public int search(int[] nums, int target) {
+        int n = nums.length;
+        if (n == 0) {
+            return -1;
+        }
+        if (n == 1) {
+            return nums[0] == target ? 0 : -1;
+        }
+        int l = 0, r = n - 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            if (nums[0] <= nums[mid]) {
+                if (nums[0] <= target && target < nums[mid]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+            } else {
+                if (nums[mid] < target && target <= nums[n - 1]) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+        }
+        return -1;
     }
 }
 ```
@@ -699,6 +972,39 @@ while (low < high) {
 
 
 ### 寻找旋转排序数组中的最小值 II
+
+已知一个长度为 `n` 的数组，预先按照升序排列，经由 `1` 到 `n` 次 **旋转** 后，得到输入数组。例如，原数组 `nums = [0,1,2,4,5,6,7]` 在变化后可能得到：
+
+- 若旋转 `4` 次，则可以得到 `[4,5,6,7,0,1,2]`
+- 若旋转 `7` 次，则可以得到 `[0,1,2,4,5,6,7]`
+
+注意，数组 `[a[0], a[1], a[2], ..., a[n-1]]` **旋转一次** 的结果为数组 `[a[n-1], a[0], a[1], a[2], ..., a[n-2]]` 。
+
+给你一个元素值 **互不相同** 的数组 `nums` ，它原来是一个升序排列的数组，并按上述情形进行了多次旋转。请你找出并返回数组中的 **最小元素** 。
+
+**示例 1：**
+
+```
+输入：nums = [3,4,5,1,2]
+输出：1
+解释：原数组为 [1,2,3,4,5] ，旋转 3 次得到输入数组。
+```
+
+**示例 2：**
+
+```
+输入：nums = [4,5,6,7,0,1,2]
+输出：0
+解释：原数组为 [0,1,2,4,5,6,7] ，旋转 4 次得到输入数组。
+```
+
+**示例 3：**
+
+```
+输入：nums = [11,13,15,17]
+输出：11
+解释：原数组为 [11,13,15,17] ，旋转 4 次得到输入数组。
+```
 
 和I一样，只拿`mid`的元素和`right`的元素比较 ，来判断。这里多了重复元素的情况，所以，如果`mid`元素和`right`元素相同，那么`right--`。因为总会有`mid`能兜住最小值。
 
@@ -723,7 +1029,127 @@ public int findMin(int[] nums) {
 
 ### 乘积最大子数组
 
+给你一个整数数组 `nums` ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+**示例 1:**
+
+```
+输入: [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+```
+
+**示例 2:**
+
+```
+输入: [-2,0,-1]
+输出: 0
+解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
+```
+
 由于数字中有正负，所以不光要记录最大的乘积，也要记录最小的乘积。对于当前数字，不管正负，都要分别×最大乘积和最小乘积，然后选最大的当结果。
+
+```java
+    public int maxProduct(int[] nums) {
+        int imax = nums[0], imin = nums[0], max = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int i_max = imax, i_min = imin;
+            imax = Math.max(i_min * nums[i], Math.max(i_max * nums[i], nums[i]));
+            imin = Math.min(i_max * nums[i], Math.min(i_min * nums[i], nums[i]));
+            max = i_max > max ? i_max : max;
+        }
+        return max;
+    }
+```
+
+
+
+### 寻找两个正序数组的中位数
+
+**二分法**
+
+```Java
+public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        int len1 = nums1.length, len2 = nums2.length;
+        if (len1 > len2) {
+            return findMedianSortedArrays(nums2, nums1);
+        }
+        int totalLen = len1 + len2;
+        if (totalLen % 2 == 1) {
+            return findKElement(nums1, 0, nums2, 0, (totalLen / 2) + 1);
+        } else {
+            int num1 = findKElement(nums1, 0, nums2, 0, totalLen / 2);
+            int num2 = findKElement(nums1, 0, nums2, 0, (totalLen / 2) + 1);
+            return (num1 + num2) / 2.0;
+        }
+    }
+
+    private int findKElement(int[] nums1, int start1, int[] nums2, int start2, int k) {
+        // len表示待选的数组长度
+        int len1 = nums1.length - start1;
+        int len2 = nums2.length - start2;
+        if (len1 > len2)
+            return findKElement(nums2, start2, nums1, start1, k);
+        if (len1 == 0) {
+            return nums2[start2 + k - 1];
+        }
+        if (k == 1) {
+            return Math.min(nums1[start1], nums2[start2]);
+        }
+        int i = start1 + Math.min(nums1.length - start1, k / 2) - 1;
+        int j = start2 + Math.min(nums2.length - start2, k / 2) - 1;
+        if (nums1[i] <= nums2[j]) {
+            return findKElement(nums1, i + 1, nums2, start2, k - (i - start1 + 1));
+        } else {
+            return findKElement(nums1, start1, nums2, j + 1, k - (j - start2 + 1));
+        }
+    }
+```
+
+复杂度分析
+
+- 时间复杂度：`O(log(m+n))`，其中 `m` 和 `n` 分别是数组`nums1` 和 `nums2`的长度。初始时有 `k=(m+n)/2` 或 `k=(m+n)/2+1`，每一轮循环可以将查找范围减少一半，因此时间复杂度是`O(log(m+n))`。
+- 空间复杂度：`O(1)`。
+
+
+
+**切分数组法**
+
+```java
+public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        return partArray(nums1, nums2);
+    }
+    private double partArray(int[] nums1, int[] nums2) {
+        if (nums1.length > nums2.length)
+            return findMedianSortedArrays(nums2, nums1);
+        int m = nums1.length;
+        int n = nums2.length;
+        // 分割左右两半的元素数量
+        int leftSize = (m + n + 1) / 2;
+        // 在[0-m]区间找一个分界线分割
+        int left = 0, right = m;
+        while (left < right) {
+            int i = left + (right - left) / 2;
+            int j = leftSize - i;
+            if (nums1[i - 1] > nums2[j]) {
+                right = i - 1;
+            } else {
+                left = i;
+            }
+        }
+        int i = left;
+        int j = leftSize - i;
+        int nums1LeftMax = i == 0 ? Integer.MIN_VALUE : nums1[i - 1];
+        int nums1RightMin = i == m ? Integer.MAX_VALUE : nums1[i];
+        int nums2LeftMax = j == 0 ? Integer.MIN_VALUE : nums2[j - 1];
+        int nums2RightMin = j == n ? Integer.MAX_VALUE : nums2[j];
+
+        if ((m + n) % 2 == 1)
+            return Math.max(nums1LeftMax, nums2LeftMax);
+        else
+            return (double) ((Math.max(nums1LeftMax, nums2LeftMax) + Math.min(nums1RightMin, nums2RightMin))) / 2;
+    }
+```
 
 
 
@@ -813,10 +1239,32 @@ private int getKth(int[] nums1, int start1, int end1, int[] nums2, int start2, i
 对于下标为0位置，从 [0,n−1] 随机一个位置进行交换，共有 n种选择；下标为 1的位置，从[1,n−1] 随机一个位置进行交换，共有n−1 种选择
 
 ```java
-Random rnd = new Random();
-for (int i = length - 1 ; i > 0 ; i--) {
-    int j = rnd.nextInt(i + 1);
-    swap(nums, i, j);
+class Solution {
+
+    private int[] initial;
+    private int[] nums;
+    public Solution(int[] nums) {
+        initial = Arrays.copyOf(nums, nums.length);
+        this.nums = nums;
+    }
+    
+    /** Resets the array to its original configuration and return it. */
+    public int[] reset() {
+        return this.initial;
+    }
+    
+    /** Returns a random shuffling of the array. */
+    public int[] shuffle() {
+        int length = nums.length;
+        Random rnd = new Random();
+        for (int i = length - 1 ; i > 0 ; i--) {
+            int j = rnd.nextInt(i + 1);
+            int tmp = nums[j];
+            nums[j] = nums[i];
+            nums[i] = tmp;
+        }
+        return nums;
+    }
 }
 ```
 
@@ -833,17 +1281,32 @@ for (int i = length - 1 ; i > 0 ; i--) {
 <img src="https://assets.leetcode-cn.com/solution-static/31/31.gif" alt="fig1" style="zoom:67%;" />
 
 ```java
-public void nextPermutation(int[] nums) {
-    int i = nums.length - 2;
-    while (i >= 0 && nums[i] >= nums[i + 1])
-        i--;
-    if (i >= 0) {
-        int j = nums.length - 1;
-        while (j > i && nums[j] <= nums[i])
-            j--;
-        swap(nums, i, j);
+class Solution {
+    public void nextPermutation(int[] nums) {
+        int i = nums.length - 2, j = i + 1;
+        while (i >= 0 && nums[i] >= nums[i + 1])
+            i--;
+        if (i >= 0) {
+            while (j > i && nums[j] <= nums[i])
+                j--;
+            swap(nums, i, j);
+        }
+        reverse(nums, i + 1, nums.length - 1);
     }
-    reverse(nums, i + 1);
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+
+    private void reverse(int[] nums, int i, int j) {
+        while (i < j) {
+            swap(nums, i ,j);
+            i++;
+            j--;
+        }
+    }
 }
 ```
 
@@ -854,11 +1317,22 @@ public void nextPermutation(int[] nums) {
 注意好问题的定义！是父与子的节点不能都选中，兄弟之间是可以都选择的，所以下面的状态不要写错啊
 
 ```java
-int rob = root.val 
-    + (root.left == null ? 0 : rob(root.left.left) + rob(root.left.right)) // 两个递归是相加的关系
-    + (root.right == null ? 0 : rob(root.right.left) + rob(root.right.right));
-int noRob = rob(root.left) + rob(root.right);
-int res = Math.max(rob, noRob);
+class Solution {
+    private Map<TreeNode, Integer> map = new HashMap<>();
+    public int rob(TreeNode root) {
+        if (root == null)
+            return 0;
+        if (map.containsKey(root))
+            return map.get(root);
+        int rob = root.val
+                + (root.left == null ? 0 : rob(root.left.left) + rob(root.left.right))
+                + (root.right == null ? 0 : rob(root.right.left) + rob(root.right.right));
+        int noRob = rob(root.left) + rob(root.right);
+        int res = Math.max(rob, noRob);
+        map.put(root, res);
+        return res;
+    }
+}
 ```
 
 
@@ -866,6 +1340,26 @@ int res = Math.max(rob, noRob);
 ### 合并区间
 
 先把初始区间放到结果集里面，然后遍历每个其他的区间，找边界，更改还是新添加区间！
+
+```java
+    public int[][] merge(int[][] intervals) {
+        if (intervals.length == 0) {
+            return new int[0][2];
+        }
+        List<int[]> list = new ArrayList<>();
+        Arrays.sort(intervals, Comparator.comparingInt(pair -> pair[0]));
+        list.add(intervals[0]);
+        for (int i = 1; i < intervals.length; i++) {
+            int end = list.get(list.size() - 1)[1];
+            if (end >= intervals[i][0]) {
+                list.get(list.size() - 1)[1] = Math.max(end, intervals[i][1]);
+            } else {
+                list.add(intervals[i]);
+            }
+        }
+        return list.toArray(new int[list.size()][]);
+    }
+```
 
 
 
@@ -899,6 +1393,87 @@ for (int k = 0; k < nums.length; k++) {
 - 使用3-way-partition将小于中位数的数字都放在中位数的左边，大于中位数的数字放在中位数的右边
 - 逆序分别选择两半数字，进行插入组成摆动的排序
 
+```java
+class Solution {
+    private Random random = new Random();
+    public void wiggleSort(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        // 找出中位数
+        int mid_index = quickSelect(nums, left, right, left + (right - left) / 2);
+        // 左右两边分开
+        threePartPartition(nums, mid_index);
+        System.out.println(Arrays.toString(nums));
+        // 交缠在一起
+        int[] leftPart = Arrays.copyOfRange(nums, left, mid_index + 1);
+        int[] rightPart = Arrays.copyOfRange(nums, mid_index + 1, nums.length);
+
+        System.out.println(Arrays.toString(leftPart));
+        System.out.println(Arrays.toString(rightPart));
+
+        int len = 0, m = leftPart.length - 1, n = rightPart.length - 1;
+        boolean fromLeft = true;
+        while (len < nums.length) {
+            if (fromLeft) {
+                nums[len] = leftPart[m--];
+                fromLeft = false;
+            } else {
+                nums[len] = rightPart[n--];
+                fromLeft = true;
+            }
+            len++;
+        }
+
+        System.out.println(Arrays.toString(nums));
+    }
+
+    private int quickSelect(int[] nums, int start, int end, int k) {
+        int index = randomPartition(nums, start, end);
+        if (k == index)
+            return index;
+        else if (k < index)
+            return quickSelect(nums, start, index - 1, k);
+        else
+            return quickSelect(nums, index + 1, end, k);
+    }
+
+    private int randomPartition(int[] nums, int left, int right) {
+        int random_index = random.nextInt(right - left + 1);
+        swap(nums, right, left + random_index);
+        return partition(nums, left, right);
+    }
+
+    private int partition(int[] nums, int start, int end) {
+        int i = start - 1, j = start, r = nums[end];
+        for (; j < end; j++) {
+            if (nums[j] < r) {
+                swap(nums, ++i, j);
+            }
+        }
+        swap(nums, ++i, end);
+        return i;
+    }
+
+    private void threePartPartition(int[] nums, int mid) {
+        int r = nums[mid], i = 0, j = 0, end = nums.length - 1;
+        for (; j < end; j++) {
+            if (nums[j] < r) {
+                swap(nums, i++, j++);
+            } else if (nums[j] > r) {
+                swap(nums, end--, j);
+            } else {
+                j++;
+            }
+        }
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+}
+```
+
 
 
 ### 区间列表的交集
@@ -906,6 +1481,61 @@ for (int k = 0; k < nums.length; k++) {
 双指针，根据当前指针对应区间的相交情况，计算相交段计入结果并不断移动指针**（注意，每次选择A或B中的一个指针移动）**
 
 判断两个区间是否相交使用的是`&&`条件判断。
+
+```java
+class Solution {
+    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+        List<int[]> res = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < firstList.length && j < secondList.length) {
+            int firstStart = firstList[i][0], firstEnd = firstList[i][1];
+            int secondStart = secondList[j][0], secondEnd = secondList[j][1];
+            if (firstEnd >= secondStart && firstStart <= secondEnd) {
+                res.add(new int[]{Math.max(firstStart, secondStart), Math.min(firstEnd, secondEnd)});
+            }
+            if (firstEnd < secondEnd)
+                i++;
+            else
+                j++;
+        }
+        return res.toArray(new int[res.size()][]);
+    }
+}
+```
+
+
+
+### 无重叠区间
+
+给定一个区间的集合 `intervals` ，其中 `intervals[i] = [starti, endi]` 。返回 *需要移除区间的最小数量，使剩余区间互不重叠* 。
+
+**示例 1:**
+
+```
+输入: intervals = [[1,2],[2,3],[3,4],[1,3]]
+输出: 1
+解释: 移除 [1,3] 后，剩下的区间没有重叠。
+```
+
+```java
+    public int eraseOverlapIntervals(int[][] intervals) {
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] interval1, int[] interval2) {
+                return interval1[1] - interval2[1];
+            }
+        });
+        int right = intervals[0][1];
+        int ans = 1;
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] >= right) {
+                ans++;
+                right = intervals[i][1];
+            }
+        }
+        return intervals.length - ans;
+    }
+```
 
 
 
@@ -1329,6 +1959,63 @@ int main()
 
 
 
+### 划分为k个相等的子集
+
+给定一个整数数组 `nums` 和一个正整数 `k`，找出是否有可能把这个数组分成 `k` 个非空子集，其总和都相等。
+
+**示例 1：**
+
+```
+输入： nums = [4, 3, 2, 3, 5, 2, 1], k = 4
+输出： True
+说明： 有可能将其分成 4 个子集（5），（1,4），（2,3），（2,3）等于总和。
+```
+
+**示例 2:**
+
+```
+输入: nums = [1,2,3,4], k = 3
+输出: false
+```
+
+```java
+    private boolean[] visited;
+    private int subsetSum;
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        // 既然要分成K个相等和的子集，那么nums所有元素的和应该能背K整除，不能整除的，肯定分不成相等和的子集。
+        if (sum % k != 0)
+            return false;
+        visited = new boolean[nums.length];
+        subsetSum = sum / k;
+        return backtracking(nums, k, 0, 0);
+    }
+
+    private boolean backtracking(int[] nums, int k, int curSubsetSum, int curIndex) {
+        // 当K为1时，说明前K-1个子集都已经凑成了。sum还能把K整除，所以剩下的这最后一个的K肯定能构成。
+        if (k == 1)
+            return true;
+        // 当前和等于子集和的时候，说明当前已经找到了一个子集，那么k--，其他变量重新开始进行搜索。
+        if (curSubsetSum == subsetSum)
+            return backtracking(nums,k - 1, 0, 0);
+        // 逐元素搜索，将符合条件的元素加到curSubsetSum中，进行递归。
+        for (int i = curIndex; i < nums.length; i++) {
+            if (!visited[i] && curSubsetSum + nums[i] <= subsetSum) {
+                visited[i] = true;
+                if (backtracking(nums, k, curSubsetSum + nums[i], i + 1))
+                    return true;
+                visited[i] = false;
+            }
+        }
+        return false;
+    }
+```
+
+
+
 ## 二. 链表
 
 ### 复制带随机指针的链表
@@ -1336,14 +2023,24 @@ int main()
 先用一个循环把新旧链表对应的两个结点捆绑在一个`HashMap`二元组里，然后再用一个循环完成对新链表每个结点的`next`域和`random`域的赋值，学习到了！
 
 ```java
-for (; node != null; node = node.next) {
-    map.put(node, new Node(node.val));
+class Solution {
+    public Node copyRandomList(Node head) {
+        if (head == null)
+            return head;
+        Map<Node, Node> map = new HashMap<>();
+        Node node = head;
+        for (; node != null; node = node.next) {
+            map.put(node, new Node(node.val));
+        }
+        node = head;
+        for (; node != null; node = node.next) {
+            map.get(node).next = map.get(node.next);
+            map.get(node).random = map.get(node.random);
+        }
+        return map.get(head);
+    }
 }
-for (; node != null; node = node.next) {
-    map.get(node).next = map.get(node.next);
-    map.get(node).random = map.get(node.random);
-}
-return map.get(head);
+
 ```
 
 这种空间复杂度和时间复杂度都是`O(n)`。
@@ -1351,23 +2048,33 @@ return map.get(head);
 方法二的做法也很常见，构建+拆分链表。我们首先将该链表中每一个节点拆分为两个相连的节点，例如对于链表 $A \rightarrow B \rightarrow C$，我们可以将其拆分为 $A→A'→B→B'→C→C'$。对于任意一个原节点 $S$，其拷贝节点$ S'$即为其后继节点。这样，我们可以直接找到每一个拷贝节点 $S'$的随机指针应当指向的节点，即为其原节点 $S$ 的随机指针指向的节点 $T$ 的后继节点$ T'$。需要注意原节点的随机指针可能为空，我们需要特别判断这种情况。
 
 ```java
-// 将复制的节点放置在源节点的后面 A -> A' -> B -> B'
-for (Node node = head; node != null; node = node.next.next) {
-    Node newNode = new Node(node.val);
-    newNode.next = node.next;
-    node.next = newNode;
+class Solution {
+    public Node copyRandomList(Node head) {
+        return getNodeInPlace(head);
+    }
+
+    public Node getNodeInPlace(Node head) {
+        if (head == null)
+            return head;
+        // 将复制的节点放置在源节点的后面 A -> A' -> B -> B'
+        for (Node node = head; node != null; node = node.next.next) {
+            Node newNode = new Node(node.val);
+            newNode.next = node.next;
+            node.next = newNode;
+        }
+        // 把random域串起来
+        for (Node node = head; node != null; node = node.next.next)
+            node.next.random = (node.random != null) ? node.random.next : null;
+        // 把源节点，复制节点分开成两个链表
+        Node newhead = head.next;
+        for (Node node = head; node != null; node = node.next) {
+            Node newNode = node.next;
+            node.next = newNode.next;
+            newNode.next = (newNode.next != null) ? newNode.next.next : null;
+        }
+        return newhead;
+    }
 }
-// 把random域串起来
-for (Node node = head; node != null; node = node.next.next)
-    node.next.random = (node.random != null) ? node.random.next : null;
-// 把源节点，复制节点分开成两个链表
-Node newhead = head.next;
-for (Node node = head; node != null; node = node.next) {
-    Node newNode = node.next;
-    node.next = node.next.next;
-    newNode.next = (newNode.next != null) ? newNode.next.next : null;
-}
-return newhead;
 ```
 
 
@@ -1483,17 +2190,34 @@ public ListNode sortRecurAndMerge(ListNode head) {
 
 ### 删除排序链表中的重复元素 II
 
-就一个cur指针指向头结点，然后判断cur.next和cur.next.next的值是否相等。
+给定一个已排序的链表的头 `head` ， 删除原始链表中所有重复数字的节点，只留下不同的数字 。返回 已排序的链表 。
+
+```
+示例 1：
+
+输入：head = [1,2,3,3,4,4,5]
+输出：[1,2,5]
+```
+
+就一个cur指针指向头结点，然后判断`cur.next`和`cur.next.next`的值是否相等。
 
 ```java
-while (cur.next != null && cur.next.next != null) {
-    if (cur.next.val != cur.next.next.val) {
-        // cur指向下一个
-    } else {
-        int num = cur.next.val; // 记录重复的节点值
-        while (cur.next != null && cur.next.val == num) {
-            cur.next = cur.next.next;
-        } // 开始一个个删掉
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        ListNode newNode = new ListNode(-1);
+        newNode.next = head;
+        ListNode cur = newNode;
+        while (cur.next != null && cur.next.next != null) {
+            if (cur.next.val != cur.next.next.val) {
+                cur = cur.next;// cur指向下一个
+            } else {
+                int num = cur.next.val;// 记录重复的节点值
+                while (cur.next != null && cur.next.val == num) {
+                    cur.next = cur.next.next;
+                }// 开始一个个删掉
+            }
+        }
+        return newNode.next;
     }
 }
 ```
@@ -1605,6 +2329,101 @@ while (cur.next != null && cur.next.next != null) {
 
 
 
+### 差分数组
+
+<img src="https://mmbiz.qpic.cn/sz_mmbiz_jpg/gibkIz0MVqdGFL8VaGGr0vzRcmibenAMtM7WPic7ibdW5LJEcJnaUnz45Kc6Uy1ozVaSWBGSfLGzAJxL1ziaAG9WhgQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:33%;" />
+
+通过这个`diff`差分数组是可以反推出原始数组`nums`的，代码逻辑如下：
+
+```java
+int[] res = new int[diff.length];
+// 根据差分数组构造结果数组
+res[0] = diff[0];
+for (int i = 1; i < diff.length; i++) {
+    res[i] = res[i - 1] + diff[i];
+}
+```
+
+**这样构造差分数组`diff`，就可以快速进行区间增减的操作**，如果你想对区间`nums[i..j]`的元素全部加 3，那么只需要让`diff[i] += 3`，然后再让`diff[j+1] -= 3`即可：
+
+<img src="https://mmbiz.qpic.cn/sz_mmbiz_jpg/gibkIz0MVqdGFL8VaGGr0vzRcmibenAMtMrmOvrjeoHOICN9ZsZD2CMn4oruTVicz6evf6fflQxPTqSnkO5bpQ7CQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:33%;" />
+
+```java
+// 差分数组工具类
+class Difference {
+    // 差分数组
+    private int[] diff;
+
+    /* 输入一个初始数组，区间操作将在这个数组上进行 */
+    public Difference(int[] nums) {
+        assert nums.length > 0;
+        diff = new int[nums.length];
+        // 根据初始数组构造差分数组
+        diff[0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            diff[i] = nums[i] - nums[i - 1];
+        }
+    }
+
+    /* 给闭区间 [i,j] 增加 val（可以是负数）*/
+    public void increment(int i, int j, int val) {
+        diff[i] += val;
+        if (j + 1 < diff.length) {
+            diff[j + 1] -= val;
+        }
+    }
+
+    /* 返回结果数组 */
+    public int[] result() {
+        int[] res = new int[diff.length];
+        // 根据差分数组构造结果数组
+        res[0] = diff[0];
+        for (int i = 1; i < diff.length; i++) {
+            res[i] = res[i - 1] + diff[i];
+        }
+        return res;
+    }
+}
+```
+
+
+
+### 扁平化多级双向链表
+
+<img src="https://assets.leetcode.com/uploads/2021/11/09/flatten11.jpg" class="css-btcloa-ZoomImage e13l6k8o5" style="zoom: 50%;" >
+
+```java
+class Solution {
+    public Node flatten(Node head) {
+        flattenNode(head);
+        return head;
+    }
+
+    private Node flattenNode(Node head) {
+        Node last = head;
+        while (head != null) {
+            if (head.child == null) {
+                last = head;
+                head = head.next;
+            } else {
+                Node tmp = head.next;
+                Node childLast = flattenNode(head.child);
+                head.next = head.child;
+                head.child.prev = head;
+                head.child = null;
+                if (childLast != null) childLast.next = tmp;
+                if (tmp != null) tmp.prev = childLast;
+                last = head;
+                head = childLast;
+            }
+        }
+        return last;
+    }
+}
+```
+
+
+
 ## 三. 排列组合
 
 ### 组合求和
@@ -1686,22 +2505,43 @@ private void dfs(int[] nums, LinkedList<Integer> path) {
 思路：就是正常的递归求解排列，这里让求出第K个，那么就计算当前分支下，剩余的数字有几种组合方式fact，如果`k < fact`，那就说明第K个排列在当前分支下，然后就往下继续进行，选择当前节点，设置当前节点为访问的。如果`k > fact`，那就说明我要在下一个分支下寻找第`k - fact`个排列，然后依次计算，直到`fact = 1`，这样就通过剪枝的方式找到了第K个排列了。
 
 ```java
-private void dfs(int n, int k, int index) {
-    if (index == n)
-        return;
+class Solution {
+    private StringBuilder stringBuilder;
+    private boolean[] visited;
+    private int[] factorial;
+    public String getPermutation(int n, int k) {
+        calculateFactorial(n);
+        stringBuilder = new StringBuilder();
+        visited = new boolean[n + 1];
+        dfs(n, k, 0);
+        return stringBuilder.toString();
+    }
 
-    for (int i = 1; i <= n; i++) {
-        if (visited[i])
-            continue;
-        int fact = factorial[n - index - 1];
-        if (fact < k) {
-            k -= fact;
-            continue;
+    private void dfs(int n, int k, int index) {
+        if (index == n)
+            return;
+
+        for (int i = 1; i <= n; i++) {
+            if (visited[i])
+                continue;
+            int fact = factorial[n - index - 1];
+            if (fact < k) {
+                k -= fact;
+                continue;
+            }
+            visited[i] = true;
+            stringBuilder.append(i);
+            dfs(n, k, index + 1);
+            return;
         }
-        visited[i] = true;
-        stringBuilder.append(i);
-        dfs(n, k, index + 1);
-        return;
+    }
+
+    private void calculateFactorial(int n) {
+        factorial = new int[n + 1];
+        factorial[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            factorial[i] = i * factorial[i -1];
+        }
     }
 }
 ```
@@ -1712,33 +2552,60 @@ private void dfs(int n, int k, int index) {
 
 ### 滑动窗口框架
 
+最长***模板
+
 ```java
-int left = 0, right = -1;
-
-while (right < s.size()) {
-    // 增大窗口
-    window.add(s[right]);
-    // 右移窗口
-    right++;
-    // 进行窗口内数据的一系列更新
-    ...
-
-    /*** debug 输出的位置 ***/
-    printf("window: [%d, %d)\n", left, right);
-    /********************/
-
-    // 判断左侧窗口是否要收缩
-    while (window needs shrink) {
-        // 缩小窗口
-        window.remove(s[left]);
-        left++;
+// 最长模板：初始化res, bestRes, left, right
+while(右指针没有到结尾) {
+    窗口扩大，加入right对应元素，更新当前res
+    while(res不满足条件) {
+        缩小窗口，移除left对应元素，left右移
     }
+    更新最优结果bestRes
+    right++;
 }
+return bestRes;
+```
+
+最短***模板
+
+```java
+// 最短模板：初始化res, bestRes, left, right
+while(右指针没有到结尾) {
+    窗口扩大，加入right对应元素，更新当前res
+    while(res满足条件) {
+        更新最优结果bestRes
+        缩小窗口，移除left对应元素，left右移
+    }
+    right++;
+}
+return bestRes;
 ```
 
 
 
 ### 无重复字符的最长子串
+
+**滑动窗口法：**
+
+```java
+    public int lengthOfLongestSubstring(String s) {
+        Set<Character> set = new HashSet<>();
+        int right = 0, res = 0, left = 0;
+        while (right < s.length()){
+            if (right != 0)
+                set.remove(s.charAt(left++));
+            while (right < s.length() && !set.contains(s.charAt(right))) {
+                set.add(s.charAt(right));
+                right++;
+            }
+            res = Math.max(res, right - left);
+        }
+        return res;
+    }
+```
+
+**位置记忆：**
 
 ```java
 HashMap<Character, Integer> map = new HashMap<>();
@@ -1774,6 +2641,30 @@ return res;
   ```
 
   上面类似的情况，如果把判断符号和空格的操作放在主体循环里面，也会返回包含的数字。这是不符合题目条件的。题目严格要求空格 符号 数字 这三个顺序。
+
+```java
+public int myAtoi(String s) {
+        int len = s.length(), index = 0, sign = 1, num = 0;
+        while (index < len && s.charAt(index) == ' ') index++;
+        if (index < len && (s.charAt(index) == '-' || s.charAt(index) == '+')) {
+            sign = s.charAt(index) == '-' ? -sign : sign;
+            index++;
+        }
+        // num > 2^31 - 1
+        while (index < len) {
+            char currChar = s.charAt(index);
+            if (currChar > '9' || currChar < '0')
+                break;
+            if (num > Integer.MAX_VALUE / 10 || (num == Integer.MAX_VALUE / 10 && Integer.MAX_VALUE % 10 < (currChar - '0')))
+                return Integer.MAX_VALUE;
+            if (num < Integer.MIN_VALUE / 10 || (num == Integer.MIN_VALUE / 10 && (currChar - '0') > -(Integer.MIN_VALUE % 10)))
+                return Integer.MIN_VALUE;
+            num = num * 10 + sign * (currChar - '0');
+            index++;
+        }
+        return num;
+    }
+```
 
 
 
@@ -1837,12 +2728,48 @@ class Solution {
 
 ### 单词拆分
 
+给你一个字符串 `s` 和一个字符串列表 `wordDict` 作为字典。请你判断是否可以利用字典中出现的单词拼接出 `s` 。
+
+**注意：**不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。
+
+**示例 1：**
+
+```
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以由 "leet" 和 "code" 拼接成。
+```
+
+**示例 2：**
+
+```
+输入: s = "applepenapple", wordDict = ["apple", "pen"]
+输出: true
+解释: 返回 true 因为 "applepenapple" 可以由 "apple" "pen" "apple" 拼接成。
+     注意，你可以重复使用字典中的单词。
+```
+
+**示例 3：**
+
+```
+输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+输出: false
+```
+
 这个题是带有查询的回溯
 
 一。 回溯法
 
 ```java
-private boolean dfs(String s, int start) {
+   private Map<Integer, Boolean> map;
+    private Set<String> set;
+    public boolean wordBreak(String s, List<String> wordDict) {
+        set = new HashSet<>(wordDict);
+        map = new HashMap<>();
+        return dfs(s,0);
+    }
+
+    private boolean dfs(String s, int start) {
         if (start == s.length())
             return true;
         if (map.containsKey(start))
@@ -1879,6 +2806,71 @@ private boolean dfs(String s, int start) {
 
 
 ### 通配符匹配
+
+给定一个字符串 (`s`) 和一个字符模式 (`p`) ，实现一个支持 `'?'` 和 `'*'` 的通配符匹配。
+
+```
+'?' 可以匹配任何单个字符。
+'*' 可以匹配任意字符串（包括空字符串）。
+```
+
+两个字符串**完全匹配**才算匹配成功。
+
+**说明:**
+
+- `s` 可能为空，且只包含从 `a-z` 的小写字母。
+- `p` 可能为空，且只包含从 `a-z` 的小写字母，以及字符 `?` 和 `*`。
+
+**示例 1:**
+
+```
+输入:
+s = "aa"
+p = "a"
+输出: false
+解释: "a" 无法匹配 "aa" 整个字符串。
+```
+
+**示例 2:**
+
+```
+输入:
+s = "aa"
+p = "*"
+输出: true
+解释: '*' 可以匹配任意字符串。
+```
+
+**示例 3:**
+
+```
+输入:
+s = "cb"
+p = "?a"
+输出: false
+解释: '?' 可以匹配 'c', 但第二个 'a' 无法匹配 'b'。
+```
+
+**示例 4:**
+
+```
+输入:
+s = "adceb"
+p = "*a*b"
+输出: true
+解释: 第一个 '*' 可以匹配空字符串, 第二个 '*' 可以匹配字符串 "dce".
+```
+
+**示例 5:**
+
+```
+输入:
+s = "acdcb"
+p = "a*c?b"
+输出: false
+```
+
+**动态规划法：**
 
 ```java
     public boolean isMatch(String s, String p) {
@@ -2232,6 +3224,349 @@ class Solution {
 
 
 
+### 索引处的解码字符串
+
+给定一个编码字符串 `S`。请你找出 **解码字符串** 并将其写入磁带。解码时，从编码字符串中 **每次读取一个字符** ，并采取以下步骤：
+
+- 如果所读的字符是字母，则将该字母写在磁带上。
+- 如果所读的字符是数字（例如 `d`），则整个当前磁带总共会被重复写 `d-1` 次。
+
+现在，对于给定的编码字符串 `S` 和索引 `K`，查找并返回解码字符串中的第 `K` 个字母。
+
+**示例 1：**
+
+```
+输入：S = "leet2code3", K = 10
+输出："o"
+解释：
+解码后的字符串为 "leetleetcodeleetleetcodeleetleetcode"。
+字符串中的第 10 个字母是 "o"。
+```
+
+**示例 2：**
+
+```
+输入：S = "ha22", K = 5
+输出："h"
+解释：
+解码后的字符串为 "hahahaha"。第 5 个字母是 "h"。
+```
+
+**示例 3：**
+
+```
+输入：S = "a2345678999999999999999", K = 1
+输出："a"
+解释：
+解码后的字符串为 "a" 重复 8301530446056247680 次。第 1 个字母是 "a"。
+```
+
+**思路**
+
+如果我们有一个像 `appleappleappleappleappleapple` 这样的解码字符串和一个像 `K=24` 这样的索引，那么如果 `K=4`，答案是相同的。
+
+一般来说，当解码的字符串等于某个长度为 `size` 的单词重复某些次数（例如 `apple` 与 `size=5` 组合重复`6`次）时，索引 `K` 的答案与索引 `K % size` 的答案相同。
+
+我们可以通过逆向工作，跟踪解码字符串的大小来使用这种洞察力。每当解码的字符串等于某些单词 `word` 重复 `d` 次时，我们就可以将 `k` 减少到 `K % (Word.Length)`。
+
+**算法**
+
+首先，找出解码字符串的长度。之后，我们将逆向工作，跟踪 `size`：解析符号 `S[0], S[1], ..., S[i]` 后解码字符串的长度。
+
+如果我们看到一个数字 `S [i]`，则表示在解析 `S [0]，S [1]，...，S [i-1]` 之后解码字符串的大小将是 `size / Integer(S[i])`。 否则，将是 `size - 1`。
+
+```java
+    public String decodeAtIndex(String s, int k) {
+        long length = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isLetter(s.charAt(i)))
+                length++;
+            else
+                length *= s.charAt(i) - '0';
+        }
+
+        for (int i = s.length() - 1; i >= 0; i--) {
+            char c = s.charAt(i);
+            k %= length;
+            if (k == 0 && Character.isLetter(c))
+                return String.valueOf(c);
+            if (Character.isDigit(c))
+                length /= c - '0';
+            else
+                length--;
+        }
+        return "";
+    }
+```
+
+
+
+### 重构字符串
+
+给定一个字符串 `s` ，检查是否能重新排布其中的字母，使得两相邻的字符不同。
+
+返回 *`s` 的任意可能的重新排列。若不可行，返回空字符串 `""`* 。
+
+**示例 1:**
+
+```
+输入: s = "aab"
+输出: "aba"
+```
+
+**示例 2:**
+
+```
+输入: s = "aaab"
+输出: ""
+```
+
+方法一：先统计出每个字符出现的频率，然后求出出现频率最大的那个字符。如果最大频率大于`（n + 1）/ 2`，那么说明必有两个字符重新排布后会相邻。如果频率小于`（n + 1）/ 2`，那么我们就两个两个取出字符，进行拼凑。
+
+```java
+    public String reorganizeString(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        int maxCount = 0;
+        for (int i = 0; i < s.length(); i++) {
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+            maxCount = Math.max(maxCount, map.get(s.charAt(i)));
+        }
+        if (maxCount > (s.length() + 1) / 2)
+            return "";
+        PriorityQueue<Character> queue = new PriorityQueue<>((o1, o2) -> map.get(o2) - map.get(o1));
+        for (Character key : map.keySet()) {
+            queue.offer(key);
+        }
+        StringBuilder sb = new StringBuilder();
+        while (queue.size() > 1) {
+            char a = queue.poll();
+            char b = queue.poll();
+            sb.append(a).append(b);
+            if (map.get(a) - 1 != 0) {
+                map.put(a, map.get(a) - 1);
+                queue.offer(a);
+            }
+            if (map.get(b) - 1 != 0) {
+                map.put(b, map.get(b) - 1);
+                queue.offer(b);
+            }
+        }
+        if (queue.size() == 1)
+            sb.append(queue.poll());
+        return sb.toString();
+    }
+```
+
+方法二：基于计数的贪心
+
+首先统计每个字母的出现次数，然后根据每个字母的出现次数重构字符串。
+
+当 n 是奇数且出现最多的字母的出现次数是 (n+1)/2 时，出现次数最多的字母必须全部放置在偶数下标，否则一定会出现相邻的字母相同的情况。其余情况下，每个字母放置在偶数下标或者奇数下标都是可行的。
+
+维护偶数下标 `evenIndex` 和奇数下标 `oddIndex`，初始值分别为 0 和 1。遍历每个字母，根据每个字母的出现次数判断字母应该放置在偶数下标还是奇数下标。
+
+首先考虑是否可以放置在奇数下标。根据上述分析可知，只要字母的出现次数不超过字符串的长度的一半（即出现次数小于或等于 n/2），就可以放置在奇数下标，只有当字母的出现次数超过字符串的长度的一半时，才必须放置在偶数下标。字母的出现次数超过字符串的长度的一半只可能发生在 n 是奇数的情况下，且最多只有一个字母的出现次数会超过字符串的长度的一半。
+
+因此通过如下操作在重构的字符串中放置字母。
+
+如果字母的出现次数大于 `0` 且小于或等于 `n/2`，且 `oddIndex` 没有超出数组下标范围，则将字母放置在 `oddIndex`，然后将 `oddIndex` 的值加 2。
+
+如果字母的出现次数大于 `n/2`，或 `oddIndex` 超出数组下标范围，则将字母放置在 `evenIndex`，然后将 `evenIndex` 的值加 2。
+
+如果一个字母出现了多次，则重复上述操作，直到该字母全部放置完毕。
+
+```java
+class Solution {
+    public String reorganizeString(String s) {
+        if (s.length() < 2) {
+            return s;
+        }
+        int[] counts = new int[26];
+        int maxCount = 0;
+        int length = s.length();
+        for (int i = 0; i < length; i++) {
+            char c = s.charAt(i);
+            counts[c - 'a']++;
+            maxCount = Math.max(maxCount, counts[c - 'a']);
+        }
+        if (maxCount > (length + 1) / 2) {
+            return "";
+        }
+        char[] reorganizeArray = new char[length];
+        int evenIndex = 0, oddIndex = 1;
+        int halfLength = length / 2;
+        for (int i = 0; i < 26; i++) {
+            char c = (char) ('a' + i);
+            while (counts[i] > 0 && counts[i] <= halfLength && oddIndex < length) {
+                reorganizeArray[oddIndex] = c;
+                counts[i]--;
+                oddIndex += 2;
+            }
+            while (counts[i] > 0) {
+                reorganizeArray[evenIndex] = c;
+                counts[i]--;
+                evenIndex += 2;
+            }
+        }
+        return new String(reorganizeArray);
+    }
+}
+```
+
+
+
+### 移掉K位数字
+
+给你一个以字符串表示的非负整数 `num` 和一个整数 `k` ，移除这个数中的 `k` 位数字，使得剩下的数字最小。请你以字符串形式返回这个最小的数字。
+
+**示例 1 ：**
+
+```
+输入：num = "1432219", k = 3
+输出："1219"
+解释：移除掉三个数字 4, 3, 和 2 形成一个新的最小的数字 1219 。
+```
+
+**示例 2 ：**
+
+```
+输入：num = "10200", k = 1
+输出："200"
+解释：移掉首位的 1 剩下的数字为 200. 注意输出不能有任何前导零。
+```
+
+**示例 3 ：**
+
+```
+输入：num = "10", k = 2
+输出："0"
+解释：从原数字移除所有的数字，剩余为空就是 0 。
+```
+
+**思路**：把高位的数字降低，则对新整数的值影响最大
+
+**把高位的数字降低**：把原整数的所有数字从左到右进行比较，如果发现某一位数字大于它右边的数字，那么在删除该数字后，必然会使该数位的值降低，因为右面比它小的数字顶替了它的位置
+（从左向右遍历，删除第1个比右侧数字大的数）
+
+```java
+    public String removeKdigits(String num, int k) {
+        int len = num.length();
+        Deque<Character> queue = new LinkedList<>();
+        for (int i = 0; i < len; i++) {
+            char c = num.charAt(i);
+            while (!queue.isEmpty() && c < queue.peekLast() && k > 0) {
+                queue.pollLast();
+                k--;
+            }
+            queue.offerLast(c);
+        }
+        for (int i = 0; i < k; i++)
+            queue.pollLast();
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean isLeading = true;
+        while (!queue.isEmpty()) {
+            char c = queue.pollFirst();
+            if (isLeading && c == '0')
+                continue;
+            isLeading = false;
+            stringBuilder.append(c);
+        }
+        return stringBuilder.length() == 0 ? "0" : stringBuilder.toString();
+    }
+```
+
+
+
+### 形成三的最大倍数
+
+给你一个整数数组 `digits`，你可以通过按任意顺序连接其中某些数字来形成 **3** 的倍数，请你返回所能得到的最大的 3 的倍数。
+
+由于答案可能不在整数数据类型范围内，请以字符串形式返回答案。
+
+如果无法得到答案，请返回一个空字符串。
+
+**示例 1：**
+
+```
+输入：digits = [8,1,9]
+输出："981"
+```
+
+**示例 2：**
+
+```
+输入：digits = [8,6,7,1,0]
+输出："8760"
+```
+
+**示例 3：**
+
+```
+输入：digits = [1]
+输出：""
+```
+
+**示例 4：**
+
+```
+输入：digits = [0,0,0,0,0,0]
+输出："0"
+```
+
+思路：
+1.能被3整除的条件：所有位上的数字加起来，能被3整除
+
+2.如果模3余1，就找个模3余1，或者2个模3余2，的扔掉就ok
+
+3.如果模3余2，就找个模3余2，或者2个模3余1，的扔掉就ok
+
+4.因为结果是尽量大。所以我们从小到大遍历（从0到9）
+先消耗小的digit
+
+```java
+    public String largestMultipleOfThree(int[] digits) {
+        int[] digitCnt = new int[10];
+        int[] modCnt = new int[3];
+        int totalSum = 0;
+        for (int digit : digits) {
+            totalSum += digit;
+            digitCnt[digit]++;
+            modCnt[digit % 3]++;
+        }
+        int delMod = 0, delCnt = 0;
+        if (totalSum % 3 == 1) {
+            if (modCnt[1] >= 1) {
+                delMod = 1;
+                delCnt = 1;
+            } else {
+                delMod = 2;
+                delCnt = 2;
+            }
+        } else if (totalSum % 3 == 2) {
+            if (modCnt[2] >= 1) {
+                delMod = 2;
+                delCnt = 1;
+            } else {
+                delMod = 1;
+                delCnt = 2;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < digitCnt[i]; j++) {
+                if (delCnt > 0 && i % 3 == delMod)
+                    delCnt--;
+                else sb.append((char) (i + '0'));
+            }
+        }
+        if (sb.length() > 0 && sb.charAt(sb.length() - 1) == '0')
+            return "0";
+        return sb.reverse().toString();
+    }
+```
+
+
+
 ## 五. 设计
 
 ### LRU
@@ -2345,6 +3680,99 @@ class LRUCache {
 
 
 
+### LFU
+
+**最不经常使用算法（LFU）：**这个缓存算法使用一个计数器来记录条目被访问的频率。通过使用LFU缓存算法，最低访问数的条目首先被移除。当存在平局（即两个或更多个键具有相同使用频率）时，应该去除 **最近最久未使用** 的键。
+
+```java
+class LFUCache {
+    private HashMap<Integer, Integer> keyToVal;
+    private HashMap<Integer, Integer> keyToFreq;
+    private HashMap<Integer, LinkedHashSet<Integer>> freqToKeys;
+    private int capacity;
+    private int minFreq;
+
+    public LFUCache(int capacity) {
+        this.keyToVal = new HashMap<>();
+        this.keyToFreq = new HashMap<>();
+        this.freqToKeys = new HashMap<>();
+        this.capacity = capacity;
+        this.minFreq = 0;
+    }
+
+    /**
+     * 获取LFU的值
+     *
+     * @param key
+     * @return
+     */
+    public int get(int key) {
+        if (!keyToVal.containsKey(key))
+            return -1;
+        addFrequency(key);
+        return keyToVal.get(key);
+    }
+
+    /**
+     * 增加访问频率
+     *
+     * @param key
+     */
+    private void addFrequency(int key) {
+        // 更新keyToFreq
+        int freq = keyToFreq.get(key);
+        keyToFreq.put(key, freq + 1);
+        // 更新freqToKeys
+        freqToKeys.get(freq).remove(key);
+        freqToKeys.putIfAbsent(freq + 1, new LinkedHashSet<>());
+        freqToKeys.get(freq + 1).add(key);
+        if (freqToKeys.get(freq).isEmpty()) {
+            freqToKeys.remove(freq);
+            if (freq == minFreq) {
+                minFreq += 1;
+            }
+        }
+    }
+
+    /**
+     * 设置LFU的键值
+     *
+     * @param key
+     * @param value
+     */
+    public void put(int key, int value) {
+        if (capacity <= 0)
+            return;
+        if (keyToVal.containsKey(key)) {
+            keyToVal.put(key, value);
+            addFrequency(key);
+            return;
+        }
+        if (capacity <= keyToVal.size()) {
+            removeMinFreqKey();
+        }
+        keyToVal.put(key, value);
+        keyToFreq.put(key, 1);
+        minFreq = 1;
+        freqToKeys.putIfAbsent(1, new LinkedHashSet<>());
+        freqToKeys.get(1).add(key);
+    }
+
+    private void removeMinFreqKey() {
+        LinkedHashSet<Integer> keySet = freqToKeys.get(minFreq);
+        int oldKey = keySet.iterator().next();
+        keySet.remove(oldKey);
+        if (keySet.isEmpty()) {
+            freqToKeys.remove(minFreq);
+        }
+        keyToVal.remove(oldKey);
+        keyToFreq.remove(oldKey);
+    }
+}
+```
+
+
+
 ### 设计一个HashSet
 
 为了实现哈希集合这一数据结构，有以下几个关键问题需要解决：
@@ -2364,19 +3792,95 @@ class LRUCache {
 使用链地址法解决：
 
 ```java
-private static final int BASE = 769;
-private LinkedList[] data;
+class MyHashSet {
+    private static final int BASE = 769;
+    private LinkedList[] data;
+
+    /** Initialize your data structure here. */
+    public MyHashSet() {
+        data = new LinkedList[BASE];
+        for (int i = 0; i < BASE; ++i) {
+            data[i] = new LinkedList<Integer>();
+        }
+    }
+    
+    public void add(int key) {
+        int h = hash(key);
+        Iterator<Integer> iterator = data[h].iterator();
+        while (iterator.hasNext()) {
+            Integer element = iterator.next();
+            if (element == key) {
+                return;
+            }
+        }
+        data[h].offerLast(key);
+    }
+    
+    public void remove(int key) {
+        int h = hash(key);
+        Iterator<Integer> iterator = data[h].iterator();
+        while (iterator.hasNext()) {
+            Integer element = iterator.next();
+            if (element == key) {
+                data[h].remove(element);
+                return;
+            }
+        }
+    }
+    
+    /** Returns true if this set contains the specified element */
+    public boolean contains(int key) {
+        int h = hash(key);
+        Iterator<Integer> iterator = data[h].iterator();
+        while (iterator.hasNext()) {
+            Integer element = iterator.next();
+            if (element == key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static int hash(int key) {
+        return key % BASE;
+    }
+}
+
+/**
+ * Your MyHashSet object will be instantiated and called as such:
+ * MyHashSet obj = new MyHashSet();
+ * obj.add(key);
+ * obj.remove(key);
+ * boolean param_3 = obj.contains(key);
+ */
 ```
 
 
 
-### 设计一个HashSet
+### 设计一个HashMap
 
 ```java
 class MyHashMap {
     private class Pair {
         private int key;
         private int value;
+
+        public Pair(int key, int value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public int getKey() {
+            return key;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public void setValue(int value) {
+            this.value = value;
+        }
     }
 
     private static final int BASE = 769;
@@ -2391,20 +3895,47 @@ class MyHashMap {
     
     public void put(int key, int value) {
         int hashKey = hash(key);
+        for (Pair pair : data[hashKey]) {
+            if (key == pair.getKey()) {
+                pair.setValue(value);
+                return;
+            }
+        }
+        data[hashKey].offer(new Pair(key, value));
     }
     
     public int get(int key) {
         int hashKey = hash(key);
+        for (Pair pair : data[hashKey]) {
+            if (key == pair.getKey()) {
+                return pair.getValue();
+            }
+        }
+        return -1;
     }
     
     public void remove(int key) {
         int hashKey = hash(key);
+        for (Pair pair : data[hashKey]) {
+            if (key == pair.getKey()) {
+                data[hashKey].remove(pair);
+                return;
+            }
+        }
     }
 
     public int hash(int key) {
         return key % BASE;
     }
 }
+
+/**
+ * Your MyHashMap object will be instantiated and called as such:
+ * MyHashMap obj = new MyHashMap();
+ * obj.put(key,value);
+ * int param_2 = obj.get(key);
+ * obj.remove(key);
+ */
 ```
 
 
@@ -2415,30 +3946,81 @@ https://zhuanlan.zhihu.com/p/29254973
 
 属于位运算把，常规二进制转化为格雷码编码的公式为：`n ^ (n >> 1)`
 
+```java
+class Solution {
+    private List<Integer> res;
+    public List<Integer> grayCode(int n) {
+        res = new ArrayList<>();
+        for (int i = 0; i < Math.pow(2, n); i++) {
+            res.add(getGrayCode(i));
+        }
+        return res;
+    }
+
+    private Integer getGrayCode(int n) {
+        return n ^ (n >> 1);
+    }
+}
+```
+
 
 
 ### 并查集
 
+一、概念及其介绍
+
+并查集是一种树型的数据结构，用于处理一些不相交集合的合并及查询问题。
+
+并查集的思想是用一个数组表示了整片森林（parent），树的根节点唯一标识了一个集合，我们只要找到了某个元素的的树根，就能确定它在哪个集合里。
+
+二、适用说明
+
+并查集用在一些有 **N** 个元素的集合应用问题中，我们通常是在开始时让每个元素构成一个单元素的集合，然后按一定顺序将属于同一组的元素所在的集合合并，其间要反复查找一个元素在哪个集合中。这个过程看似并不复杂，但数据量极大，若用其他的数据结构来描述的话，往往在空间上过大，计算机无法承受，也无法在短时间内计算出结果，所以只能用并查集来处理。
+
+三、基于`size`的优化
+
 ```java
 class UnionFind {
-    int[] parents;
+    private int[] parents;
+     // 数据个数
+    private int count;
+    // sz[i]表示以i为根的集合中元素个数
+    private int[] sz;
 
     public UnionFind(int totalNodes) {
+        count = totalNodes;
         parents = new int[totalNodes];
+        sz = new int[totalNodes];
         for (int i = 0; i < totalNodes; i++) {
             parents[i] = i;
+            sz[i] = 1;
         }
     }
-		// 合并连通区域是通过find来操作的, 即看这两个节点是不是在一个连通区域内.
-    void union(int node1, int node2) {
-        int root1 = find(node1);
-        int root2 = find(node2);
-        if (root1 != root2) {
-            parents[root2] = root1;
+    
+    // 合并元素p和元素q所属的集合
+    // O(h)复杂度, h为树的高度
+    void union(int p, int q) {
+        int pRoot = find(p);
+        int qRoot = find(q);
+        if( pRoot == qRoot )
+            return;
+        // 根据两个元素所在树的元素个数不同判断合并方向
+        // 将元素个数少的集合合并到元素个数多的集合上
+        if( sz[pRoot] < sz[qRoot] ){
+            parents[pRoot] = qRoot;
+            sz[qRoot] += sz[pRoot];
+        }
+        else{
+            parents[qRoot] = pRoot;
+            sz[pRoot] += sz[qRoot];
         }
     }
-
+    
+    // 查找过程, 查找元素p所对应的集合编号
+    // O(h)复杂度, h为树的高度
     int find(int node) {
+        // 不断去查询自己的父亲节点, 直到到达根节点
+        // 根节点的特点: parent[node] == node
         while (parents[node] != node) {
             // 当前节点的父节点 指向父节点的父节点.
             // 保证一个连通区域最终的parents只有一个.
@@ -2448,10 +4030,116 @@ class UnionFind {
 
         return node;
     }
-
+    
+    // 查看元素p和元素q是否所属一个集合
+    // O(h)复杂度, h为树的高度
     boolean isConnected(int node1, int node2) {
         return find(node1) == find(node2);
     }
+}
+```
+
+四、基于`rank`的优化
+
+上一小节介绍了并查集基于 size 的优化，但是某些场景下，也会存在某些问题，如下图所示，操作 union(4,2)。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/rank-01.png" alt="img" style="zoom:67%;" />
+
+根据上一小节，size 的优化，元素少的集合根节点指向元素多的根节点。操完后，层数变为4，比之前增多了一层，如下图所示：
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/rank-02.png" alt="img" style="zoom:67%;" />
+
+依靠集合的 size 判断指向并不是完全正确的，更准确的是，根据两个集合层数，具体判断根节点的指向，层数少的集合根节点指向层数多的集合根节点，如下图所示，这就是基于 rank 的优化。我们在并查集的属性中，添加 rank 数组，rank[i] 表示以 i 为根的集合所表示的树的层数。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/rank-03.png" alt="img" style="zoom: 67%;" />
+
+```java
+class UnionFind {
+    private int[] parents;
+     // 数据个数
+    private int count;
+    private int[] rank;   // rank[i]表示以i为根的集合所表示的树的层数
+
+    public UnionFind(int totalNodes) {
+        count = totalNodes;
+        parents = new int[totalNodes];
+        rank = new int[totalNodes];
+        for (int i = 0; i < totalNodes; i++) {
+            parents[i] = i;
+            rank[i] = 1;
+        }
+    }
+    
+    // 合并元素p和元素q所属的集合
+    // O(h)复杂度, h为树的高度
+    void union(int p, int q) {
+        int pRoot = find(p);
+        int qRoot = find(q);
+        if( pRoot == qRoot )
+            return;
+        if( rank[pRoot] < rank[qRoot] ){
+            parent[pRoot] = qRoot;
+        }
+        else if( rank[qRoot] < rank[pRoot]){
+            parent[qRoot] = pRoot;
+        }
+        else{ // rank[pRoot] == rank[qRoot]
+            parent[pRoot] = qRoot;
+            rank[qRoot] += 1;   // 维护rank的值
+        }
+    }
+    
+    // 查找过程, 查找元素p所对应的集合编号
+    // O(h)复杂度, h为树的高度
+    int find(int node) {
+        // 不断去查询自己的父亲节点, 直到到达根节点
+        // 根节点的特点: parent[node] == node
+        while (parents[node] != node) {
+            // 当前节点的父节点 指向父节点的父节点.
+            // 保证一个连通区域最终的parents只有一个.
+            parents[node] = parents[parents[node]];
+            node = parents[node];
+        }
+
+        return node;
+    }
+    
+    // 查看元素p和元素q是否所属一个集合
+    // O(h)复杂度, h为树的高度
+    boolean isConnected(int node1, int node2) {
+        return find(node1) == find(node2);
+    }
+}
+```
+
+五、路径压缩
+
+上面的路径优化过程如下图所示：
+
+如下图中，find(4) 的过程就可以路径压缩，让树的层数更少。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/compress-01.png" alt="img" style="zoom:67%;" />
+
+节点 4 往上寻找根节点时，压缩第一步，树的层数就减少了一层：
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/compress-02.png" alt="img" style="zoom:67%;" />
+
+节点 2 向上寻找，也不是根节点，那么把元素 2 指向原来父节点的父节点，操后后树的层数相应减少了一层，同时返回根节点 0。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/compress-03.png" alt="img" style="zoom:67%;" />
+
+上述路径压缩并不是最优的方式，我们可以把最初的树压缩成下图所示，层数是最少的。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/conpress-04.png" alt="img" style="zoom:67%;" />
+
+第二种路径压缩方式是使用递归：
+
+```java
+public int find(int p) {
+    //第二种路径压缩算法
+    if (p != parent[p])
+        parent[p] = find(parent[p]);
+    return parent[p];
 }
 ```
 
@@ -2658,6 +4346,78 @@ class RandomizedSet {
         }
         return left;
     }
+```
+
+
+
+### 区间内查询数字的频率
+
+请你实现 `RangeFreqQuery` 类：
+
+- `RangeFreqQuery(int[] arr)` 用下标从 **0** 开始的整数数组 `arr` 构造一个类的实例。
+- `int query(int left, int right, int value)` 返回子数组 `arr[left...right]` 中 `value` 的 **频率** 。
+
+一个 **子数组** 指的是数组中一段连续的元素。`arr[left...right]` 指的是 `nums` 中包含下标 `left` 和 `right` **在内** 的中间一段连续元素。
+
+**示例 1：**
+
+```
+输入：
+["RangeFreqQuery", "query", "query"]
+[[[12, 33, 4, 56, 22, 2, 34, 33, 22, 12, 34, 56]], [1, 2, 4], [0, 11, 33]]
+输出：
+[null, 1, 2]
+
+解释：
+RangeFreqQuery rangeFreqQuery = new RangeFreqQuery([12, 33, 4, 56, 22, 2, 34, 33, 22, 12, 34, 56]);
+rangeFreqQuery.query(1, 2, 4); // 返回 1 。4 在子数组 [33, 4] 中出现 1 次。
+rangeFreqQuery.query(0, 11, 33); // 返回 2 。33 在整个子数组中出现 2 次。
+```
+
+使用哈希表和二分查找，哈希表统计所有元素的下标，下标使用一个List来维护，既然下标是按顺序放到List里面的，那么List肯定是有序的。
+
+下一步就是使用二分法搜索左右边界的下标了。找到大于等于左边界的第一个位置的下标，找到大于右边界的第一个位置的下标。返回两个下标的差就可以了。
+
+```java
+class RangeFreqQuery {
+
+    Map<Integer, List<Integer>> map;
+    public RangeFreqQuery(int[] arr) {
+       map = new HashMap<>();
+       for (int i = 0; i < arr.length; i++) {
+           List<Integer> list = map.getOrDefault(arr[i], new ArrayList<>());
+           list.add(i);
+           map.put(arr[i], list);
+       }
+    }
+    
+    public int query(int left, int right, int value) {
+        if (!map.containsKey(value))
+            return 0;
+        List<Integer> idxList = map.get(value);
+        int l = binarySearch(idxList, left, true, false);
+        int r = binarySearch(idxList, right, false, true);
+        return r - l;
+    }
+
+    private int binarySearch(List<Integer> nums, int num, boolean fl, boolean fr) {
+        int left = 0, right = nums.size();
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums.get(mid) > num)
+                right = mid;
+            else if (nums.get(mid) < num)
+                left = mid + 1;
+            else {
+                if (fl)
+                    right = mid;
+                if (fr)
+                    left = mid + 1;
+            }
+        }
+        return left;
+    }
+}
 ```
 
 
@@ -2927,16 +4687,32 @@ class Solution {
 计算左括号右括号的数量，先左括号匹配，左括号数量够了，再追加右括号。
 
 ```java
-private void dfs(int n, StringBuilder path, int leftNum, int rightNum) {
-    // 1. 条件满足的判断，左右括号计数等于n
-    // 2. 开始回溯生成（
-    if (leftNum < n) {
-        path.append('(');
-        dfs(n, path, leftNum + 1, rightNum);
-        path.deleteCharAt(path.length() - 1);
+class Solution {
+    private List<String> res;
+    public List<String> generateParenthesis(int n) {
+        res = new ArrayList<>();
+        dfs(n, new StringBuilder(), 0, 0);
+        return res;
     }
-    // 3. 开始回溯生成符合数量的右括号），条件是右括号要小于左括号的时候才生成
-    if (rightNum < leftNum) {}
+
+    private void dfs(int n, StringBuilder path, int leftNum, int rightNum) {
+        // 1. 条件满足的判断，左右括号计数等于n
+        if (n * 2 == leftNum + rightNum) {
+            res.add(path.toString());
+        }
+        // 2. 开始回溯生成（
+        if (leftNum < n) {
+            path.append('(');
+            dfs(n, path, leftNum + 1, rightNum);
+            path.deleteCharAt(path.length() - 1);
+        }
+        // 3. 开始回溯生成符合数量的右括号），条件是右括号要小于左括号的时候才生成
+        if (rightNum < leftNum) {
+            path.append(')');
+            dfs(n, path, leftNum, rightNum + 1);
+            path.deleteCharAt(path.length() - 1);
+        }
+    }
 }
 ```
 
@@ -3113,17 +4889,52 @@ private TreeNode delete(TreeNode root, int key) {
 
 递归法和迭代法两种写法
 
+递归法：
+
 ```java
-if (root == null)
-    return true;
-if (min != null && min.val >= root.val) //
-    return false;
-if (max != null && max.val <= root.val) //
-    return false;
-return isValidBST(root.left, min, root) && isValidBST(root.right, root, max);
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        return isValidBST(root, null, null);
+    }
+
+    private boolean isValidBST(TreeNode root, TreeNode min, TreeNode max) {
+        if (root == null)
+            return true;
+        if (min != null && min.val >= root.val)
+            return false;
+        if (max != null && max.val <= root.val)
+            return false;
+        return isValidBST(root.left, min, root) && isValidBST(root.right, root, max);
+    }
+}
 ```
 
 迭代法参考中序非递归遍历，中序遍历是升序的！否则返回`false`。
+
+```java
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        return iterative(root);
+    }
+
+    private boolean iterative(TreeNode root) {
+        Deque<TreeNode> stack = new LinkedList<>();
+        double preOrder = -Double.MAX_VALUE;
+        while (!stack.isEmpty() || root != null) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            if (root.val <= preOrder)
+                return false;
+            preOrder = root.val;
+            root = root.right;
+        }
+        return true;
+    }
+}
+```
 
 
 
@@ -3449,7 +5260,7 @@ BFS版本的好理解
 递归函数的本身是求这个最大贡献值的，那么这个最大路径和是在这其中顺便求出来的。
 
 ```java
-private int maxPathSum = Integer.MIN_VALUE;
+    private int maxPathSum = Integer.MIN_VALUE;
     public int maxPathSum(TreeNode root) {
         dfs(root);
         return maxPathSum;
@@ -3459,10 +5270,10 @@ private int maxPathSum = Integer.MIN_VALUE;
     private int myDFS(TreeNode root) {
         if (root == null)
             return 0;
-        int leftSum = myDFS(root.left);
-        int rightSum = myDFS(root.right);
-        maxPathSum = Math.max(root.val, Math.max(leftSum + root.val + rightSum, maxPathSum));
-        return Math.max(0, root.val + Math.max(leftSum, rightSum));
+        int leftSum = Math.max(dfs(root.left), 0);
+        int rightSum = Math.max(dfs(root.right), 0);
+        maxPathSum = Math.max(leftSum + root.val + rightSum, maxPathSum);
+        return root.val + Math.max(leftSum, rightSum);
     }
 ```
 
@@ -3551,6 +5362,79 @@ class Solution {
 
 
 
+### 不同的二叉搜索树
+
+假设 `n` 个节点存在二叉排序树的个数是 `G (n)`，令 `f(i)` 为以 `i` 为根的二叉搜索树的个数，则
+$$
+G(n) = f(1) + f(2) + f(3) + f(4) + ... + f(n)
+$$
+当 `i` 为根节点时，其左子树节点个数为 `i-1` 个，右子树节点为 `n-i`，则
+$$
+f(i) = G(i-1)*G(n-i)
+$$
+综合两个公式可以得到 卡特兰数 公式
+$$
+G(n) = G(0)*G(n-1)+G(1)*(n-2)+...+G(n-1)*G(0)
+$$
+
+```java
+    public int numTrees(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i] += dp[j] * dp[i - j - 1];
+            }
+        }
+        return dp[n];
+    }
+```
+
+
+
+### 判断完全二叉树
+
+```java
+    public static void judge(Node<Integer> node){
+        Queue<Node<Integer>> queue = new LinkedList<>();
+        queue.add(node);
+        boolean flag = true;
+        while(!queue.isEmpty()){
+            //这里没有直接使用queue.poll()的原因是，如果最后那个节点没有左子树，但是有右子树，那么这个循环也会停止，
+            //而且那个节点也会从队列中弹出，如果刚好是那个节点就是问题节点，那最后的结果就是有问题的，所以这里使用peek
+            node = queue.peek();
+            //遇见为空的直接停止
+            if (node.left != null){
+                queue.add(node.left);
+            }else {
+                break;
+            }
+            //遇见为空直接停止
+            if (node.right != null){
+                queue.add(node.right);
+            }else {
+                break;
+            }
+            queue.poll();
+        }
+        //这里搞这个判断的原因，就是看一下暂停遍历的那个节点是不是有问题，因为上面的循环并没有把这个节点弹出
+        if (queue.peek().right == null){
+            queue.poll();
+        }
+        //这里判断队列中剩余的节点是不是都是叶子节点
+        while (!queue.isEmpty()){
+            node = queue.poll();
+            if (node.left != null || node.right != null){
+                flag = false;
+            }
+        }
+        System.out.println(flag);
+    }
+```
+
+
+
 ## 八. 图
 
 ### 所有的可能路径
@@ -3618,23 +5502,32 @@ class Solution {
 
 
 
-### 拓扑排序
+### 课程表1(拓扑排序)
 
-#### 深度优先算法
+深度优先算法
 
 ```java
 class Solution {
+    private List<List<Integer>> edges;
+    private int[] visited;
+    boolean isValid = true;
     public boolean canFinish(int numCourses, int[][] prerequisites) {
-        // 1. 判断节点i是否被访问，0表示未访问，1表示被访问过
+        // 图的邻接表存储
+        edges = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++)
+            edges.add(new ArrayList<>());
+        // 判断节点i是否被访问，0表示未访问，1表示被访问过
         visited = new int[numCourses];
-        // 2. 建立图的邻接表存储edges
-        // 3. 开始深度优先遍历所有节点
+        // 建立图
+        for (int[] preRequisite : prerequisites) {
+            edges.get(preRequisite[1]).add(preRequisite[0]);
+        }
+        // 开始深度优先遍历所有节点
         for (int i = 0; i < numCourses && isValid; i++) {
             if (visited[i] == 0) {
                 dfs(i);
             }
         }
-        // 4. 返回是否有效即可，不需定义数据结构存储顺序
         return isValid;
     }
 
@@ -3644,37 +5537,155 @@ class Solution {
         for (int v : edges.get(i)) {
             if (visited[v] == 0) {
                 dfs(v);
-                if (!isValid)  return;
+                if (!isValid) {
+                    return;
+                }
             } else if (visited[v] == 1) { // 则存在环，返回false
                 isValid = false;
                 return;
             }
         }
-        // 访问完毕，置2
         visited[i] = 2;
     }
 }
 ```
 
-#### 广度优先算法
+广度优先算法
 
 ```java
-private boolean bfdCanFinish(int numCourses, int[][] prerequisites) {
-    // 1. 图的邻接表存储edges
-    edges = new ArrayList<>();
-    // 2. 存节点的入度信息，方便从入度为0的节点开始进行广度优先搜索
-    indeg = new int[numCourses];
-    // 3. 先将入度为0的节点放入队列中
-    Queue<Integer> queue = new LinkedList<>();
-    // 4. 由于不需要输出序列，所以直接计数就行，遍历过的节点技术，不用使用数据结构保存
-    int res = 0;
-    while (!queue.isEmpty()) {
-        res++;
-        int node = queue.poll();
-        // 5. 弹出一个节点，边数－1，即相邻节点的入度-1
-        // 6. 将新的0入度点加入到队列中
+class Solution {
+    private List<List<Integer>> edges;
+    private int[] indeg;
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        // 图的邻接表存储
+        edges = new ArrayList<>();
+        for (int i = 0; i < numCourses; ++i)
+            edges.add(new ArrayList<>());
+        // 存节点的入度信息，方便从入度为0的节点开始进行广度优先搜索
+        indeg = new int[numCourses];
+        for (int[] info : prerequisites) {
+            edges.get(info[1]).add(info[0]);
+            indeg[info[0]]++;
+        }
+
+        // 先将入度为0的节点放入队列中
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < indeg.length; i++) {
+            if (indeg[i] == 0) queue.offer(i);
+        }
+
+        // 由于不需要输出序列，所以直接计数就行，遍历过的节点技术，不用使用数据结构保存
+        int res = 0;
+        while (!queue.isEmpty()) {
+            res++;
+            int node = queue.poll();
+            for (int v : edges.get(node)) {
+                indeg[v]--;
+                if (indeg[v] == 0)
+                    queue.offer(v);
+            }
+        }
+        return res == numCourses;
     }
-    return res == numCourses;
+}
+```
+
+
+
+### 课程表2
+
+深度优先：
+
+```java
+class Solution {
+    private int[] res;
+    private int[] visited;
+    private boolean isValid;
+    private int index;
+    private Map<Integer, List<Integer>> graph;
+
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        return findOrderDFS(numCourses, prerequisites);
+    }
+
+    public int[] findOrderDFS(int numCourses, int[][] prerequisites) {
+        res = new int[numCourses];
+        visited = new int[numCourses];
+        isValid = true;
+        index = numCourses - 1;
+        graph = new HashMap<>();
+        for (int i = 0; i < numCourses; i++) {
+            graph.put(i, new ArrayList());
+        }
+        for (int[] pair : prerequisites) {
+            graph.get(pair[1]).add(pair[0]);
+        }
+        for (int i = 0; i < numCourses && isValid; i++) {
+            if (visited[i] == 0)
+                dfs(i);
+        }
+        if (!isValid)
+            return new int[]{};
+        return res;
+    }
+
+    private void dfs(int u) {
+        visited[u] = 1;
+        for (int v : graph.get(u)) {
+            if (visited[v] == 0) {
+                dfs(v);
+                if (!isValid)
+                    return;
+            } else if (visited[v] == 1) {
+                isValid = false;
+                return;
+            }
+        }
+        visited[u] = 2;
+        res[index--] = u;
+    }
+}
+```
+
+广度优先：
+
+```java
+class Solution {
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        List<Integer> resList = new ArrayList<>();
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < numCourses; i++) {
+            graph.put(i, new ArrayList());
+        }
+        int[] inDegree = new int[numCourses];
+        for (int[] pair : prerequisites) {
+            graph.get(pair[1]).add(pair[0]);
+            inDegree[pair[0]]++;
+        }
+
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < inDegree.length; i++)
+            if (inDegree[i] == 0) queue.offer(i);
+
+        int count = 0;
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            resList.add(course);
+            count++;
+            for (int adjCourse : graph.get(course)) {
+                inDegree[adjCourse]--;
+                if (inDegree[adjCourse] == 0)
+                    queue.offer(adjCourse);
+            }
+        }
+        if (count != numCourses)
+            return new int[]{};
+        int[] res = new int[numCourses];
+        for (int i = 0; i < resList.size(); i++) {
+            res[i] = resList.get(i);
+        }
+        return res;
+    }
 }
 ```
 
@@ -3962,46 +5973,53 @@ public class knapsack_0_1 {
 
 ### 完全背包
 
-```java
-public class complete_knapsack {
-
-    /**
-     * 完全背包问题
-     * @param W
-     * @param weights
-     * @return
-     */
-    public int solutionForDP(int W, int[] weights) {
-        int[][] dp = new int[weights.length + 1][W + 1];
-        for (int i = 0; i <= weights.length; i++)
-            dp[i][0] = 1;
-
-        for (int i = 1; i <= weights.length; i++) {
-            for (int j = 1; j <= W; j++) {
-                if (j < weights[i - 1]) {
-                    dp[i][j] = dp[i - 1][j];
-                } else {
-                    /**
-                     * dp[i][j - weights[i - 1]]这个一定要注意，由于i的选取不止一次，所以
-                     * i的情况可分为（1）一次都不选（2）选一次的情况
-                     */
-                    dp[i][j] = dp[i - 1][j] + dp[i][j - weights[i - 1]];
-                }
-            }
-        }
-        return dp[weights.length][W];
+```c++
+#include<iostream>
+using namespace std;
+const int N = 1010;
+int f[N][N];
+int v[N],w[N];
+int main()
+{
+    int n,m;
+    cin>>n>>m;
+    for(int i = 1 ; i <= n ;i ++)
+    {
+        cin>>v[i]>>w[i];
     }
 
-    public static void main(String[] args) {
-        complete_knapsack solution = new complete_knapsack();
-        System.out.println(solution.solutionForDP(5, new int[]{1, 2, 5}));
+    for(int i = 1 ; i<=n ;i++)
+    for(int j = 0 ; j<=m ;j++)
+    {
+        for(int k = 0 ; k*v[i]<=j ; k++)
+            f[i][j] = max(f[i][j],f[i-1][j-k*v[i]]+k*w[i]);
     }
+
+    cout<<f[n][m]<<endl;
 }
+
 ```
 
 
 
 ### 一和零
+
+给你一个二进制字符串数组 strs 和两个整数 m 和 n 。
+
+请你找出并返回 strs 的最大子集的长度，该子集中 最多 有 m 个 0 和 n 个 1 。
+
+如果 x 的所有元素也是 y 的元素，集合 x 是集合 y 的 子集 。
+
+示例 1：
+
+```
+输入：strs = ["10", "0001", "111001", "1", "0"], m = 5, n = 3
+输出：4
+解释：最多有 5 个 0 和 3 个 1 的最大子集是 {"10","0001","1","0"} ，因此答案是 4 。
+其他满足题意但较小的子集包括 {"0001","1"} 和 {"10","1","0"} 。{"111001"} 不满足题意，因为它含 4 个 1 ，大于 n 的值 3 。
+```
+
+
 
 ```java
 class Solution {
@@ -4093,6 +6111,24 @@ class Solution {
 
 ## 十. 数学
 
+### 快速幂
+
+```java
+int fastPower(int base, int exponent) {
+    int sum = 1;
+    while (exponent != 0) {
+        if ((exponent & 1) != 0) {
+            sum *= base;
+        }
+        exponent = expnonent >> 1;  // 对指数进行移位
+        base *= base;               // 让base的次幂以2的倍数增长
+    }
+    return sum;
+}
+```
+
+
+
 ### 矩阵快速幂
 
 ```java
@@ -4113,7 +6149,82 @@ public int[][] pow(int[][] a, int n) {
 
 ### 数字 1 的个数
 
-https://leetcode-cn.com/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/solution/mian-shi-ti-43-1n-zheng-shu-zhong-1-chu-xian-de-2/
+输入一个整数 n ，求1～n这n个整数的十进制表示中1出现的次数。
+
+例如，输入12，1～12这些整数中包含1 的数字有1、10、11和12，1一共出现了5次。
+
+示例 1：
+
+```
+输入：n = 12
+输出：5
+```
+
+示例 2：
+
+```
+输入：n = 13
+输出：6
+```
+
+**解题思路：**
+
+将 1 ~ n 的个位、十位、百位、...的 1 出现次数相加，即为 1 出现的总次数。
+
+**某位中 11 出现次数的计算方法：**
+
+根据当前位**cur** 值的不同，分为以下三种情况：
+
+1. 当 **cur = 0 时：** 此位 1 的出现次数只由高位 high 决定，计算公式为：
+   $$
+   high×digit
+   $$
+   > 如下图所示，以 n = 2304 为例，求 digit = 10（即十位）的 1 出现次数。
+
+   <img src="https://pic.leetcode-cn.com/78e60b6c2ada7434ba69643047758e113fa732815f7c53791271c5e0f123687c-Picture1.png" style="zoom:33%;" />
+
+2. 当 **cur = 1**时： 此位 1 的出现次数由高位 high 和低位 low 决定，计算公式为：
+   $$
+   high×digit+low+1
+   $$
+   > 如下图所示，以 n = 2314 为例，求 digit = 10 （即十位）的 1 出现次数。
+
+   <img src="https://pic.leetcode-cn.com/58c7e6472155b49923b48daac10bd438b68e9504690cf45d5e739f3a8cb9cee1-Picture2.png" style="zoom:33%;" />
+
+3. 当 **cur = 2, 3,..., 9** 时： 此位 1 的出现次数只由高位 high 决定，计算公式为：
+   $$
+   (high+1)×digit
+   $$
+
+   > 如下图所示，以 n = 2324 为例，求 digit = 10（即十位）的 1 出现次数。
+
+<img src="https://pic.leetcode-cn.com/0e51d37b434ef0ad93882cdcb832f867e18b872833c0c360ad4580eb9ed4aeda-Picture3.png" style="zoom:33%;" />
+
+
+
+变量递推公式：
+设计按照 “个位、十位、...” 的顺序计算，则 high / cur / low / digit 应初始化为：
+
+```
+high = n // 10
+cur = n % 10
+low = 0
+digit = 1 # 个位
+```
+
+因此，从个位到最高位的变量递推公式为：
+
+```java
+while high != 0 or cur != 0: # 当 high 和 cur 同时为 0 时，说明已经越过最高位，因此跳出
+   low += cur * digit # 将 cur 加入 low ，组成下轮 low
+   cur = high % 10 # 下轮 cur 是本轮 high 的最低位
+   high //= 10 # 将本轮 high 最低位删除，得到下轮 high
+   digit *= 10 # 位因子每轮 × 10
+```
+
+复杂度分析：
+**时间复杂度 O(logn) ：** 循环内的计算操作使用 O(1) 时间；循环次数为数字 n 的位数，即 log10n ，因此循环使用O(logn) 时间。
+**空间复杂度 O(1) ：** 几个变量使用常数大小的额外空间。
 
 ```java
     public int countDigitOne(int n) {
@@ -4136,27 +6247,62 @@ https://leetcode-cn.com/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/solu
 
 ### 第N位数字
 
+给你一个整数 n ，请你在无限的整数序列 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...] 中找出并返回第 n 位上的数字。
+
+示例 1：
+
+```
+输入：n = 3
+输出：3
+```
+
+示例 2：
+
+```
+输入：n = 11
+输出：0
+解释：第 11 位数字在序列 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ... 里是 0 ，它是 10 的一部分。
+```
+
+1. 首先计算出第n位数字是几位数字的
+
+   比如n=10000，求出第n为的数字是什么？
+
+   > 1位数字一共有9个
+   >
+   > 2位数字一共有90个
+   >
+   > 3位数字一共有900个
+
+   所以第n一定是个4位数。
+   
+2. 然后计算这第n位数字是4位数字的第几个数的第几位？
+
+   进行整除和取模运算即可。
+
 https://leetcode-cn.com/problems/nth-digit/solution/wei-ruan-zhao-pin-ing-400-di-n-wei-shu-z-hb7i/
 
 ```java
+class Solution {
     public int findNthDigit(int n) {
-        int digit = 1;
-        int numDigit = 9;
+        int d = 1, count = 9;
         // 开始求是几位数字
-        while (n > digit * numDigit) {
-            n -= numDigit * digit++;
-            numDigit *= 10;
-            if(Integer.MAX_VALUE / numDigit < digit){
-                break;
-            }
+        while (n > (long) d * count) {
+            n -= d * count;
+            d++;
+            count *= 10;
         }
         // 开始求是哪个数字num
-        int num = (int) (Math.pow(10, digit - 1)) + (n - 1) / digit;
+        int index = n - 1;
+        int start = (int) Math.pow(10, d - 1);
+        int num = start + index / d;
         // 开始求第几位iDigit
-        int iDigit = (n - 1) % digit;
+        int digitIndex = index % d;
         // 那就是num的第iDigit位置(从高位计算)
-        return num / (int) (Math.pow(10, digit - iDigit - 1)) % 10;
+        int digit = (num / (int)(Math.pow(10, d - digitIndex - 1))) % 10;
+        return digit;
     }
+}
 ```
 
 
@@ -4177,7 +6323,7 @@ https://leetcode-cn.com/problems/nth-digit/solution/wei-ruan-zhao-pin-ing-400-di
 
 ### 不用加减乘除实现加法
 
-用与运算实现进位，异或运算实现加法。知道算到进位为0即可。
+用与运算实现进位，异或运算实现加法。直到算到进位为0即可。**无进位和** 与 **异或运算** 规律相同，**进位** 和 **与运算** 规律相同（并需左移一位）
 
 ```java
 class Solution {
@@ -4198,7 +6344,26 @@ class Solution {
 
 ### 整数除法
 
+给定两个整数 `a` 和 `b` ，求它们的除法的商 `a/b` ，要求不得使用乘号 `'*'`、除号 `'/'` 以及求余符号 `'%'` 。
+
 ```java
+class Solution {
+    public int divide(int a, int b) {
+        if (b == 1) return a;
+        if (b == -1 && a == Integer.MIN_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        int res = 0;
+        if (a < 0 && b < 0) {
+            res = getDivide(-(long) a, -(long) b);
+        } else if (a > 0 && b > 0) {
+            res = getDivide((long) a, (long) b);
+        } else {
+            res = -getDivide(Math.abs((long) a), Math.abs((long) b));
+        }
+        return res;
+    }
+
     private int getDivide(long dividend, long divisor) {
         if (dividend < divisor)
             return 0;
@@ -4210,6 +6375,7 @@ class Solution {
         }
         return count + getDivide(dividend - num, divisor);
     }
+}
 ```
 
 
@@ -4232,6 +6398,136 @@ class Solution {
         double y = getPow(x, n / 2);
         return n % 2 == 0 ? y * y : y * y * x;
     }
+```
+
+
+
+### 26进制向字符转换
+
+```
+A -> 1
+B -> 2
+C -> 3 
+... 
+Z -> 26 
+AA -> 27 
+AB -> 28
+```
+
+
+
+```java
+    public String convertToTitle(int columnNumber) {
+        StringBuilder sb = new StringBuilder();
+        while (columnNumber > 0) {
+            int n = (columnNumber - 1) % 26 + 1;
+            sb.append((char)('A' + n - 1));
+            columnNumber = (columnNumber - n) / 26;
+        }
+        return sb.reverse().toString();
+    }
+```
+
+
+
+### 字符串相乘
+
+给定两个以字符串形式表示的非负整数 `num1` 和 `num2`，返回 `num1` 和 `num2` 的乘积，它们的乘积也表示为字符串形式。
+
+**示例 1:**
+
+```
+输入: num1 = "2", num2 = "3"
+输出: "6"
+```
+
+**示例 2:**
+
+```
+输入: num1 = "123", num2 = "456"
+输出: "56088"
+```
+
+模拟计算：num1和num2。将num2的各个位分解以此和num1相乘，然后结果依次相加。
+
+```java
+    public String multiply(String num1, String num2) {
+        return num1.length() < num2.length() ? getMultiply(num2, num1) : getMultiply(num1, num2);
+    }
+
+    private String getMultiply(String num1, String num2) {
+        if (num1.equals("0") || num2.equals("0"))
+            return "0";
+        String sum = "0";
+        for (int j = num2.length() - 1; j >= 0; j--){
+            StringBuilder sb = new StringBuilder();
+            int carry = 0;
+            for (int k = j; k < num2.length() - 1; k++)
+                sb.append("0");
+            for (int i = num1.length() - 1; i >= 0; i--) {
+                int n1 = num1.charAt(i) - '0';
+                int n2 = num2.charAt(j) - '0';
+                int res = n1 * n2 + carry;
+                carry = res / 10;
+                sb.append(res % 10);
+            }
+            if (carry > 0) sb.append(carry);
+            sum = getAdd(sum, sb.reverse().toString());
+        }
+        return sum;
+    }
+
+    private String getAdd(String num1, String num2) {
+        int carry = 0;
+        int n1 = num1.length() - 1, n2 = num2.length() - 1;
+        StringBuilder sb = new StringBuilder();
+        while (n1 >= 0 || n2 >= 0 || carry != 0) {
+            int a = n1 < 0 ? 0 : num1.charAt(n1) - '0';
+            int b = n2 < 0 ? 0 : num2.charAt(n2) - '0';
+            int sum = a + b + carry;
+            carry = sum / 10;
+            sb.append(sum % 10);
+            n1--;
+            n2--;
+        }
+        return sb.reverse().toString();
+    }
+```
+
+
+
+### 求素数
+
+```java
+public class CountPrime {
+    /**
+     * 返回 1 - n 之间素数的个数
+     * @param n
+     * @return
+     */
+    public int countPrime(int n) {
+        boolean[] isPrime = new boolean[n];
+        Arrays.fill(isPrime, true);
+        for (int i = 2; i * i < n; i++) {
+            if (isPrime[i]) {
+                for (int j = i * i; j < n; j = j + i)
+                    isPrime[j] = false;
+            }
+        }
+
+        int count = 0;
+        for (int i = 2; i < n; i++) {
+            if (isPrime[i])
+                count++;
+        }
+        return count;
+    }
+
+    public static void main(String[] args) {
+        CountPrime countPrime = new CountPrime();
+        System.out.println(countPrime.countPrime(9));
+    }
+}
 ```
 
 
@@ -4566,6 +6862,90 @@ dp[i][1] = min(dp[i-1][1], dp[i-1][0]) + (s.charAt(i)=='1'?0:1)；
 
 
 
+### 预测赢家（石子游戏）
+
+给你一个整数数组 `nums` 。玩家 1 和玩家 2 基于这个数组设计了一个游戏。
+
+玩家 1 和玩家 2 轮流进行自己的回合，玩家 1 先手。开始时，两个玩家的初始分值都是 `0` 。每一回合，玩家从数组的任意一端取一个数字（即，`nums[0]` 或 `nums[nums.length - 1]`），取到的数字将会从数组中移除（数组长度减 `1` ）。玩家选中的数字将会加到他的得分上。当数组中没有剩余数字可取时，游戏结束。
+
+如果玩家 1 能成为赢家，返回 `true` 。如果两个玩家得分相等，同样认为玩家 1 是游戏的赢家，也返回 `true` 。你可以假设每个玩家的玩法都会使他的分数最大化。
+
+**示例 1：**
+
+```
+输入：nums = [1,5,2]
+输出：false
+解释：一开始，玩家 1 可以从 1 和 2 中进行选择。
+如果他选择 2（或者 1 ），那么玩家 2 可以从 1（或者 2 ）和 5 中进行选择。如果玩家 2 选择了 5 ，那么玩家 1 则只剩下 1（或者 2 ）可选。 
+所以，玩家 1 的最终分数为 1 + 2 = 3，而玩家 2 为 5 。
+因此，玩家 1 永远不会成为赢家，返回 false 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,5,233,7]
+输出：true
+解释：玩家 1 一开始选择 1 。然后玩家 2 必须从 5 和 7 中进行选择。无论玩家 2 选择了哪个，玩家 1 都可以选择 233 。
+```
+
+**解题思路：**
+
+**这里定义 `dp[i][j]` 表示作为先手，在区间 `nums[i..j]` 里进行选择可以获得的净得分**。
+
+甲乙比赛，甲先手面对区间`[i...j]`时，`dp[i][j]`表示甲对乙的净得分。
+
+最终求的就是，甲先手面对区间`[0...n-1]`时，甲对乙的净得分`dp[0][n-1]`是否`>=0`。
+
+甲先手面对区间`[i...j]`时，
+
+- 如果甲拿`nums[i]`，那么变成乙先手面对区间`[i+1...j]`，这段区间内乙对甲的净得分为`dp[i+1][j]`；那么甲对乙的净得分就应该是`nums[i] - dp[i+1][j]`。
+- 如果甲拿`nums[j]`，同理可得甲对乙的净得分为是`nums[j] - dp[i][j-1]`。
+
+以上两种情况二者取大即可。
+
+**递归**
+
+```java
+    public boolean PredictTheWinner(int[] nums) {
+        int len = nums.length;
+        return dfs(nums, 0, len - 1) >= 0;
+    }
+
+    private int dfs(int[] nums, int start, int end) {
+        if (start > end)
+            return 0;
+        int chooseLeft = nums[start] - dfs(nums, start + 1, end);
+        int chooseRight = nums[end] - dfs(nums, start, end - 1);
+        return Math.max(chooseLeft, chooseRight);
+    }
+```
+
+**动态规划**
+
+状态定义：`dp[i][j]` 表示作为先手，在区间 `nums[i..j]` 里进行选择可以获得的相对分数。相对分数的意思是：当前自己的选择得分为正，对手的选择得分为负。
+
+从对角线开始填。依次沿着东北方向填
+
+<img src="https://pic.leetcode-cn.com/774b88e4332e5f93ebba7b1dd66aad35dcd2f7cd6c5680c2225f479be0947cfa-image.png" alt="img" style="zoom: 33%;" />
+
+```java
+    public boolean PredictTheWinner(int[] nums) {
+        int len = nums.length;
+        int[][] dp = new int[len][len];
+        for (int i = 0; i < len; i++)
+            dp[i][i] = nums[i];
+        for (int j = 1; j < len; j++) {
+            for (int i = j - 1; i >= 0; i--) {
+                dp[i][j] = Math.max(nums[i] - dp[i + 1][j], nums[j] - dp[i][j - 1]);
+            }
+        }
+        return dp[0][len - 1] >= 0;
+    }
+```
+
+
+
 ## 十二. 回溯
 
 ### 删除无效的括号
@@ -4633,7 +7013,7 @@ dp[i][1] = min(dp[i-1][1], dp[i-1][0]) + (s.charAt(i)=='1'?0:1)；
 
 
 
-### 复原IP地址
+### *复原IP地址
 
 **输入：**s = "25525511135"
 
@@ -4679,5 +7059,163 @@ dp[i][1] = min(dp[i-1][1], dp[i-1][0]) + (s.charAt(i)=='1'?0:1)；
             }
         }
     }
+```
+
+
+
+### 花括号展开
+
+```
+输入：{a,b}c{d,e}f
+输出：["acdf", "acef", "bcdf", "bcef"]
+```
+
+把输入转化成`{a,b}{c}{d,e}{f}`，分别进行递归：
+
+```java
+    private List<String> chars;
+    private List<String> res;
+    public List<String> expand(String s) {
+        chars = new ArrayList<>();
+        res = new ArrayList<>();
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '{') {
+                StringBuilder sb = new StringBuilder();
+                while (i + 1 < s.length() && s.charAt(++i) != '}') {
+                    if (s.charAt(i) == ',')
+                        continue;
+                    sb.append(s.charAt(i));
+                }
+                chars.add(sb.toString());
+            } else {
+                chars.add(String.valueOf(s.charAt(i)));
+            }
+        }
+        dfs(0, new StringBuilder());
+        return res;
+    }
+
+    private void dfs(int index, StringBuilder stringBuilder) {
+        if (index == chars.size()) {
+            res.add(stringBuilder.toString());
+            return;
+        }
+        String curString = chars.get(index);
+        for (int i = 0; i < curString.length(); i++) {
+            stringBuilder.append(curString.charAt(i));
+            dfs(index + 1, stringBuilder);
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        }
+    }
+```
+
+
+
+## 十三. 排序算法
+
+### 冒泡排序
+
+```java
+    public void sort(int[] nums) {
+        int len = nums.length;
+        for (int k = 1; k < len; k++) {
+            for (int i = 0; i < len - k; i++) {
+                if (nums[i] > nums[i + 1]) {
+                    int temp = nums[i];
+                    nums[i] = nums[i + 1];
+                    nums[i + 1] = temp;
+                }
+            }
+        }
+    }
+```
+
+
+
+### 插入排序
+
+```java
+/**
+ * 插入排序算法实现
+ */
+public class InsertionSort {
+    public void sort(int[] nums) {
+        super.sort(nums);
+        int len = nums.length;
+        for (int i = 1; i < len; i++) {
+            int temp = nums[i];
+            int j;
+            for (j = i - 1; j >= 0 && nums[j] > temp; j--) {
+                    nums[j + 1] = nums[j];
+            }
+            nums[j + 1] = temp;
+        }
+    }
+}
+```
+
+
+
+### 归并排序
+
+```java
+public class MergeSort {
+
+    public void sort(int[] list) {
+        super.sort(list);
+        mergeSort(list, 0, list.length - 1);
+    }
+
+    public void mergeSort(int[] nums, int left, int right) {
+        if (left >= right)
+            return;
+        int mid = left + (right - left) / 2;
+        mergeSort(nums, left, mid);
+        mergeSort(nums, mid + 1, right);
+        merge(nums, left, mid, right);
+    }
+
+    private void merge(int[] nums, int left, int mid, int right) {
+        int[] leftPart = Arrays.copyOfRange(nums, left, mid + 1);
+        int[] rightPart = Arrays.copyOfRange(nums, mid + 1, right + 1);
+        int numsP = left, leftP = 0, rightP = 0;
+        while (leftP < leftPart.length && rightP < rightPart.length) {
+            if (leftPart[leftP] < rightPart[rightP])
+                nums[numsP++] = leftPart[leftP++];
+            else
+                nums[numsP++] = rightPart[rightP++];
+        }
+        while (leftP < leftPart.length)
+            nums[numsP++] = leftPart[leftP++];
+        while (rightP < rightPart.length)
+            nums[numsP++] = rightPart[rightP++];
+    }
+}
+```
+
+
+
+### 选择排序
+
+```java
+/**
+ * 简单选择排序算法实现
+ */
+public class SelectionSort {
+    public void sort(int[] nums) {
+        super.sort(nums);
+        int len = nums.length;
+        for (int i = 0; i < len; i++) {
+            int min_index = i;
+            for (int j = i + 1; j < len; j++) {
+                if (nums[j] < nums[min_index])
+                    min_index = j;
+            }
+            int temp = nums[i];
+            nums[i] = nums[min_index];
+            nums[min_index] = temp;
+        }
+    }
+}
 ```
 

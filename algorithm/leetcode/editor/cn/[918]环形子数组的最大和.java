@@ -60,6 +60,18 @@ import java.util.Deque;
 //leetcode submit region begin(Prohibit modification and deletion)
 class maxSubarraySumCircularSolution {
     public int maxSubarraySumCircular(int[] nums) {
+        int sum = 0, maxSum = nums[0], minSum = nums[0], curMax = 0, curMin = 0;
+        for (int num : nums) {
+            curMax = Math.max(curMax + num, num);
+            maxSum = Math.max(maxSum, curMax);
+            curMin = Math.min(curMin + num, num);
+            minSum = Math.min(minSum, curMin);
+            sum += num;
+        }
+        return maxSum > 0 ? Math.max(sum - minSum, maxSum) : maxSum;
+    }
+
+    private int preSumQueue(int[] nums) {
         int N = nums.length;
         int[] preSum = new int[2 * N + 1];
         for (int i = 0; i < 2 * N; i++)
@@ -85,7 +97,7 @@ class maxSubarraySumCircularSolution {
 
     public static void main(String[] args) {
         maxSubarraySumCircularSolution solution = new maxSubarraySumCircularSolution();
-        System.out.println(solution.maxSubarraySumCircular(new int[]{3,-2,2,-3}));
+        System.out.println(solution.maxSubarraySumCircular(new int[]{-3,-2,-3}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

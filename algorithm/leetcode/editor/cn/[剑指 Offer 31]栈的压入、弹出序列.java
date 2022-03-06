@@ -39,7 +39,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class validateStackSequencesSolution {
+class validateStackSequencesOfferSolution {
     public boolean validateStackSequences(int[] pushed, int[] popped) {
         Deque<Integer> stack = new LinkedList<>();
         int j = 0;
@@ -54,7 +54,7 @@ class validateStackSequencesSolution {
     }
 
     public static void main(String[] args) {
-        validateStackSequencesSolution solution = new validateStackSequencesSolution();
+        validateStackSequencesOfferSolution solution = new validateStackSequencesOfferSolution();
         System.out.println(solution.validateStackSequences(new int[]{1,0}, new int[]{1,0}));
     }
 }

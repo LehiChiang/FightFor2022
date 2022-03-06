@@ -40,9 +40,9 @@ class majorityElementSolution {
         int count = 0;
         int res = nums[0];
         for (int num : nums) {
-            if (num == res)
+            if (num == res) {
                 count++;
-            else {
+            } else {
                 count--;
             }
             if (count <= 0) {

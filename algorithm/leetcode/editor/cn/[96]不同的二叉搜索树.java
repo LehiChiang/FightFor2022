@@ -14,22 +14,33 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class numTreesSolution {
-    int[][] dp;
 
     public int numTrees(int n) {
-        dp = new int[n + 1][n + 1];
-        return count(1, n);
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i] += dp[j] * dp[i - j - 1];
+            }
+        }
+        return dp[n];
     }
 
-    private int count(int low, int high) {
+    private int extracted(int n) {
+        int[][] dp = new int[n + 1][n + 1];
+        return count(1, n, dp);
+    }
+
+    private int count(int low, int high, int[][] dp) {
         if (low > high)
             return 1;
         if (dp[low][high] != 0)
             return dp[low][high];
         int res = 0;
         for (int i = low; i <= high; i++) {
-            int leftTreeNum = count(low, i - 1);
-            int rightTreeNum = count(i + 1, high);
+            int leftTreeNum = count(low, i - 1, dp);
+            int rightTreeNum = count(i + 1, high, dp);
             res += leftTreeNum * rightTreeNum;
         }
         dp[low][high] = res;
@@ -38,7 +49,7 @@ class numTreesSolution {
 
     public static void main(String[] args) {
         numTreesSolution solution = new numTreesSolution();
-        System.out.println(solution.numTrees(6));
+        System.out.println(solution.numTrees(3));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
