@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<config>
+    <className>designpattern.book.oricode.facade.NewEncryptFacade</className>
+</config>

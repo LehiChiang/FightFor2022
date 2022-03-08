@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config>
+    <!--RefinedAbstraction-->
+    <className>designpattern.book.oricode.bridge.GIFImage</className>
+    <!--ConcreteImplementor-->
+    <className>designpattern.book.oricode.bridge.WindowsImp</className>
+</config>
