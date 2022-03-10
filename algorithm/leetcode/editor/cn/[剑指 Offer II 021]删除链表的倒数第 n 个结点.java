@@ -33,7 +33,7 @@ class removeNthFromEndOffer2Solution {
 
     public static void main(String[] args) {
         removeNthFromEndOffer2Solution solution = new removeNthFromEndOffer2Solution();
-        System.out.println(solution.removeNthFromEnd(ListNode.buildLinkedList(1), 1));
+        System.out.println(solution.removeNthFromEnd(ListNode.buildLinkedList(1,2,3,4,5), 2));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

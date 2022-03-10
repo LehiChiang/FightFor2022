@@ -28,6 +28,31 @@ import java.util.List;
 class findAnagramsSolution {
 
     public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> res = new ArrayList<>();
+        if (s.length() < p.length())
+            return res;
+        int[] sFreq = new int[26];
+        int[] pFreq = new int[26];
+        for (int i = 0; i < p.length(); i++) {
+            pFreq[p.charAt(i) - 'a']++;
+        }
+        int start = 0, end = 0;
+        while (end < s.length()) {
+            int c = s.charAt(end) - 'a';
+            sFreq[c]++;
+            while (sFreq[c] > pFreq[c]) {
+                sFreq[s.charAt(start) - 'a']--;
+                start++;
+            }
+            if (end - start + 1 == p.length()) {
+                res.add(start);
+            }
+            end++;
+        }
+        return res;
+    }
+
+    private List<Integer> preWrite(String s, String p) {
         List<Integer> resList = new ArrayList<>();
         if (s.length() < p.length())
             return resList;

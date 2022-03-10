@@ -15,7 +15,7 @@ while(left < right){
 或者
 
 ```java
-left = 0, right = nums.length;
+left = 0, right = nums.length - 1;
 while(left <= right){
     return mid;
     left = mid + 1;
@@ -25,6 +25,58 @@ while(left <= right){
 ```
 
 ！！！**注意**：如果是二分查找不返回mid的话，那么一般`right = nums.length - 1`，比如**山脉数组，数字峰值**等，其他的与第一种写法一样。
+
+### 二分查找左边界
+
+```java
+    /**
+     * 二分搜索左边界
+     * @param nums 二分搜索的数组
+     * @param target 搜索目标值
+     * @return 返回数组中最左边出现的目标值数字的索引
+     */
+    public static int left_bound(int[] nums, int target) {
+        if (nums.length == 0) return -1;
+        int left = 0, right = nums.length;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target)
+                right = mid;
+            else if (nums[mid] > target)
+                right = mid;
+            else if (nums[mid] < target)
+                left = mid + 1;
+        }
+        return left < nums.length && nums[left] == target ? left : -1;
+    }
+```
+
+
+
+### 二分查找右边界
+
+```java
+    /**
+     * 二分搜索的右边界
+     * @param nums 二分搜索的数组
+     * @param target 搜索目标值
+     * @return 返回数组中最右边出现的目标值数字的索引
+     */
+    public static int right_bound(int[] nums, int target) {
+        if (nums.length == 0) return -1;
+        int left = 0, right = nums.length;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target)
+                left = mid + 1;
+            else if (nums[mid] < target)
+                left = mid + 1;
+            else if (nums[mid] > target)
+                right = mid;
+        }
+        return right > 0 && nums[right - 1] == target ? right - 1 : -1;
+    }
+```
 
 
 
@@ -2016,7 +2068,334 @@ int main()
 
 
 
+### 子数组最大平均数
+
+给你一个由 `n` 个元素组成的整数数组 `nums` 和一个整数 `k` 。请你找出平均数最大且 **长度为 `k`** 的连续子数组，并输出该最大平均数。任何误差小于 `10-5` 的答案都将被视为正确答案。
+
+**示例 1：**
+
+```
+输入：nums = [1,12,-5,-6,50,3], k = 4
+输出：12.75
+解释：最大平均数 (12-5-6+50)/4 = 51/4 = 12.75
+```
+
+**示例 2：**
+
+```
+输入：nums = [5], k = 1
+输出：5.00000
+```
+
+滑动窗口解法：
+
+```java
+    public double findMaxAverage(int[] nums, int k) {
+        double sum = 0, maxAvg = -10000000;
+        int start = 0, end = 0;
+        while (end < nums.length) {
+            sum += nums[end];
+            if (end - start + 1 == k) {
+                maxAvg = Math.max(maxAvg, sum / k);
+                sum -= nums[start];
+                start++;
+            }
+            end++;
+        }
+        return maxAvg;
+    }
+```
+
+
+
+### 和大于等于target的长度最小的子数组
+
+给定一个含有 `n` 个正整数的数组和一个正整数 `target` **。**
+
+找出该数组中满足其和 `≥ target` 的长度最小的 **连续子数组** `[numsl, numsl+1, ..., numsr-1, numsr]` ，并返回其长度**。**如果不存在符合条件的子数组，返回 `0` 。
+
+**示例 1：**
+
+```
+输入：target = 7, nums = [2,3,1,2,4,3]
+输出：2
+解释：子数组 [4,3] 是该条件下的长度最小的子数组。
+```
+
+**示例 2：**
+
+```
+输入：target = 4, nums = [1,4,4]
+输出：1
+```
+
+**示例 3：**
+
+```
+输入：target = 11, nums = [1,1,1,1,1,1,1,1]
+输出：0
+```
+
+滑动窗口解法：
+
+```java
+    public int minSubArrayLen(int target, int[] nums) {
+        int sum = 0, res = Integer.MAX_VALUE;
+        int start = 0, end = 0;
+        while (end < nums.length) {
+            sum += nums[end];
+            while (sum >= target) {
+                res = Math.min(res, end - start + 1);
+                sum -= nums[start];
+                start++;
+            }
+            end++;
+        }
+        return res == Integer.MAX_VALUE ? 0 : res;
+    }
+```
+
+
+
+### 无重复数字的最长子数组的和
+
+本题对应力扣的[1695. 删除子数组的最大得分](https://leetcode-cn.com/problems/maximum-erasure-value/)
+
+给一个数组，求出其中的最长连续子数组的和，且子数组不包含重复元素。
+
+**示例 1：**
+
+```
+输入：nums = [4,2,4,5,6]
+输出：17
+解释：最优子数组是 [2,4,5,6]
+```
+
+**示例 2：**
+
+```
+输入：nums = [5,2,1,2,5,2,1,2,5]
+输出：8
+解释：最优子数组是 [5,2,1] 或 [1,2,5]
+```
+
+滑动窗口解法：（和无重复字符的最长子串思想一样）
+
+```java
+    public int maximumUniqueSubarray(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        int sum = 0, maxScore = Integer.MIN_VALUE;
+        int start = 0, end = 0;
+        while (end < nums.length) {
+             if (end > 0) {
+                 set.remove(nums[start]);
+                 sum -= nums[start];
+                 start++;
+             }
+             while (end < nums.length && !set.contains(nums[end])) {
+                 set.add(nums[end]);
+                 sum += nums[end];
+                 end++;
+             }
+             maxScore = Math.max(maxScore, sum);
+        }
+        return maxScore;
+    }
+```
+
+
+
+### 字典树排序
+
+给你一个整数 `n` ，按字典序返回范围 `[1, n]` 内所有整数。
+
+你必须设计一个时间复杂度为 `O(n)` 且使用 `O(1)` 额外空间的算法。
+
+**示例 1：**
+
+```
+输入：n = 13
+输出：[1,10,11,12,13,2,3,4,5,6,7,8,9]
+```
+
+**示例 2：**
+
+```
+输入：n = 2
+输出：[1,2]
+```
+
+深度优先：
+
+```java
+    private List<Integer> res;
+    public List<Integer> lexicalOrder(int n) {
+        res = new ArrayList<>();
+        dfs(0, 1, n);
+        return res;
+    }
+
+    private void dfs(int base, int start, int n) {
+        if (base > n)
+            return;
+        for (int i = start; i < 10; i++) {
+            int num = base + i;
+            if (num <= n) {
+                res.add(num);
+                dfs(num * 10, 0, n);
+            }
+        }
+    }
+```
+
+
+
 ## 二. 链表
+
+### 链表两数相加(高位头结点)
+
+给你两个 **非空** 链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。
+
+你可以假设除了数字 0 之外，这两个数字都不会以零开头。
+
+**示例1：**
+
+<img src="https://pic.leetcode-cn.com/1626420025-fZfzMX-image.png" alt="img" style="zoom:50%;" />
+
+```
+输入：l1 = [7,2,4,3], l2 = [5,6,4]
+输出：[7,8,0,7]
+```
+
+**示例2：**
+
+```
+输入：l1 = [2,4,3], l2 = [5,6,4]
+输出：[8,0,7]
+```
+
+**示例3：**
+
+```
+输入：l1 = [0], l2 = [0]
+输出：[0]
+```
+
+用栈和各位模拟加法：
+
+```java
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        Deque<Integer> stack1 = new LinkedList<>();
+        Deque<Integer> stack2 = new LinkedList<>();
+        while (l1 != null) {
+            stack1.push(l1.val);
+            l1 = l1.next;
+        }
+        while (l2 != null) {
+            stack2.push(l2.val);
+            l2 = l2.next;
+        }
+        int carry = 0;
+        ListNode ans = new ListNode(-1);
+        while (!stack1.isEmpty() || !stack2.isEmpty()) {
+            carry += stack1.isEmpty() ? 0 : stack1.pop();
+            carry += stack2.isEmpty() ? 0 : stack2.pop();
+            ListNode node = new ListNode(carry % 10);
+            carry /= 10;
+            node.next = ans.next;
+            ans.next = node;
+        }
+        if (carry == 1) {
+            ListNode carryNode = new ListNode(1);
+            carryNode.next = ans.next;
+            ans.next = carryNode;
+        }
+        return ans.next;
+    }
+```
+
+
+
+### 两两交换链表中的节点
+
+给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/03/swap_ex1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：head = [1,2,3,4]
+输出：[2,1,4,3]
+```
+
+**示例 2：**
+
+```
+输入：head = []
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：head = [1]
+输出：[1]
+```
+
+方法一：迭代法
+
+<img src="https://assets.leetcode-cn.com/solution-static/24/1.png" alt="img" style="zoom: 25%;" />
+
+<img src="https://assets.leetcode-cn.com/solution-static/24/3.png" alt="img" style="zoom:25%;" />
+
+<img src="https://assets.leetcode-cn.com/solution-static/24/4.png" alt="img" style="zoom:25%;" />
+
+<img src="https://assets.leetcode-cn.com/solution-static/24/5.png" alt="img" style="zoom:25%;" />
+
+<img src="https://assets.leetcode-cn.com/solution-static/24/6.png" alt="img" style="zoom:25%;" />
+
+```java
+    public ListNode swapPairs(ListNode head) {
+        ListNode newNode = new ListNode(-1, head);
+        ListNode tmp = newNode;
+        while (tmp.next != null && tmp.next.next != null) {
+            ListNode node1 = tmp.next;
+            ListNode node2 = tmp.next.next;
+            tmp.next = node2;
+            node1.next = node2.next;
+            node2.next = node1;
+            tmp = node1;
+        }
+        return newNode.next;
+    }
+```
+
+方法二：递归法
+
+可以通过递归的方式实现两两交换链表中的节点。
+
+递归的终止条件是链表中没有节点，或者链表中只有一个节点，此时无法进行交换。
+
+如果链表中至少有两个节点，则在两两交换链表中的节点之后，原始链表的头节点变成新的链表的第二个节点，原始链表的第二个节点变成新的链表的头节点。链表中的其余节点的两两交换可以递归地实现。在对链表中的其余节点递归地两两交换之后，更新节点之间的指针关系，即可完成整个链表的两两交换。
+
+用 head 表示原始链表的头节点，新的链表的第二个节点，用 newHead 表示新的链表的头节点，原始链表的第二个节点，则原始链表中的其余节点的头节点是 newHead.next。令 head.next = swapPairs(newHead.next)，表示将其余节点进行两两交换，交换后的新的头节点为 head 的下一个节点。然后令 newHead.next = head，即完成了所有节点的交换。最后返回新的链表的头节点 newHead。
+
+```java
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode newHead = head.next;
+        head.next = swapPairs(newHead.next);
+        newHead.next = head;
+        return newHead;
+    }
+}
+```
+
+
 
 ### 复制带随机指针的链表
 
@@ -2550,6 +2929,48 @@ class Solution {
 
 ## 四. 字符串
 
+### 翻转单词顺序
+
+```
+输入: "the sky is blue"
+输出: "blue is sky the"
+```
+
+**示例 2：**
+
+```
+输入: "  hello world!  "
+输出: "world! hello"
+解释: 输入字符串可以在前面或者后面包含多余的空格，但是反转后的字符不能包括。
+```
+
+**示例 3：**
+
+```
+输入: "a good   example"
+输出: "example good a"
+解释: 如果两个单词间有多余的空格，将反转后单词间的空格减少到只含一个。
+```
+
+代码实现，双指针
+
+```java
+    public String reverseWords(String s) {
+        s = s.trim();
+        int end = s.length() - 1, start = end;
+        StringBuilder stringBuilder = new StringBuilder();
+        while (start >= 0) {
+            while (start >= 0 && s.charAt(start) != ' ') start--;
+            stringBuilder.append(s, start + 1, end + 1).append(' ');
+            while (start >= 0 && s.charAt(start) == ' ') start--;
+            end = start;
+        }
+        return stringBuilder.toString().trim();
+    }
+```
+
+
+
 ### 滑动窗口框架
 
 最长***模板
@@ -2617,6 +3038,96 @@ for (int i = 0; i < s.length(); i++) {
     res = Math.max(res, i - left + 1);
 }
 return res;
+```
+
+
+
+### 最小覆盖子串
+
+给你一个字符串 `s` 、一个字符串 `t` 。返回 `s` 中涵盖 `t` 所有字符的最小子串。如果 `s` 中不存在涵盖 `t` 所有字符的子串，则返回空字符串 `""` 。
+
+**注意：**
+
+- 对于 `t` 中重复字符，我们寻找的子字符串中该字符数量必须不少于 `t` 中该字符数量。
+- 如果 `s` 中存在这样的子串，我们保证它是唯一的答案。
+
+**示例 1：**
+
+```
+输入：s = "ADOBECODEBANC", t = "ABC"
+输出："BANC"
+```
+
+**示例 2：**
+
+```
+输入：s = "a", t = "a"
+输出："a"
+```
+
+**示例 3:**
+
+```
+输入: s = "a", t = "aa"
+输出: ""
+解释: t 中两个字符 'a' 均应包含在 s 的子串中，
+因此没有符合条件的子字符串，返回空字符串。
+```
+
+滑动窗口解法：
+
+```java
+class minWindowSolution {
+
+    private HashMap<Character, Integer> tStateMap;
+    private HashMap<Character, Integer> winStateMap;
+
+    public String minWindow(String s, String t) {
+        int sLen = s.length(), tLen = t.length();
+        tStateMap = new HashMap<>();
+        winStateMap = new HashMap<>();
+        for (Character c : t.toCharArray())
+            tStateMap.put(c, tStateMap.getOrDefault(c, 0) + 1);
+        int end = -1, start = 0, minLen = Integer.MAX_VALUE;
+        int ansEnd = -1, ansStart = -1;
+        while (end < sLen) {
+            // 开始扩张右边界
+            end++;
+            if (end < sLen && tStateMap.containsKey(s.charAt(end))) {
+                winStateMap.put(s.charAt(end), winStateMap.getOrDefault(s.charAt(end), 0) + 1);
+            }
+            // 不断地将右边界指向的元素加入到winStateMap中去，直到t中的所有字符都在winStateMap中，则开始
+            // 缩小左边界！
+
+            // check()是判断t中的所有字符都在winStateMap中有记录？返回true的话说明当前窗口里所有数值已经都包括
+            // 了t中的所有字符,那么就开始选择最小的覆盖子串。返回false的话说明当前窗口里所有数值没有包含t串的所有
+            // 字符还需要往里添加。
+
+            while (checkTInWinMap() && start <= end) {
+                if (end - start + 1 < minLen) {
+                    minLen = end - start + 1;
+                    ansStart = start;
+                    ansEnd = end;
+                }
+
+                // 开始缩小左边界，在这个while循环里，保证右边界不发生缩放
+                if (tStateMap.containsKey(s.charAt(start))) {
+                    winStateMap.put(s.charAt(start), winStateMap.getOrDefault(s.charAt(start), 0) - 1);
+                }
+                start++;
+            }
+        }
+        return ansStart == -1 ? "" : s.substring(ansStart, ansEnd + 1);
+    }
+
+    private boolean checkTInWinMap() {
+        for (Map.Entry<Character, Integer> entry : tStateMap.entrySet()) {
+            if (winStateMap.getOrDefault(entry.getKey(), 0) < entry.getValue())
+                return false;
+        }
+        return true;
+    }
+}
 ```
 
 
@@ -2963,25 +3474,33 @@ p = "a*c?b"
 
 
 
+### 字符串的排列
+
+如下题！
+
+
+
 ### 字符串中的变位词
 
 ```java
     public boolean checkInclusion(String s1, String s2) {
-        int m = s1.length(), n = s2.length();
-        int[] win = new int[26];
-        for (int i = 0; i < m; i++)
-            --win[s1.charAt(i) - 'a'];
-        int left = 0;
-        for (int right = 0; right < n; right++) {
-            ++win[s2.charAt(right) - 'a'];
-            while (win[s2.charAt(right) - 'a'] > 0) {
-                --win[s2.charAt(left) - 'a'];
-                left++;
-            }
-            if (right - left + 1 == m)
-                return true;
-        }
-        return false;
+         int[] win = new int[26];
+         for (int i = 0; i < s1.length(); i++) {
+             win[s1.charAt(i) - 'a']++;
+         }
+         int start = 0, end = 0;
+         while (end < s2.length()) {
+             win[s2.charAt(end) - 'a']--;
+             while (win[s2.charAt(end) - 'a'] < 0) {
+                 win[s2.charAt(start) - 'a']++;
+                 start++;
+             }
+             if (end - start + 1 == s1.length()) {
+                 return true;
+             }
+             end++;
+         }
+         return false;
     }
 ```
 
@@ -2991,23 +3510,28 @@ p = "a*c?b"
 
 ```java
     public List<Integer> findAnagrams(String s, String p) {
-        List<Integer> list = new ArrayList<>();
-        int[] sWin = new int[26];
-        int[] pwin = new int[26];
+        List<Integer> res = new ArrayList<>();
+        if (s.length() < p.length())
+            return res;
+        int[] sFreq = new int[26];
+        int[] pFreq = new int[26];
         for (int i = 0; i < p.length(); i++) {
-            pwin[p.charAt(i) - 'a']++;
+            pFreq[p.charAt(i) - 'a']++;
         }
-        int start = 0;
-        for (int end = 0; end < s.length(); end++) {
-            sWin[s.charAt(end) - 'a']++;
-            while (sWin[s.charAt(end) - 'a'] > pwin[s.charAt(end) - 'a']) {
-                sWin[s.charAt(start) - 'a']--;
+        int start = 0, end = 0;
+        while (end < s.length()) {
+            int c = s.charAt(end) - 'a';
+            sFreq[c]++;
+            while (sFreq[c] > pFreq[c]) {
+                sFreq[s.charAt(start) - 'a']--;
                 start++;
             }
-            if (end - start + 1 == p.length())
-                list.add(start);
+            if (end - start + 1 == p.length()) {
+                res.add(start);
+            }
+            end++;
         }
-        return list;
+        return res;
     }
 ```
 
@@ -6309,13 +6833,111 @@ class Solution {
 
 ### 约瑟夫环问题
 
+问题描述：编号为 1-N 的 N 个士兵围坐在一起形成一个圆圈，从编号为 1 的士兵开始依次报数（1，2，3…这样依次报），数到 m 的 士兵会被杀死出列，之后的士兵再从 1 开始报数。直到最后剩下一士兵，求这个士兵的编号。
+
+**示例 1：**
+
+```
+输入: n = 5, m = 3
+输出: 3
+```
+
+**示例 2：**
+
+```
+输入: n = 10, m = 17
+输出: 2
+```
+
+两种方法解决，一种是模拟链表法，逐渐删除其中第m个节点。
+
+```java
+    private Integer getNumLinkedList(int n, int m) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < n; i++)
+            list.add(i);
+        int index = 0;
+        while (n > 1) {
+            index = (index + m - 1) % n;
+            list.remove(index);
+            n--;
+        }
+        return list.get(0);
+    }
+```
+
+递归法：
+
+其实这道题还可以用递归来解决，递归是思路是**每次我们删除了某一个士兵之后，我们就对这些士兵重新编号，然后我们的难点就是找出删除前和删除后士兵编号的映射关系**。
+
+我们定义递归函数 f(n，m) 的返回结果是存活士兵的编号，显然当 n = 1 时，f(n, m) = 1。假如我们能够找出 f(n，m) 和 f(n-1，m) 之间的关系的话，我们就可以用递归的方式来解决了。我们假设人员数为 n, 报数到 m 的人就自杀。则刚开始的编号为
+
+…
+1
+…
+m - 2
+
+m - 1
+
+m
+
+m + 1
+
+m + 2
+…
+n
+…
+
+进行了一次删除之后，删除了编号为 m 的节点。删除之后，就只剩下 n - 1 个节点了，删除前和删除之后的编号转换关系为：
+
+删除前   ---   删除后
+
+…      ---    …
+
+m - 2   ---   n - 2
+
+m - 1   ---    n - 1
+
+m     ----   无(因为编号被删除了)
+
+m + 1   ---   1(因为下次就从这里报数了)
+
+m + 2   ----   2
+
+…     ----     …
+
+新的环中只有 n - 1 个节点。且删除前编号为 m + 1, m + 2, m + 3 的节点成了删除后编号为 1， 2， 3 的节点。
+
+假设 old 为删除之前的节点编号， new 为删除了一个节点之后的编号，则 old 与 new 之间的关系为 `old = (new + m - 1) % n + 1`。
+
+这样，我们就得出 f(n, m) 与 f(n - 1, m)之间的关系了，而 f(1, m) = 1.所以我们可以采用递归的方式来做。代码如下：
+
+> 注：有些人可能会疑惑为什么不是 old = (new + m ) % n 呢？主要是因为编号是从 1 开始的，而不是从 0 开始的。如果 new + m == n的话，会导致最后的计算结果为 old = 0。所以 old = (new + m - 1) % n + 1.
+
+```java
+int f(int n, int m){
+    if(n == 1)   return n;
+    return (f(n - 1, m) + m - 1) % n + 1;
+}
+```
+
+对于从0开始编号的，写法会有点不同，如下：
+
+```java
+    public int f(int n, int m) {
+        return n == 1 ? 0 : (f(n - 1, m) + m) % n;
+    }
+```
+
+时间复杂度O(n)，空间复杂度也是O(n)。空间优化如下：使用迭代方法，从0开始编号的。
+
 ```java
     public int lastRemaining(int n, int m) {
-        int x = 0;
-        for (int i = 2; i <= n; i++) {
-            x = (x + m) % i;
+        int f = 0;
+        for (int i = 2; i != n + 1; ++i) {
+            f = (m + f) % i;
         }
-        return x;
+        return f;
     }
 ```
 
@@ -6528,6 +7150,56 @@ public class CountPrime {
         System.out.println(countPrime.countPrime(9));
     }
 }
+```
+
+
+
+### 旋转数字
+
+我们称一个数 X 为好数, 如果它的每位数字逐个地被旋转 180 度后，我们仍可以得到一个有效的，且和 X 不同的数。要求每位数字都要被旋转。
+
+如果一个数的每位数字被旋转以后仍然还是一个数字， 则这个数是有效的。0, 1, 和 8 被旋转后仍然是它们自己；2 和 5 可以互相旋转成对方（在这种情况下，它们以不同的方向旋转，换句话说，2 和 5 互为镜像）；6 和 9 同理，除了这些以外其他的数字旋转以后都不再是有效的数字。
+
+现在我们有一个正整数 `N`, 计算从 `1` 到 `N` 中有多少个数 X 是好数？
+
+**示例：**
+
+```
+输入: 10
+输出: 4
+解释: 
+在[1, 10]中有四个好数： 2, 5, 6, 9。
+注意 1 和 10 不是好数, 因为他们在旋转之后不变。
+```
+
+```java
+  public int rotatedDigits(int n) {
+        int cnt = 0;
+        for (int i = 1; i <= n; i++) {
+            if (isGoodNum(i)) {
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+
+    private boolean isGoodNum(Integer num) {
+        char[] digits = num.toString().toCharArray();
+        int sameCnt = 0;
+        for (char ch : digits) {
+            if (ch == '0' || ch == '1' || ch == '8') {
+                sameCnt++;
+            } else if (ch == '2' || ch == '5' || ch == '6' || ch == '9') {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        if (sameCnt == digits.length)
+            return false;
+        else
+            return true;
+    }
 ```
 
 

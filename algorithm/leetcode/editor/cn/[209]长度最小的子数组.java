@@ -25,6 +25,21 @@ package leetcode.editor.cn;
 //leetcode submit region begin(Prohibit modification and deletion)
 class minSubArrayLenSolution {
     public int minSubArrayLen(int target, int[] nums) {
+        int sum = 0, res = Integer.MAX_VALUE;
+        int start = 0, end = 0;
+        while (end < nums.length) {
+            sum += nums[end];
+            while (sum >= target) {
+                res = Math.min(res, end - start + 1);
+                sum -= nums[start];
+                start++;
+            }
+            end++;
+        }
+        return res == Integer.MAX_VALUE ? 0 : res;
+    }
+
+    private int preWrite(int target, int[] nums) {
         if (nums.length == 0)
             return 0;
         int res = nums.length + 1;
@@ -44,7 +59,7 @@ class minSubArrayLenSolution {
 
     public static void main(String[] args) {
         minSubArrayLenSolution solution = new minSubArrayLenSolution();
-        int res = solution.minSubArrayLen(11, new int[]{1,1,1,1,1,1,1,1});
+        int res = solution.minSubArrayLen(4, new int[]{1,4,4});
         System.out.println(res);
     }
 }

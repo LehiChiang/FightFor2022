@@ -36,6 +36,10 @@ import java.util.List;
 //leetcode submit region begin(Prohibit modification and deletion)
 class lastRemainingSolution {
     public int lastRemaining(int n, int m) {
+        return n == 1 ? 0 : (lastRemaining(n - 1, m) + m) % n;
+    }
+
+    private Integer getNumLinkedList(int n, int m) {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < n; i++)
             list.add(i);
@@ -50,7 +54,7 @@ class lastRemainingSolution {
 
     public static void main(String[] args) {
         lastRemainingSolution solution = new lastRemainingSolution();
-        System.out.println(solution.lastRemaining(5, 3));
+        System.out.println(solution.lastRemaining(10, 17));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
