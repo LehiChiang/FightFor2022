@@ -742,7 +742,7 @@ public class code_6_5 {
 ```java
 public interface InvocationHandler {
     /**
-    * proxy:代理类代理的真实代理对象com.sun.proxy.$Proxy0
+    * proxy:代理类对象com.sun.proxy.$Proxy0
     * method:我们所要调用某个对象真实的方法的Method对象
     * args:指代代理对象方法传递的参数
     */
@@ -764,7 +764,7 @@ public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces,
 
 ```java
 class PrintServiceProxyHandler implements InvocationHandler {
-    // 被代理的对象
+    // 真实对象
     private final Object proxyObject;
 
     public PrintServiceProxyHandler(Object proxyObject) {
@@ -821,8 +821,8 @@ public class code_6_5_2 {
 
 上面的代码还能简化成以下写法：
 
-**代理模式的定义：**代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用，通俗的来讲代理模式就是我们生活中常见的中介**
-，动态代理和静态代理的区别在于静态代理我们需要手动的去实现目标对象的代理类，而动态代理可以在运行期间动态的生成代理类。**
+**代理模式的定义：**代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用，通俗的来讲代理模式就是我们生活中常见的中介
+，动态代理和静态代理的区别在于静态代理我们需要手动的去实现目标对象的代理类，而动态代理可以在运行期间动态的生成代理类。
 
 再看一个示例，跟踪方法调用：
 
@@ -874,12 +874,125 @@ public class code_6_5_3 {
 }
 ```
 
+
+
+#### CGLIB代理
+
+这里我们以操作用户数据的`UserDao`为例，通过动态代理来对其功能进行增强（执行前后添加日志）。`UserDao`定义如下：
+
+```java
+public class UserDao {
+
+    public void findAllUsers(){
+        System.out.println("UserDao 查询所有用户");
+    }
+
+    public String findUsernameById(int id){
+        System.out.println("UserDao 根据ID查询用户");
+        return "username";
+    }
+}
+```
+
+创建一个拦截器，实现接口net.sf.cglib.proxy.MethodInterceptor，用于方法的拦截回调。
+
+
+
+```java
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+
+import java.lang.reflect.Method;
+
+public class LogInterceptor implements MethodInterceptor {
+
+    /**
+     *
+     * @param obj 表示要进行增强的对象
+     * @param method 表示拦截的方法
+     * @param args 数组表示参数列表，基本数据类型需要传入其包装类型，如int-->Integer、long-Long、double-->Double
+     * @param methodProxy 表示对方法的代理，invokeSuper方法表示对被代理对象方法的调用
+     * @return 执行结果
+     * @throws Throwable 异常
+     */
+    @Override
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+        System.out.println("调用方法" + method.getName() +"之【前】的日志处理");
+        // 注意这里是调用invokeSuper而不是invoke，否则死循环;
+        // methodProxy.invokeSuper执行的是原始类的方法;
+        // method.invoke执行的是子类的方法;
+        Object result = methodProxy.invokeSuper(obj, args);
+        System.out.println("调用方法" + method.getName() +"之【后】的日志处理");
+        return result;
+    }
+}
+```
+
+在方法的内部主要调用的`methodProxy.invokeSuper`，执行的原始类的方法。如果调用`invoke`方法否会出现死循环。
+
+客户端使用示例如下：
+
+```java
+import net.sf.cglib.proxy.Enhancer;
+
+public class CglibTest {
+
+    public static void main(String[] args) {
+
+        // 通过CGLIB动态代理获取代理对象的过程
+        // 创建Enhancer对象，类似于JDK动态代理的Proxy类
+        Enhancer enhancer = new Enhancer();
+        // 设置目标类的字节码文件
+        enhancer.setSuperclass(UserDao.class);
+        // 设置回调函数
+        enhancer.setCallback(new LogInterceptor());
+        // create方法正式创建代理类
+        UserDao userDao = (UserDao) enhancer.create();
+        // 调用代理类的具体业务方法
+        userDao.findAllUsers();
+        userDao.findUsernameById(1);
+    }
+}
+```
+
+执行客户端的main方法打印结果如下：
+
+```text
+调用方法findAllUsers之【前】的日志处理
+UserDao 查询所有用户
+调用方法findAllUsers之【后】的日志处理
+调用方法findUsernameById之【前】的日志处理
+UserDao 根据ID查询用户
+调用方法findUsernameById之【后】的日志处理
+```
+
+可以看到，我们方法前后已经被添加上对应的“增强处理”。
+
+#### 动态代理与CGLIB对比
+
+JDK动态代理是基于接口的方式，换句话来说就是代理类和目标类都实现同一个接口，那么代理类和目标类的方法名就一样了
+
+CGLib动态代理是代理类去继承目标类，然后重写其中目标类的方法啊，这样也可以保证代理类拥有目标类的同名方法；
+
+JDK动态代理：基于Java反射机制实现，必须要实现了接口的业务类才生成代理对象。
+
+CGLIB动态代理：基于ASM机制实现，通过生成业务类的子类作为代理类。
+
+**JDK Proxy的优势：**
+
+最小化依赖关系、代码实现简单、简化开发和维护、JDK原生支持，比CGLIB更加可靠，随JDK版本平滑升级。而字节码类库通常需要进行更新以保证在新版Java上能够使用。
+
+**基于CGLIB的优势：**
+
+无需实现接口，达到代理类无侵入，只操作关心的类，而不必为其他相关类增加工作量。高性能。
+
+
+
 #### 6.5.3 代理类的特性
 
 所有的代理类都扩展`Proxy`类。一个代理类只有一个实例字段——即调用处理器。它在`Proxy`超类中定义。完成代理对象任务所需要的任何额外数据都必须存储在调用处理器中。
 
-所有的代理类都要覆盖`Object`类中的`toString`，`equals`，`hashCode`方法。如同其他方法一样，这些方法只是在调用处理器上调用`invoke`。`Object`类中其他方法（如`clone`
-和`getClass`）没有重新定义。
+所有的代理类都要覆盖`Object`类中的`toString`，`equals`，`hashCode`方法。如同其他方法一样，这些方法只是在调用处理器上调用`invoke`。`Object`类中其他方法（如`clone`和`getClass`）没有重新定义。
 
 对于一个特定的类加载器和预设的一组接口来说，只能有一个代理类。也就是说，如果使用同一个类加载器和接口数组调用两次`newProxyInstance`方法，将得到同一个类的两个对象。也可以使用`getProxyClass`方法获得这个类：
 
