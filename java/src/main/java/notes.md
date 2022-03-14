@@ -65,7 +65,7 @@ JDK1.8 之前 HashMap 底层是 数组和链表 结合在一起使用也就是�
 
 所谓扰动函数指的就是 HashMap 的 hash 方法。使用 hash 方法也就是扰动函数是为了防止一些实现比较差的
 hashCode() 方法 换句话说使用扰动函数之后可以减少碰撞。也就是说hashCode()有时并不十分完美，比如只和高位有关等等，因此需要再次hash()一下。
-JDK 1.8 HashMap 的 hash 方法源码:
+**JDK 1.8 HashMap 的 hash 方法源码，通过 hashCode() 的高 16 位异或低 16 位实现的：(h = k.hashCode()) ^ (h >>> 16)，主要是从速度，功效和质量来考虑的，减少系统的开销，也不会造成因为高位没有参与下标的计算，从而引起的碰撞。**
 JDK 1.8 的 hash方法 相比于 JDK 1.7 hash 方法更加简化，但是原理不变。
 
 ```java
@@ -107,14 +107,14 @@ return h ^ (h >>> 7) ^ (h >>> 4);
 
 1. 线程是否安全： HashMap 是非线程安全的，Hashtable 是线程安全的；Hashtable 内部的方法基本都经过
    synchronized 修饰。
-
 2. 效率： 因为线程安全的问题，HashMap 要比 Hashtable 效率高一点。另外，Hashtable 基本被淘汰，不要在代码中使用它；
 3. 对Null key 和Null value的支持： HashMap 中，null 可以作为键，这样的键只有一个，可以有一个或多个键
 所对应的值为 null。但是在 Hashtable 中 put 进的键值只要有一个 null，直接抛出 NullPointerException。
-4. 初始容量大小和每次扩充容量大小的不同 ： ①创建时如果不指定容量初始值，Hashtable 默认的初始大小为
-11，之后每次扩充，容量变为原来的2n+1。**HashMap 默认的初始化大小为16。之后每次扩充，容量变为原来的2倍**。②创建时如果给定了容量初始值，那么 Hashtable 会直接使用你给定的大小，而 **HashMap 会将其扩充为2的幂次方大小。也就是说 HashMap 总是使用2的幂作为哈希表的大小**。
-5. 底层数据结构： JDK1.8 以后的 HashMap 在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为
-8）时，将链表转化为红黑树，以减少搜索时间。Hashtable 没有这样的机制。
+4. HashMap 需要重新计算 hash 值，而 Hashtable 直接使用对象的 hashCode
+5. 初始容量大小和每次扩充容量大小的不同 ： ①创建时如果不指定容量初始值，Hashtable 默认的初始大小为
+  11，之后每次扩充，容量变为原来的2n+1。**HashMap 默认的初始化大小为16。之后每次扩充，容量变为原来的2倍**。②创建时如果给定了容量初始值，那么 Hashtable 会直接使用你给定的大小，而 **HashMap 会将其扩充为2的幂次方大小。也就是说 HashMap 总是使用2的幂作为哈希表的大小**。
+6. 底层数据结构： JDK1.8 以后的 HashMap 在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为
+  8）时，将链表转化为红黑树，以减少搜索时间。Hashtable 没有这样的机制。
 
 HashMap 中带有初始容量的构造函数：
 
@@ -247,7 +247,7 @@ public boolean add(E e) {
 
    ① **ConcurrentHashMap（分段锁）**
 
-  - 在JDK1.7的时候，对整个桶数组进行了分割分段(Segment)，首先将数据分为一段一段的存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据时，其他段的数据也能被其他线程访问，就不会存在锁竞争，提高并发访问率。**ConcurrentHashMap是由Segment数组结构和HashEntry数组结构组成**。 Segment 实现了 ReentrantLock,所以 Segment 是一种可重入锁，扮演锁的角色。HashEntry 用于存储键值对数据。
+  - 在JDK1.7的时候，锁粒度基于 Segment，对整个桶数组进行了分割分段(Segment)，首先将数据分为一段一段的存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据时，其他段的数据也能被其他线程访问，就不会存在锁竞争，提高并发访问率。**ConcurrentHashMap是由Segment数组结构和HashEntry数组结构组成**。 Segment 实现了 ReentrantLock,所以 Segment 是一种可重入锁，扮演锁的角色。HashEntry 用于存储键值对数据。
 
     ```java
     static class Segment<K,V> extends ReentrantLock implements Serializable {}
@@ -257,7 +257,7 @@ public boolean add(E e) {
 
     <img src="..\..\..\..\pics\屏幕截图 2022-03-13 111441.png" alt="屏幕截图 2022-03-13 111441" style="zoom:50%;" />
 
-  - 在JDK1.8的时候，已经摒弃了Segment的概念，而是直接用Node 数组+链表+红黑树的数据结构来实现，并发控制使用synchronized和 CAS 来操作。synchronized只锁定当前链表或红黑二叉树的首节点，这样只要hash不冲突，就不会产生并发，效率又提升N倍。整个看起来就像是优化过且线程安全的 HashMap，虽然在JDK1.8中还能看到 Segment 的数据结构，但是已经简化了属性，只是为了兼容旧版本；
+  - 在JDK1.8的时候，锁粒度：Node（首结点），已经摒弃了Segment的概念，而是直接用**Node 数组+链表+红黑树**的数据结构来实现，并发控制使用**synchronized和 CAS** 来操作。**synchronized只锁定当前链表或红黑二叉树的首节点**，这样只要hash不冲突，就不会产生并发，效率又提升N倍。整个看起来就像是优化过且线程安全的 HashMap，虽然在JDK1.8中还能看到 Segment 的数据结构，但是已经简化了属性，只是为了兼容旧版本；
 
   <img src="..\..\..\..\pics\屏幕截图 2022-03-13 111518.png" alt="屏幕截图 2022-03-13 111518" style="zoom:50%;" />
 
@@ -266,6 +266,22 @@ public boolean add(E e) {
   ② **Hashtable(同一把锁)** :使用 synchronized 来保证线程安全，效率非常低下。当一个线程访问同步方法时，其他线程也访问同步方法，可能会进入阻塞或轮询状态，如使用put 添加元素，另一个线程不能使用 put 添加元素，也不能使用 get，竞争会越来越激烈效率越低。
 
   <img src="..\..\..\..\pics\屏幕截图 2022-03-13 111350.png" alt="屏幕截图 2022-03-13 111350" style="zoom: 50%;" />
+
+
+
+## ConcurrentHashMap 在 JDK 1.8 中，为什么synchronized 代替ReentrantLock？ 
+
+①、粒度降低了；
+
+②、JVM 开发团队没有放弃 synchronized，而且基于 JVM 的 synchronized 优化空间更大，更加自然。
+
+③、在大量的数据操作下，对于 JVM 的内存压力，基于 API 的 ReentrantLock 会开销更多的内存。
+
+
+
+## HashMap和ConcurrentHashMap的区别？
+
+除了加锁，原理上无太大区别。另外，HashMap 的键值对允许有null，但是ConcurrentHashMap 都不允许。
 
 
 
