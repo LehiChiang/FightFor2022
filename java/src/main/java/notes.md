@@ -456,6 +456,161 @@ volatile是Java虚拟机提供的最轻量级的同步机制。当变量被定�
 
 
 
+## ReentrantReadWriteLock
+
+### 1、初识读写锁
+
+　　a）[Java中的锁——Lock和synchronized](https://www.cnblogs.com/fsmly/p/10703804.html)中介绍的ReentrantLock和synchronized基本上都是排它锁，意味着这些锁在同一时刻只允许一个线程进行访问，而读写锁在同一时刻可以允许多个读线程访问，在写线程访问的时候其他的读线程和写线程都会被阻塞。读写锁维护一对锁(读锁和写锁)，通过锁的分离，使得并发性提高。
+
+　　b）关于读写锁的基本使用：在不使用读写锁的时候，一般情况下我们需要使用synchronized搭配等待通知机制完成并发控制（写操作开始的时候，所有晚于写操作的读操作都会进入等待状态），只有写操作完成并通知后才会将等待的线程唤醒继续执行。
+
+　　如果改用读写锁实现，只需要在读操作的时候获取读锁，写操作的时候获取写锁。当写锁被获取到的时候，后续操作（读写）都会被阻塞，只有在写锁释放之后才会执行后续操作。并发包中对ReadWriteLock接口的实现类是ReentrantReadWriteLock，这个实现类具有下面三个特点
+
+　　①具有与ReentrantLock类似的**公平锁和非公平锁**的实现：默认的支持非公平锁，对于二者而言，非公平锁的吞吐量由于公平锁；
+
+　　②支持重入：读线程获取读锁之后能够再次获取读锁，写线程获取写锁之后能再次获取写锁，也可以获取读锁。
+
+　　③锁能降级：遵循获取写锁、获取读锁在释放写锁的顺序，即写锁能够降级为读锁
+
+### 2、读写锁源码分析
+
+#### **a）ReadWriteLock接口中只有两个方法，分别是readLock和writeLock**
+
+```java
+public interface ReadWriteLock {
+    /**
+     * 返回读锁
+     */
+    Lock readLock();
+
+    /**
+     * 返回写锁
+     */
+    Lock writeLock();
+}
+```
+
+#### **b）关于读写读写状态的设计**
+
+　　①作为已经实现的同步组件，读写锁同样是需要实现同步器来实现同步功能，同步器的同步状态就是读写锁的读写状态，只是读写锁的同步器需要在同步状态上维护多个读线程和写线程的状态。使用按位切割的方式将一个整形变量按照高低16位切割成两个部分。对比下图，低位值表示当前获取写锁的线程重入两次，高位的值表示当前获取读锁的线程重入一次。读写锁的获取伴随着读写状态值的更新。当低位为0000_0000_0000_0000的时候表示写锁已经释放，当高位为0000_0000_0000_0000的时候表示读锁已经释放。
+
+　　②从下面的划分得到：当**state值不等于0**的时候，如果写状态(state & 0x0000FFFF)等于0的话，读状态是大于0的，表示读锁被获取；如果写状态不等于0的话，读锁没有被获取。这个特点也在源码中实现。
+
+![img](https://img2018.cnblogs.com/blog/1368768/201904/1368768-20190415191724996-535147814.png)
+
+#### **c）写锁writeLock**
+
+　　①上面说到过，读写锁是支持重入的锁，而对于写锁而言还是排他的，这样避免多个线程同时去修改临界资源导致程序出现错误。如果当前线程已经获取了写锁，则按照上面读写状态的设计增加写锁状态的值；如果当前线程在获取写锁的时候，读锁已经被获取或者该线程之前已经有别的线程获取到写锁，当前线程就会进入等待状态。
+
+```java
+static final int SHARED_SHIFT   = 16;
+static final int EXCLUSIVE_MASK = (1 << SHARED_SHIFT) - 1; //1左移16位减1=>0000_0000_0000_0000_1111_1111_1111_1111
+static int exclusiveCount(int c) { return c & EXCLUSIVE_MASK; } //返回读状态的值
+protected final boolean tryAcquire(int acquires) {
+        /*
+         * Walkthrough:
+         * 1. 如果读状态不为0或者写状态不为0并且写线程不是自己，返回false
+         * 2. 如果已经超过了可重入的计数值MAX_COUNT，就会返回false
+         * 3. 如果该线程是可重入获取或队列策略允许，则该线程有资格获得锁定;同时更新所有者和写锁状态值
+         */
+        Thread current = Thread.currentThread(); //获取当前线程
+        int c = getState(); //获取当前写锁状态值
+        int w = exclusiveCount(c); //获取写状态的值
+        //当同步状态state值不等于0的时候，如果写状态(state & 0x0000FFFF)等于0的话，读状态是大于0的，表示读锁被获取
+        if (c != 0) {
+            if (w == 0 || current != getExclusiveOwnerThread())
+                return false;
+            if (w + exclusiveCount(acquires) > MAX_COUNT) //如果已经超过了可重入的计数值MAX_COUNT，就会返回false
+                throw new Error("Maximum lock count exceeded");
+            // 重入锁：更新状态值
+            setState(c + acquires);
+            return true;
+        }
+        if (writerShouldBlock() ||
+            !compareAndSetState(c, c + acquires))
+            return false;
+        setExclusiveOwnerThread(current);
+        return true;
+    }
+```
+
+　　②分析一下上面的写锁获取源码
+
+　　tryAcquire中线程获取写锁的条件：读锁没有线程获取，写锁被获取并且被获取的线程是自己，那么该线程可以重入的获取锁，而判断读锁是否被获取的条件就是（**当同步状态state值不等于0的时候，如果写状态(state & 0x0000FFFF)等于0的话，读状态是大于0的，表示读锁被获取**）。对于读写锁而言，需要保证写锁的更新结果操作对读操作是可见的，这样的话写锁的获取就需要保证其他的读线程没有获取到读锁。
+
+　　③写锁的释放源码
+
+　　写锁的释放和ReentrantLock的锁释放思路基本相同，从源码中可以看出来，每次释放都是减少写状态，直到写状态值为0(**exclusiveCount(nextc) == 0**)的时候释放写锁，后续阻塞等待的读写线程可以继续竞争锁。
+
+```java
+static final int SHARED_SHIFT   = 16;
+static final int EXCLUSIVE_MASK = (1 << SHARED_SHIFT) - 1; //1左移16位减1=>0000_0000_0000_0000_1111_1111_1111_1111
+static int exclusiveCount(int c) { return c & EXCLUSIVE_MASK; } //返回读状态的值
+protected final boolean tryRelease(int releases) {
+    if (!isHeldExclusively())
+        throw new IllegalMonitorStateException();
+    int nextc = getState() - releases;
+    boolean free = exclusiveCount(nextc) == 0; //写状态值为0，就释放写锁，并将同步状态的线程持有者置为null，然后更新状态值
+    if (free)
+        setExclusiveOwnerThread(null);
+    setState(nextc);
+    return free;
+}
+```
+
+#### d）读锁readLock
+
+　　①读锁是同样是支持重入的，除此之外也是共享式的，能够被多个线程获取。在同一时刻的竞争队列中，如果没有写线程想要获取读写锁，那么读锁总会被读线程获取到(然后更新读状态的值)。每个读线程都可以重入的获取读锁，而对应的获取次数保存在本地线程中，由线程自身维护该值。
+
+　　②获取读锁的条件：其他线程已经获取了写锁，则当前线程获取读锁会失败而进入等待状态；如果当前线程获取了写锁或者写锁没有被获取，那么就可以获取到读锁，并更细同步状态（读状态值）。
+
+　　③读锁的每次释放都是减少读状态，
+
+#### f）锁的降级
+
+　　锁降级的概念：如果当先线程是写锁的持有者，并保持获得写锁的状态，同时又获取到读锁，然后释放写锁的过程。（注意不同于这样的分段过程：当前线程拥有写锁，释放掉写锁之后再获取读锁的过程，这种分段过程不能称为锁降级）。
+
+```java
+class CachedData {
+  Object data;
+  volatile boolean cacheValid;
+  final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+
+  void processCachedData() {
+    // 获取读锁
+    rwl.readLock().lock();
+    if (!cacheValid) {
+      // 在获取写锁之前必须释放读锁，不释放的话下面写锁会获取不成功，造成死锁
+      rwl.readLock().unlock();
+     // 获取写锁
+      rwl.writeLock().lock();
+      try {
+        // 重新检查state，因为在获取写锁之前其他线程可能已经获取写锁并且更改了state
+        if (!cacheValid) {
+          data = ...
+          cacheValid = true;
+        }
+        // 通过在释放写锁定之前获取读锁定来降级
+        // 这里再次获取读锁，如果不获取，那么当写锁释放后可能其他写线程再次获得写锁，导致下方`use(data)`时出现不一致的现象
+        // 这个操作就是降级
+        rwl.readLock().lock();
+      } finally {
+        rwl.writeLock().unlock(); // 释放写锁，由于在释放之前读锁已经被获取，所以现在是读锁获取状态
+      }
+    }
+
+    try {
+    // 使用完后释放读锁
+      use(data);
+    } finally {
+      rwl.readLock().unlock(); //释放读锁
+    }
+  }
+ }}
+```
+
+ 
+
 ## java多线程的实现方式有4种
 
 1. 继承Thread类，重写run方法；

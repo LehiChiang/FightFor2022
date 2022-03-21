@@ -9,7 +9,7 @@ class ProducerThread implements Runnable {
 
     @Override
     public void run() {
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 2; i++) {
             producer.pushService();
         }
     }
