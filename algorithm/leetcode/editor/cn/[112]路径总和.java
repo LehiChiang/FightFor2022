@@ -31,36 +31,15 @@ class hasPathSumSolution {
     private boolean dfs(TreeNode root, int targetSum) {
         if (root == null)
             return false;
-        if (targetSum == root.val && root.left == null && root.right == null) {
+        if (root.left == null && root.right == null && targetSum == root.val)
             return true;
-        }
-        targetSum -= root.val;
-        return dfs(root.left, targetSum) || dfs(root.right, targetSum);
+        return dfs(root.left, targetSum - root.val) || dfs(root.right, targetSum - root.val);
     }
 
     public static void main(String[] args) {
         hasPathSumSolution solution = new hasPathSumSolution();
-//        TreeNode root = new TreeNode(5);
-//        TreeNode node_4 = new TreeNode(4);
-//        TreeNode node_8 = new TreeNode(8);
-//        TreeNode node_11 = new TreeNode(11);
-//        TreeNode node_13 = new TreeNode(13);
-//        TreeNode node__4 = new TreeNode(4);
-//        TreeNode node_7 = new TreeNode(7);
-//        TreeNode node_2 = new TreeNode(2);
-//        TreeNode node_1 = new TreeNode(1);
-//        node_11.left = node_7;
-//        node_11.right = node_2;
-//        node__4.right = node_1;
-//        node_4.left = node_11;
-//        node_8.left = node_13;
-//        node_8.right = node__4;
-//        root.left = node_4;
-//        root.right = node_8;
-
-        TreeNode root2 = new TreeNode(-2);
-        root2.right = new TreeNode(-3);
-        System.out.println(solution.hasPathSum(root2, -15));
+        System.out.println(solution.hasPathSum(TreeNode.deserialize("1,2,3"), 5));
+        System.out.println(solution.hasPathSum(TreeNode.deserialize("5,4,8,11,null,13,4,7,2,null,null,null,1"), 22));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

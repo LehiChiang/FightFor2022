@@ -35,9 +35,9 @@ class pathSum3Solution {
 //    private void dfs(TreeNode root, int targetSum) {
 //        if (root == null)
 //            return;
-//        if (targetSum == root.val)
-//            res++;
 //        targetSum -= root.val;
+//        if (targetSum == 0)
+//            res++;
 //        dfs(root.left, targetSum);
 //        dfs(root.right, targetSum);
 //    }
@@ -69,10 +69,7 @@ class pathSum3Solution {
 
     public static void main(String[] args) {
         pathSum3Solution solution = new pathSum3Solution();
-        TreeNode root = new TreeNode(1);
-        root.left = new TreeNode(-2);
-        root.right = new TreeNode(-3);
-        System.out.println(solution.pathSum(root, -1));
+        System.out.println(solution.pathSum(TreeNode.deserialize("10,5,-3,3,2,null,11,3,-2,null,1"), 8));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

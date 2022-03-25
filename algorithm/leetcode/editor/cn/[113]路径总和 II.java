@@ -39,7 +39,7 @@ class pathSum2Solution {
             return;
         path.offerLast(root.val);
         targetSum -= root.val;
-        if (targetSum == 0 && root.left == null && root.right == null) {
+        if (root.left == null && root.right == null && targetSum == 0) {
             res.add(new LinkedList<>(path));
         }
         dfs(root.left, targetSum);
@@ -49,24 +49,7 @@ class pathSum2Solution {
 
     public static void main(String[] args) {
         pathSum2Solution solution = new pathSum2Solution();
-        TreeNode root = new TreeNode(5);
-        TreeNode node_4 = new TreeNode(4);
-        TreeNode node_8 = new TreeNode(8);
-        TreeNode node_11 = new TreeNode(11);
-        TreeNode node_13 = new TreeNode(13);
-        TreeNode node__4 = new TreeNode(4);
-        TreeNode node_7 = new TreeNode(7);
-        TreeNode node_2 = new TreeNode(2);
-        TreeNode node_1 = new TreeNode(1);
-        node_11.left = node_7;
-        node_11.right = node_2;
-        node__4.right = node_1;
-        node_4.left = node_11;
-        node_8.left = node_13;
-        node_8.right = node__4;
-        root.left = node_4;
-        root.right = node_8;
-        System.out.println(solution.pathSum(root, 22));
+        System.out.println(solution.pathSum(TreeNode.deserialize("5,4,8,11,null,13,4,7,2,null,null,5,1"), 22));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

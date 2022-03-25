@@ -40,7 +40,7 @@
 ### 框架
 
 - [Spring](https://github.com/LehiChiang/FightFor2022/tree/main/java/src/main/java/Spring)
-- Quartz
+- quartz
 
 <h2 id="database">数据库</h2>
 
