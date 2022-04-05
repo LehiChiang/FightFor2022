@@ -14,6 +14,9 @@ package leetcode.editor.cn;
 // 0 <= height[i] <= 10⁵
 // Related Topics 栈 数组 双指针 动态规划 单调栈 👍 2758 👎 0
 
+import java.util.Deque;
+import java.util.LinkedList;
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class trapSolution {
 //    public int trap(int[] height) {
@@ -32,23 +35,39 @@ class trapSolution {
 //        return res;
 //    }
 
-    public int trap(int[] height) {
-        int n = height.length;
-        int l_max = height[0], r_max = height[n - 1];
-        int left = 0, right = n - 1, res = 0;
-        while (left <= right) {
-            l_max = Math.max(l_max, height[left]);
-            r_max = Math.max(r_max, height[right]);
+//    public int trap(int[] height) {
+//        int n = height.length;
+//        int l_max = height[0], r_max = height[n - 1];
+//        int left = 0, right = n - 1, res = 0;
+//        while (left <= right) {
+//            l_max = Math.max(l_max, height[left]);
+//            r_max = Math.max(r_max, height[right]);
+//
+//            if (l_max < r_max) {
+//                res += l_max - height[left];
+//                left++;
+//            } else {
+//                res += r_max - height[right];
+//                right--;
+//            }
+//        }
+//        return res;
+//    }
 
-            if (l_max < r_max) {
-                res += l_max - height[left];
-                left++;
-            } else {
-                res += r_max - height[right];
-                right--;
+    public int trap(int[] height) {
+        Deque<Integer> stack = new LinkedList<>();
+        int ans = 0;
+        for (int i = 0; i < height.length; i++) {
+            while (!stack.isEmpty() && height[stack.peek()] < height[i]) {
+                int curIndex = stack.pop();
+                int left = stack.isEmpty() ? curIndex : stack.peek();
+                int curWidth = i - left - 1;
+                int curHeight = Math.min(height[left], height[i]) - height[curIndex];
+                ans += curHeight * curWidth;
             }
+            stack.push(i);
         }
-        return res;
+        return ans;
     }
 
     public static void main(String[] args) {

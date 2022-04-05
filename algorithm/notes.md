@@ -1694,6 +1694,47 @@ class Solution {
 
 
 
+### 接雨水问题
+
+给定 `n` 个非负整数表示每个宽度为 `1` 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+
+**示例 1：**
+
+![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/rainwatertrap.png)
+
+```
+输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]
+输出：6
+解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 
+```
+
+**示例 2：**
+
+```
+输入：height = [4,2,0,3,2,5]
+输出：9
+```
+
+```java
+    public int trap(int[] height) {
+        Deque<Integer> stack = new LinkedList<>();
+        int ans = 0;
+        for (int i = 0; i < height.length; i++) {
+            while (!stack.isEmpty() && height[stack.peek()] < height[i]) {
+                int curIndex = stack.pop();
+                int left = stack.isEmpty() ? curIndex : stack.peek();
+                int curWidth = i - left - 1;
+                int curHeight = Math.min(height[left], height[i]) - height[curIndex];
+                ans += curHeight * curWidth;
+            }
+            stack.push(i);
+        }
+        return ans;
+    }
+```
+
+
+
 ### 柱状图中最大的矩形
 
 要求出柱状图中的最大矩形，可以枚举宽和高。固定宽枚举高或者固定高枚举宽。这里选择固定高枚举宽度比较方便。可以使用暴力的方法枚举出所能容纳的最小宽度范围，然后乘以高度即可得到面积。
@@ -2251,6 +2292,137 @@ int main()
 
 
 ## 二. 链表
+
+### 单向链表的快速排序
+
+**算法思想**：对于一个链表，以head节点的值作为key，然后遍历之后的节点，可以得到一个小于key的链表和大于等于key的链表；由此递归可以对两个链表分别进行快速。这里用到了快速排序的思想即经过一趟排序能够将小于key的元素放在一边，将大于等于key的元素放在另一边。
+
+```java
+    //快速排序
+    public static void quickSort(ListNode begin, ListNode end){
+        if(begin == null || begin == end)
+            return;
+
+        ListNode index = paration(begin, end);
+        quickSort(begin, index);
+        quickSort(index.next, end);
+    }
+
+    /**
+     * 划分函数，以头结点值为基准元素进行划分
+     * @param begin
+     * @param end
+     * @return
+     */
+    public static ListNode paration(ListNode begin, ListNode end){
+        if(begin == null || begin == end)
+            return begin;
+
+        int val = begin.val;  //基准元素
+        ListNode index = begin, cur = begin.next;
+
+        while(cur != end){
+            if(cur.val < val){  //交换
+                index = index.next;
+                int tmp = cur.val;
+                cur.val = index.val;
+                index.val = tmp;
+            }
+            cur = cur.next;
+        }
+
+
+        begin.val = index.val;
+        index.val = val;
+
+        return index;
+    }
+```
+
+
+
+### 双向链表的快速排序
+
+```java
+/**
+ * 双向链表快排
+ */
+public class DoubleLinkedListQuickSort {
+
+    static class Node {
+        int value;
+        Node pre;
+        Node next;
+
+        Node(int value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            if (this.next == null) {
+                return String.valueOf(this.value);
+            }
+            return this.value + "->" + this.next.toString();
+        }
+    }
+
+    /**
+     * 参数为头节点和尾节点
+     */
+    public static void quickSort(Node head, Node tail) {
+        if (head == null || tail == null || head == tail || head.next == tail) {
+            return;
+        }
+
+        if (head != tail) {
+            Node mid = getMid(head, tail);
+            quickSort(head, mid);
+            quickSort(mid.next, tail);
+        }
+    }
+
+    public static Node getMid(Node start, Node end) {
+        int base = start.value;
+        while (start != end) {
+            while(start != end && base <= end.value) {
+                end = end.pre;
+            }
+            start.value = end.value;
+            while(start != end && base >= start.value) {
+                start = start.next;
+            }
+            end.value = start.value;
+        }
+        start.value = base;
+        return start;
+    }
+
+    public static void main(String[] args) {
+        Node node1 = new Node(5);
+        Node node2 = new Node(4);
+        Node node3 = new Node(5);
+        Node node4 = new Node(2);
+        Node node5 = new Node(1);
+        Node node6 = new Node(0);
+        node1.next = node2;
+        node2.pre = node1;
+        node2.next = node3;
+        node3.pre = node2;
+        node3.next = node4;
+        node4.pre = node3;
+        node4.next = node5;
+        node5.pre = node4;
+        node5.next = node6;
+        node6.pre = node5;
+        System.out.println("Origin link: " + node1);
+        quickSort(node1, node6);
+        System.out.println("Sorted link: " + node1);
+    }
+}
+```
+
+
 
 ### 链表两数相加(高位头结点)
 
