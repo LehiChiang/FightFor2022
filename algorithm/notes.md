@@ -153,73 +153,6 @@ class Solution {
 
 
 
-### 快速排序
-
-```java
-class Solution {
-
-    private Random random = new Random();
-    public int[] sortArray(int[] nums) {
-        quickSort(nums, 0, nums.length - 1);
-        return nums;
-    }
-
-    private void quickSort(int[] nums, int start, int end) {
-        if (start < end) {
-            int mid = random_partition(nums, start, end);
-            quickSort(nums, start, mid - 1);
-            quickSort(nums, mid + 1, end);
-        }
-    }
-
-    private int random_partition(int[] nums, int left, int right) {
-    	int i = random.nextInt(right - left + 1) + left;
-    	swap(nums, left, i);
-    	return partition(nums, left, right);
-	}
-    
-    // 第一种partition写法
-    private int partition(int[] nums, int low, int high) {
-        int pivot = nums[low];
-        while (low < high) {
-            while (low < high && nums[high] >= pivot) high--;
-            nums[low] = nums[high];
-            while (low < high && nums[low] <= pivot) low++;
-            nums[high] = nums[low];
-        }
-        nums[low] = pivot;
-        return low;
-    }
-    
-    // 第二种partition写法
-    /**
-     * i，j，r三个变量分别代表左半部分最后一个元素，未分区的元素的第一个元素，最后一个为中枢的元素
-     * @param nums
-     * @param start
-     * @param end
-     * @return
-     */
-    private int partition(int[] nums, int start, int end) {
-        int i = start - 1, j = start, r = nums[end];
-        for (; j < end; j++) {
-            if (nums[j] <= r) {
-                swap(nums, ++i, j);
-            }
-        }
-        swap(nums, ++i, j);
-        return i;
-    }
-
-    private void swap(int[] nums, int i, int j) {
-        int tmp = nums[i];
-        nums[i] = nums[j];
-        nums[j] = tmp;
-    }
-}
-```
-
-<img src="https://assets.codetop.cc/user/note/24967_zY9rGVtnak62qoFZ.jpg" alt="image" style="zoom: 67%;" />
-
 ### 堆
 
 两个操作，（一）建堆`buildHeap` （二）维护堆`heapify`
@@ -337,7 +270,7 @@ while (res > 0) res -= nums[maxIndex--];
 
 
 
-### 环形子数组的最大和
+### 【×】环形子数组的最大和
 
 这题一共有两种情况（也就是相当于比上一题多了一种最大子数组和是首尾连接的情况）
 下面的这个子数组指最大和的子数组
@@ -395,9 +328,23 @@ while (res > 0) res -= nums[maxIndex--];
 
 
 
-### 最大子矩阵和
+### 【×】最大子矩阵和
 
-返回一个数组 `[r1, c1, r2, c2]`，其中 `r1, c1` 分别代表子矩阵左上角的行号和列号，`r2, c2` 分别代表右下角的行号和列号。若有多个满足条件的子矩阵，返回任意一个均可。
+返回一个数组 `[r1, c1, r2, c2]`，其中 `r1`, `c1` 分别代表子矩阵左上角的行号和列号，`r2`, `c2` 分别代表右下角的行号和列号。若有多个满足条件的子矩阵，返回任意一个均可。
+
+**示例：**
+
+```
+输入：
+[
+   [-1,0],
+   [0,-1]
+]
+输出：[0,1,0,1]
+解释：输入中标粗的元素即为输出所表示的矩阵
+```
+
+
 
 将二维压缩成一维，然后计算每层累计的数组的最大和（和上一题一样）
 
@@ -439,6 +386,30 @@ public int[] getMaxMatrix(int[][] matrix) {
 
 ### 和为K的子数组
 
+给你一个整数数组 `nums` 和一个整数 `k` ，请你统计并返回 *该数组中和为 `k` 的子数组的个数* 。
+
+子数组是数组中元素的连续非空序列。
+
+**示例 1：**
+
+```
+输入：nums = [1,1,1], k = 2
+输出：2
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,3], k = 3
+输出：2
+```
+
+**提示：**
+
+- `1 <= nums.length <= 2 * 104`
+- `-1000 <= nums[i] <= 1000`
+- `-107 <= k <= 107`
+
 ```java
 public int subarraySum(int[] nums, int k) {
     // key表示前缀和，value表示前缀和的数量
@@ -457,7 +428,101 @@ public int subarraySum(int[] nums, int k) {
 
 
 
+### 二维数组的前缀和
+
+给定一个二维矩阵 `matrix`，以下类型的多个请求：
+
+- 计算其子矩形范围内元素的总和，该子矩阵的 **左上角** 为 `(row1, col1)` ，**右下角** 为 `(row2, col2)` 。
+
+实现 `NumMatrix` 类：
+
+- `NumMatrix(int[][] matrix)` 给定整数矩阵 `matrix` 进行初始化
+- `int sumRegion(int row1, int col1, int row2, int col2)` 返回 **左上角** `(row1, col1)` 、**右下角** `(row2, col2)` 所描述的子矩阵的元素 **总和** 。
+
+**示例 1：**
+
+![img](https://pic.leetcode-cn.com/1626332422-wUpUHT-image.png)
+
+```
+输入: 
+["NumMatrix","sumRegion","sumRegion","sumRegion"]
+[[[[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]],[2,1,4,3],[1,1,2,2],[1,2,2,4]]
+输出: 
+[null, 8, 11, 12]
+
+解释:
+NumMatrix numMatrix = new NumMatrix([[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]);
+numMatrix.sumRegion(2, 1, 4, 3); // return 8 (红色矩形框的元素总和)
+numMatrix.sumRegion(1, 1, 2, 2); // return 11 (绿色矩形框的元素总和)
+numMatrix.sumRegion(1, 2, 2, 4); // return 12 (蓝色矩形框的元素总和)
+```
+
+ 
+
+**提示：**
+
+- `m == matrix.length`
+- `n == matrix[i].length`
+- `1 <= m, n <= 200`
+- `-105 <= matrix[i][j] <= 105`
+- `0 <= row1 <= row2 < m`
+- `0 <= col1 <= col2 < n`
+- 最多调用 `104` 次 `sumRegion` 方法
+
+代码：
+
+```java
+class NumMatrix {
+    // preSum[i][j] 记录矩阵 [0, 0, i, j] 的元素和
+    private int[][] preSum;
+
+    public NumMatrix(int[][] matrix) {
+        int m = matrix.length, n = matrix[0].length;
+        if (m == 0 || n == 0) return;
+        // 构造前缀和矩阵
+        preSum = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                // 计算每个矩阵 [0, 0, i, j] 的元素和
+                preSum[i][j] = preSum[i-1][j] + preSum[i][j-1] + matrix[i - 1][j - 1] - preSum[i-1][j-1];
+            }
+        }
+    }
+
+    // 计算子矩阵 [x1, y1, x2, y2] 的元素和
+    public int sumRegion(int x1, int y1, int x2, int y2) {
+        // 目标矩阵之和由四个相邻矩阵运算获得
+        return preSum[x2+1][y2+1] - preSum[x1][y2+1] - preSum[x2+1][y1] + preSum[x1][y1];
+    }
+}
+```
+
+
+
 ### 和可被K整除的子数组
+
+给定一个整数数组 `nums` 和一个整数 `k` ，返回其中元素之和可被 `k` 整除的（连续、非空） **子数组** 的数目。
+
+**子数组** 是数组的 **连续** 部分。
+
+**示例 1：**
+
+```
+输入：nums = [4,5,0,-2,-3,1], k = 5
+输出：7
+解释：
+有 7 个子数组满足其元素之和可被 k = 5 整除：
+[4, 5, 0, -2, -3, 1], [5], [5, 0], [5, 0, -2, -3], [0], [0, -2, -3], [-2, -3]
+```
+
+**示例 2:**
+
+```
+输入: nums = [5], k = 9
+输出: 0
+```
+
+**解题：**
 
 `preSum % k`作为判断条件
 
@@ -469,6 +534,11 @@ public int subarraySum(int[] nums, int k) {
         for (int i = 0; i < nums.length; i++) {
             preSum += nums[i];
             int key = (preSum % k + k) % k;
+            // (presum - num[j]) % k = 0
+            // presum % k = num[j] % k
+            // Map里面存的是和presum同模的num[j]出现的次数，
+            // 考虑到负数的情况，可以使用Java的取模函数计算
+            // int key = Math.floorMod(preSum,k);      !!!
             if (map.containsKey(key)) {
                 res += map.get(key);
             }
@@ -7961,6 +8031,75 @@ dp[i][1] = min(dp[i-1][1], dp[i-1][0]) + (s.charAt(i)=='1'?0:1)；
 
 
 ## 十三. 排序算法
+
+### 快速排序
+
+```java
+class Solution {
+
+    private Random random = new Random();
+    public int[] sortArray(int[] nums) {
+        quickSort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    private void quickSort(int[] nums, int start, int end) {
+        if (start < end) {
+            int mid = random_partition(nums, start, end);
+            quickSort(nums, start, mid - 1);
+            quickSort(nums, mid + 1, end);
+        }
+    }
+
+    private int random_partition(int[] nums, int left, int right) {
+    	int i = random.nextInt(right - left + 1) + left;
+    	swap(nums, left, i);
+    	return partition(nums, left, right);
+	}
+    
+    // 第一种partition写法
+    private int partition(int[] nums, int low, int high) {
+        int pivot = nums[low];
+        while (low < high) {
+            while (low < high && nums[high] >= pivot) high--;
+            nums[low] = nums[high];
+            while (low < high && nums[low] <= pivot) low++;
+            nums[high] = nums[low];
+        }
+        nums[low] = pivot;
+        return low;
+    }
+    
+    // 第二种partition写法
+    /**
+     * i，j，r三个变量分别代表左半部分最后一个元素，未分区的元素的第一个元素，最后一个为中枢的元素
+     * @param nums
+     * @param start
+     * @param end
+     * @return
+     */
+    private int partition(int[] nums, int start, int end) {
+        int i = start - 1, j = start, r = nums[end];
+        for (; j < end; j++) {
+            if (nums[j] <= r) {
+                swap(nums, ++i, j);
+            }
+        }
+        swap(nums, ++i, j);
+        return i;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+}
+```
+
+<img src="https://assets.codetop.cc/user/note/24967_zY9rGVtnak62qoFZ.jpg" alt="image" style="zoom: 67%;" />
+
+
 
 ### 冒泡排序
 

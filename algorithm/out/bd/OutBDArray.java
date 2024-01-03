@@ -1,5 +1,8 @@
 package out.bd;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class OutBDArray {
 
     private final int[] nums;
@@ -62,5 +65,25 @@ public class OutBDArray {
         int pivotPos = partition(left, right);
         quickSort(left, pivotPos - 1);
         quickSort(pivotPos + 1, right);
+    }
+
+    /**
+     * 和可被K整除的子数组个数
+     * @param k
+     * @return 子数组个数
+     */
+    public int SubarraysDivByK(int k) {
+        int res = 0, preSum = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        for (int num : nums) {
+            preSum += num;
+            int key = Math.floorMod(preSum, k);
+            if (map.containsKey(key)) {
+                res += map.get(key);
+            }
+            map.put(key, map.getOrDefault(key, 0) + 1);
+        }
+        return res;
     }
 }
