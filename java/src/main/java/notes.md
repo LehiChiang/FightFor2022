@@ -2101,6 +2101,95 @@ class Buffer {
 
 
 
+### 6. 交替输出奇偶数
+
+synchronized关键字
+
+```java
+/**
+ * 多线程：写一下两个线程交替打印 0~100 的奇偶数
+ */
+public class Code {
+
+    public static void main(String[] args) {
+        PrintTask task = new PrintTask();
+        new Thread(task::printNum, "偶数线程").start();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        new Thread(task::printNum, "奇数线程").start();
+    }
+}
+
+class PrintTask {
+
+    private int count = 0;
+
+    public void printNum() {
+       while (count <= 10) {
+           synchronized (this) {
+               System.out.println(Thread.currentThread().getName() + ": " + count++);
+               this.notify();
+               try {
+                   if (count <= 10) {
+                       this.wait();
+                   }
+               }catch (Exception e){
+                   e.printStackTrace();
+               }
+           }
+       }
+    }
+}
+```
+
+
+
+ReentrantLock+Condition
+
+```java
+/**
+ * 多线程：写一下两个线程交替打印 0~100 的奇偶数
+ */
+public class Code {
+
+    public static void main(String[] args) {
+        PrintTask task = new PrintTask();
+        new Thread(task::printNum, "偶数线程").start();
+        new Thread(task::printNum, "奇数线程").start();
+    }
+}
+
+class PrintTask {
+
+    private int count = 0;
+    private int maxCount = 10000;
+    private ReentrantLock lock = new ReentrantLock();
+    private Condition condition = lock.newCondition();
+
+    public void printNum() {
+        while (count <= maxCount) {
+            try {
+                lock.lock();
+                System.out.println(Thread.currentThread().getName() + ": " + count++);
+                condition.signal();
+                if (count <= maxCount) {
+                    condition.await();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+}
+```
+
+
+
 ## 37. 接口，lambda表达式与内部类
 
 ### 37.1 接口

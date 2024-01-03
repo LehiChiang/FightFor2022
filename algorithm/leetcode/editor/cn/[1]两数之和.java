@@ -24,26 +24,26 @@ package leetcode.editor.cn;
 
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class twoSumSolution {
     public int[] twoSum(int[] nums, int target) {
-        Arrays.sort(nums);
-        int low = 0, high = nums.length - 1;
-        while (low < high) {
-            int sum = nums[low] + nums[high];
-            if (sum == target) {
-                return new int[]{nums[low], nums[high]};
-            } else if (sum < target) {
-                low++;
-            } else high--;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(target - nums[i])) {
+                return new int[]{map.get(target - nums[i]), i};
+            }
+            map.put(nums[i], i);
         }
         return new int[]{};
     }
 
     public static void main(String[] args) {
         twoSumSolution solution = new twoSumSolution();
-        int[] res = solution.twoSum(new int[]{3,2,4}, 6);
+        int[] res = solution.twoSum(new int[]{3,3}, 9);
+        System.out.println(Arrays.toString(res));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
