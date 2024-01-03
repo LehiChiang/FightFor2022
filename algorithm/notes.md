@@ -100,7 +100,11 @@ while(left <= right){
 输出: 4
 ```
 
-代码：
+**核心思想：**
+
+利用快速排序，正确放置轴值元素位置的思想，找到第n-k位置上的数字，使得数组能够局部排序，即得到的轴值元素为第K大的数字。
+
+**代码：**
 
 ```java
 class Solution {
@@ -189,7 +193,7 @@ class Solution {
     
     // 第二种partition写法
     /**
-     * i，j，r三个变量分别代表左半部分最后一个元素，未分区的元素的第一个元素，最后一个最为中枢的元素
+     * i，j，r三个变量分别代表左半部分最后一个元素，未分区的元素的第一个元素，最后一个为中枢的元素
      * @param nums
      * @param start
      * @param end
@@ -261,7 +265,8 @@ class Solution {
     }
 
     private void maxHeapify(int[] nums, int i, int heapSize) { // 堆化是从上往下的
-        int left = 2 * i + 1, right = 2 * i + 2, maxIndex = i;
+        int left = 2 * i + 1, right = 2 * i +
+            2, maxIndex = i;
         if (left < heapSize && nums[left] > nums[maxIndex]) // 这里只是找出最大的索引
             maxIndex = left;
         if (right < heapSize && nums[right] > nums[maxIndex])
@@ -287,7 +292,7 @@ class Solution {
 
 
 
-### 最大子数组和
+### 最大连续子数组和
 
 ```
 输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
