@@ -652,6 +652,8 @@ class NumMatrix {
 
 前缀和思想：
 
+注意：这里`preCount`表示的是`nums[0, i-1]`中子数组的个数
+
 ```java
 class Solution {
     public int numberOfSubarrays(int[] nums, int k) {
@@ -732,7 +734,34 @@ $$
 $$
 \text{LIS}_{\textit{length}}= \max(\textit{dp}[i]), \text{其中} \, 0\leq i < n
 $$
-**基于二分查找的动态规划**：
+```java
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        int[] dp = new int[nums.length];
+        dp[0] = 1;
+        int res = 1;
+        for (int i = 1; i < nums.length; i++) {
+            dp[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+
+                }
+            }
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+    }
+}
+```
+
+
+
+**基于二分查找的贪心**：
+
+核心思想就是构造一个最长递增子序列数组，我们想要使子数组最长，就需要子数组的递增速度要慢（递增增幅尽可能小），所以使用二分查找，找到第一个最小的数字，替换掉就行。这样就用最小增幅的数字，构成长度最长的子数组了。
 
 维护一个最长数组 $d[i]$ ，表示长度为 i 的最长上升子序列的末尾元素的最小值，用 $\textit{len}$记录目前最长上升子序列的长度，起始时$ len $为 $1$，$d[1] = \textit{nums}[0]$。
 
@@ -764,7 +793,7 @@ $$
                 right = mid;
             else left = mid + 1;
         }
-        return left;
+        return left;   // 这里注意返回的是left边界
     }
 ```
 
@@ -781,6 +810,7 @@ $$
 我们的做法可以是从当前元素`num`开始，一次查找`num+1, num+2, ... num+y`是否在数字中，如果都在那么个最后的答案就是`y`。那么这个其实不是最优的，因为如果当前元素是`num+2`的话，那么找到`num+y`，这算一次了。但是如果走到`num`，还要找一遍`num+1, num+2, ... num+y`。那么前面走的那一遍就白走了。所以我们就直接找的最小的元素`num`，从`num`开始`+1`的找。既然`num`是数组中的最小值，那么数组中肯定不存在`num-1`，所以`num-1`就是我们判断最小值的条件。如果`num-1`在数组里，`num`就不是最小值，跳过。如果`num-1`不在数组中，那么`num`就是最小值，这个时候开始往上找。
 
 ```java
+
 public int longestConsecutive(int[] nums) {
         Set<Integer> set = new HashSet<>();
         for (int num : nums) {
@@ -789,7 +819,8 @@ public int longestConsecutive(int[] nums) {
         int res = 0;
         for (int num : nums) {
             if (!set.contains(num - 1)) {
-                int currentNum = num;
+                int currentNum = num
+                    
                 int currentLongest = 1;
                 while (set.contains(currentNum + 1)) {
                     currentNum += 1;
@@ -804,13 +835,7 @@ public int longestConsecutive(int[] nums) {
 
 
 
-### 最长连续不重复子序列(下标连续)
-
-```java
-输入: nums= [1,2,2,3,5]
-输出格式: 3
-解释：最长下标连续不重复的子序列是[2,3,5]。它的长度是3
-```
+### 滑动窗口模板
 
 双指针算法的模板一般都可以写成下面的形式(模板)：
 
@@ -823,6 +848,41 @@ for (int i = 0, j = 0; i < n; i++)
 ```
 
 因为双指针算法是一种优化时间复杂度的方法，所以我们可以首先写出最朴素的**两层循环**的写法。然后考虑题目中是否具有**单调性**。即当其中一个指针 向后移动时，在希望得到答案的情况下，另一个指针 是不是只能向着一个方向移动。
+
+
+
+### 最长连续不重复子序列/子串(下标连续)
+
+```java
+输入: nums= [1,2,2,3,5]
+输出格式: 3
+解释：最长下标连续不重复的子序列是[2,3,5]。它的长度是3
+```
+
+**示例 1:**
+
+```
+输入: s = "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+```
+
+**示例 2:**
+
+```
+输入: s = "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+```
+
+**示例 3:**
+
+```
+输入: s = "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+```
 
 这道题我们只枚举`i`， `j`的话是每次看一下要不要往后走。如果有重复元素的话，就`j++`。一直移动到`j`和`i`之间没有重复元素为止，所以最多是`i`走`n`步，`j`走`n`步，一共走`2n`步。
 

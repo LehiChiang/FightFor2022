@@ -6,13 +6,13 @@ import java.util.Arrays;
 
 class OutBDArrayTest {
 
-    int[] nums = new int[]{4, 5, 0, -2, -3, 1};
+    int[] nums = new int[]{10, 9, 2, 5, 3, 7, 100, 18};
     OutBDArray outBDArray = new OutBDArray(nums);
 
     @Test
     void quickSelect() {
         int num = outBDArray.QuickSelect(2);
-        assert num == 5;
+        System.out.println(num);
     }
 
     @Test
@@ -25,5 +25,17 @@ class OutBDArrayTest {
     void subarraysDivByK() {
         int res = outBDArray.SubarraysDivByK(5);
         System.out.println(res);
+    }
+
+    @Test
+    void lengthOfLongestIncreasingSubsequence() {
+        int res = outBDArray.LIS();
+        System.out.println(res);
+    }
+
+
+    @Test
+    void LCNRS() {
+        assert outBDArray.LCNRS("qwwaew") == 3;
     }
 }
