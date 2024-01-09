@@ -986,24 +986,18 @@ public int lengthOfLongestSubstring(String s) {
 
 ```java
 public List<List<Integer>> threeSum(int[] nums) {
-        int n = nums.length;
-        Arrays.sort(nums);
         List<List<Integer>> res = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            if (i > 0 && nums[i] == nums[i - 1]) {
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0 && nums[i] == nums[i - 1])
                 continue;
-            }
-            int third = n - 1;
-            for (int j = i + 1; j < n; j++) {
-                if (j > i + 1 && nums[j] == nums[j - 1]) {
+            int third = nums.length - 1;
+            for (int j = i + 1; j < nums.length; j++) {
+                if (j > i + 1 && nums[j] == nums[j - 1])
                     continue;
-                }
-                while (j < third && nums[i] + nums[j] + nums[third] > 0)
-                    third--;
-                if (j == third)
-                    break;
-                if (nums[i] + nums[j] + nums[third] == 0) {
-                    ArrayList<Integer> list = new ArrayList<>();
+                while (third > j && nums[i] + nums[j] + nums[third] > 0) third--;
+                if (third > j && nums[i] + nums[j] + nums[third] == 0) {
+                    List<Integer> list = new ArrayList<>();
                     list.add(nums[i]);
                     list.add(nums[j]);
                     list.add(nums[third]);
@@ -1022,38 +1016,27 @@ public List<List<Integer>> threeSum(int[] nums) {
 ```java
 class Solution {
     public int threeSumClosest(int[] nums, int target) {
+        int res = 10000000;
         Arrays.sort(nums);
-        int n = nums.length;
-        int best = 10000000;
-        for (int i = 0; i < n; ++i) {
-            if (i > 0 && nums[i] == nums[i - 1]) {
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0 && nums[i] == nums[i - 1])
                 continue;
-            }
-            int j = i + 1, k = n - 1;
-            while (j < k) {
-                int sum = nums[i] + nums[j] + nums[k];
-                if (sum == target) {
-                    return target;
-                }
-                if (Math.abs(sum - target) < Math.abs(best - target)) {
-                    best = sum;
-                }
-                if (sum > target) {
-                    int k0 = k - 1;
-                    while (j < k0 && nums[k0] == nums[k]) {
-                        --k0;
+            for (int j = i + 1; j < nums.length; j++) {
+                int third = nums.length - 1;
+                if (j > i + 1 && nums[j] == nums[j - 1])
+                    continue;
+                while (j < third) {
+                    int sum = nums[i] + nums[j] + nums[third];
+                    if (sum == target)
+                        return target;
+                    if (Math.abs(sum - target) < Math.abs(res - target)) {
+                        res = sum;
                     }
-                    k = k0;
-                } else {
-                    int j0 = j + 1;
-                    while (j0 < k && nums[j0] == nums[j]) {
-                        ++j0;
-                    }
-                    j = j0;
+                    third--;
                 }
             }
         }
-        return best;
+        return res;
     }
 }
 ```
@@ -1118,6 +1101,8 @@ public List<List<Integer>> threeSum(int[] nums) {
 
 查看当前 `mid` 为分割位置分割出来的两个部分 `[l, mid]` 和 `[mid + 1, r]` 哪个部分是有序的，并根据有序的那个部分确定我们该如何改变二分查找的上下界，因为我们能够根据有序的那部分判断出 `target` 在不在这个部分：
 
+<img src="https://assets.leetcode-cn.com/solution-static/33/33_fig1.png" alt="fig1" style="zoom:90%;" />
+
 - 如果 `[l, mid - 1]` 是有序数组，且 target 的大小满足 `[nums[l],nums[mid])`，则我们应该将搜索范围缩小至 `[l, mid - 1]`，否则在 `[mid + 1, r]` 中寻找。
 - 如果 `[mid, r]` 是有序数组，且 target 的大小满足 `(nums[mid+1],nums[r]]`，则我们应该将搜索范围缩小至 `[mid + 1, r]`，否则在 `[l, mid - 1]` 中寻找。
 
@@ -1158,7 +1143,7 @@ class Solution {
 
 
 
-### 寻找旋转排序数组中的最小值 II
+### 寻找旋转排序数组中的最小值
 
 已知一个长度为 `n` 的数组，预先按照升序排列，经由 `1` 到 `n` 次 **旋转** 后，得到输入数组。例如，原数组 `nums = [0,1,2,4,5,6,7]` 在变化后可能得到：
 
@@ -1193,7 +1178,55 @@ class Solution {
 解释：原数组为 [11,13,15,17] ，旋转 4 次得到输入数组。
 ```
 
-和I一样，只拿`mid`的元素和`right`的元素比较 ，来判断。这里多了重复元素的情况，所以，如果`mid`元素和`right`元素相同，那么`right--`。因为总会有`mid`能兜住最小值。
+**`pivot`和`high`的元素之间比较即可**
+
+<img src="https://assets.leetcode-cn.com/solution-static/153/2.png" alt="fig2" style="zoom:80%;" />
+
+<img src="https://assets.leetcode-cn.com/solution-static/153/3.png" alt="fig3" style="zoom:80%;" />
+
+代码：
+
+```java
+class Solution {
+    public int findMin(int[] nums) {
+        int low = 0;
+        int high = nums.length - 1;
+        while (low < high) {
+            int pivot = low + (high - low) / 2;
+            if (nums[pivot] < nums[high]) {
+                high = pivot;
+            } else {
+                low = pivot + 1;
+            }
+        }
+        return nums[low];
+    }
+}
+```
+
+
+
+### 寻找旋转排序数组中的最小值 II
+
+给你一个可能存在 **重复** 元素值的数组 `nums` ，它原来是一个升序排列的数组，并按上述情形进行了多次旋转。请你找出并返回数组中的 **最小元素** 。
+
+**示例 1：**
+
+```
+输入：nums = [1,3,5]
+输出：1
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,2,2,0,1]
+输出：0
+```
+
+
+
+和I一样，只拿`mid`的元素和`right`的元素比较 ，来判断。这里多了重复元素的情况，所以，如果`mid`元素和`right`元素相同，那么`right--`。**因为总会有`mid`能兜住最小值**。
 
 ```java
 public int findMin(int[] nums) {
@@ -1234,7 +1267,7 @@ public int findMin(int[] nums) {
 解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
 ```
 
-由于数字中有正负，所以不光要记录最大的乘积，也要记录最小的乘积。对于当前数字，不管正负，都要分别×最大乘积和最小乘积，然后选最大的当结果。
+由于存在负数，那么会导致最大的变最小的，最小的变最大的。因此还需要维护当前最小值`imin`。对于当前数字，不管正负，都要分别×最大乘积和最小乘积，然后选最大的当结果。
 
 ```java
     public int maxProduct(int[] nums) {
@@ -1252,6 +1285,50 @@ public int findMin(int[] nums) {
 
 
 ### 寻找两个正序数组的中位数
+
+我们只有用到二分的方法才能达到。我们不妨用另一种思路，题目是求中位数，其实就是求第 k 小数的一种特殊情况，而求第 k 小数有一种算法。由于数列是有序的，其实我们完全可以一半儿一半儿的排除。假设我们要找第 k 小数，我们可以每次循环排除掉 k/2 个数。看下边一个例子。
+
+假设我们要找第 7 小的数字。
+
+![image.png](https://pic.leetcode-cn.com/735ea8129ab5b56b7058c6286217fa4bb5f8a198e4c8b2172fe0f75b29a966cd-image.png)
+
+我们比较两个数组的第 k/2 个数字，如果 k 是奇数，向下取整。也就是比较第 3 个数字，上边数组中的 4 和下边数组中的 3，如果哪个小，就表明该数组的前 k/2 个数字都不是第 k 小数字，所以可以排除。也就是 1，2，3 这三个数字不可能是第 7 小的数字，我们可以把它排除掉。将 1349和 45678910 两个数组作为新的数组进行比较。
+
+更一般的情况 A[1] ，A[2] ，A[3]，A[k/2] ... ，B[1]，B[2]，B[3]，B[k/2] ... ，如果 A[k/2]<B[k/2] ，那么A[1]，A[2]，A[3]，A[k/2]都不可能是第 k 小的数字。
+
+A 数组中比 A[k/2] 小的数有 k/2-1 个，B 数组中，B[k/2] 比 A[k/2] 小，假设 B[k/2] 前边的数字都比 A[k/2] 小，也只有 k/2-1 个，所以比 A[k/2] 小的数字最多有 k/1-1+k/2-1=k-2个，所以 A[k/2] 最多是第 k-1 小的数。而比 A[k/2] 小的数更不可能是第 k 小的数了，所以可以把它们排除。
+
+橙色的部分表示已经去掉的数字。
+
+![image.png](https://pic.leetcode-cn.com/09b8649cd2b8bbea74f7f632b098fed5f8404530ff44b5a0b54a360b3cf7dd8f-image.png)
+
+由于我们已经排除掉了 3 个数字，就是这 3 个数字一定在最前边，所以在两个新数组中，我们只需要找第 7 - 3 = 4 小的数字就可以了，也就是 k = 4。此时两个数组，比较第 2 个数字，3 < 5，所以我们可以把小的那个数组中的 1 ，3 排除掉了。
+
+![image.png](https://pic.leetcode-cn.com/f2d72fd3dff109ad810895b9a0c8d8782f47df6b2f24f9de72704961bc547fcb-image.png)
+
+我们又排除掉 2 个数字，所以现在找第 4 - 2 = 2 小的数字就可以了。此时比较两个数组中的第 k / 2 = 1 个数，4 == 4，怎么办呢？由于两个数相等，所以我们无论去掉哪个数组中的都行，因为去掉 1 个总会保留 1 个的，所以没有影响。为了统一，我们就假设 4 > 4 吧，所以此时将下边的 4 去掉。
+
+![image.png](https://pic.leetcode-cn.com/3c89a8ea29f2e19057b57242c8bc37c5f09b6796b96c30f3d42caea21c12f294-image.png)
+
+由于又去掉 1 个数字，此时我们要找第 1 小的数字，所以只需判断两个数组中第一个数字哪个小就可以了，也就是 4。
+
+所以第 7 小的数字是 4。
+
+我们每次都是取 k/2 的数进行比较，有时候可能会遇到数组长度小于 k/2的时候。
+
+![image.png](https://pic.leetcode-cn.com/ad87d1f63a9bbd99e12605686290800ce61b03f9fb98d87f1d8c020d404421ac-image.png)
+
+此时 k / 2 等于 3，而上边的数组长度是 2，我们此时将箭头指向它的末尾就可以了。这样的话，由于 2 < 3，所以就会导致上边的数组 1，2 都被排除。造成下边的情况。
+
+![image.png](https://pic.leetcode-cn.com/7ea1963f184b1dcaddf951326ccbe7aa09cfbb9ebee7fffb2ede131853b3d1de-image.png)
+
+由于 2 个元素被排除，所以此时 k = 5，又由于上边的数组已经空了，我们只需要返回下边的数组的第 5 个数字就可以了。
+
+从上边可以看到，无论是找第奇数个还是第偶数个数字，对我们的算法并没有影响，而且在算法进行中，k 的值都有可能从奇数变为偶数，最终都会变为 1 或者由于一个数组空了，直接返回结果。
+
+所以我们采用递归的思路，为了防止数组长度小于 k/2，所以每次比较 min(k/2，len(数组) 对应的数字，把小的那个对应的数组的数字排除，将两个新数组进入递归，并且 k 要减去排除的数字的个数。递归出口就是当 k=1 或者其中一个数字长度是 0 了。
+
+
 
 **二分法**
 
@@ -1342,47 +1419,7 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
 
 ### 两个有序数组第k小的数
 
-https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by-w-2/
-
-我们一次遍历就相当于去掉不可能是中位数的一个值，也就是一个一个排除。由于数列是有序的，其实我们完全可以一半儿一半儿的排除。假设我们要找第 k 小数，我们可以每次循环排除掉 k/2 个数。看下边一个例子。
-
-假设我们要找第 7 小的数字。
-
-我们比较两个数组的第 k/2 个数字，如果 k 是奇数，向下取整。也就是比较第 33 个数字，上边数组中的 44 和下边数组中的 33，如果哪个小，就表明该数组的前 k/2 个数字都不是第 k 小数字，所以可以排除。也就是 11，22，33 这三个数字不可能是第 77 小的数字，我们可以把它排除掉。将 13491349 和 4567891045678910 两个数组作为新的数组进行比较。
-
-更一般的情况 A[1] ，A[2] ，A[3]，A[k/2] ... ，B[1]，B[2]，B[3]，B[k/2] ... ，如果 A[k/2]<B[k/2] ，那么A[1]，A[2]，A[3]，A[k/2]都不可能是第 k 小的数字。
-
-A 数组中比 A[k/2] 小的数有 k/2-1 个，B 数组中，B[k/2] 比 A[k/2] 小，假设 B[k/2] 前边的数字都比 A[k/2] 小，也只有 k/2-1 个，所以比 A[k/2] 小的数字最多有 k/1-1+k/2-1=k-2个，所以 A[k/2] 最多是第 k-1 小的数。而比 A[k/2] 小的数更不可能是第 k 小的数了，所以可以把它们排除。
-
-橙色的部分表示已经去掉的数字。
-
-
-
-由于我们已经排除掉了 3 个数字，就是这 3 个数字一定在最前边，所以在两个新数组中，我们只需要找第 7 - 3 = 4 小的数字就可以了，也就是 k = 4。此时两个数组，比较第 2 个数字，3 < 5，所以我们可以把小的那个数组中的 1 ，3 排除掉了。
-
-
-
-我们又排除掉 2 个数字，所以现在找第 4 - 2 = 2 小的数字就可以了。此时比较两个数组中的第 k / 2 = 1 个数，4 == 4，怎么办呢？由于两个数相等，所以我们无论去掉哪个数组中的都行，因为去掉 1 个总会保留 1 个的，所以没有影响。为了统一，我们就假设 4 > 4 吧，所以此时将下边的 4 去掉。
-
-
-
-由于又去掉 1 个数字，此时我们要找第 1 小的数字，所以只需判断两个数组中第一个数字哪个小就可以了，也就是 4。
-
-所以第 7 小的数字是 4。
-
-我们每次都是取 k/2 的数进行比较，有时候可能会遇到数组长度小于 k/2的时候。
-
-
-
-此时 k / 2 等于 3，而上边的数组长度是 2，我们此时将箭头指向它的末尾就可以了。这样的话，由于 2 < 3，所以就会导致上边的数组 1，2 都被排除。造成下边的情况。
-
-
-
-由于 2 个元素被排除，所以此时 k = 5，又由于上边的数组已经空了，我们只需要返回下边的数组的第 5 个数字就可以了。
-
-从上边可以看到，无论是找第奇数个还是第偶数个数字，对我们的算法并没有影响，而且在算法进行中，k 的值都有可能从奇数变为偶数，最终都会变为 1 或者由于一个数组空了，直接返回结果。
-
-所以我们采用递归的思路，为了防止数组长度小于 k/2，所以每次比较 min(k/2，len(数组) 对应的数字，把小的那个对应的数组的数字排除，将两个新数组进入递归，并且 k 要减去排除的数字的个数。递归出口就是当 k=1 或者其中一个数字长度是 0 了。
+**详细解法见上题目文字解说**
 
 ```java
 private int getKth(int[] nums1, int start1, int end1, int[] nums2, int start2, int end2, int k) {
@@ -1425,6 +1462,69 @@ private int getKth(int[] nums1, int start1, int end1, int[] nums2, int start2, i
 
 对于下标为0位置，从 [0,n−1] 随机一个位置进行交换，共有 n种选择；下标为 1的位置，从[1,n−1] 随机一个位置进行交换，共有n−1 种选择
 
+**公平性验证**
+
+为什么能做到保证：对于生成的排列，每一个元素都能等概率的出现在每一个位置了。
+
+在这里，我们模拟一下算法的执行过程，同时，对于每一步，计算一下概率值。
+
+我们简单的只是用 5 个数字进行模拟。假设初始的时候，是按照 1，2，3，4，5 进行排列的。
+
+<img src="https://img-blog.csdnimg.cn/20201012223322565.png#pic_center" alt="在这里插入图片描述" style="zoom: 50%;" />
+
+那么，根据这个算法，首先会在这五个元素中选一个元素，和最后一个元素 5 交换位置。假设随机出了 2。
+<img src="https://img-blog.csdnimg.cn/20201012223335362.png#pic_center" alt="在这里插入图片描述" style="zoom: 50%;" />
+下面，我们计算 2 出现在最后一个位置的概率是多少？非常简单，因为是从 5 个元素中选的嘛，就是 1/5。实际上，根据这一步，任意一个元素出现在最后一个位置的概率，都是 1/5。
+<img src="https://img-blog.csdnimg.cn/20201012223350428.png#pic_center" alt="在这里插入图片描述" style="zoom: 50%;" />
+
+下面，根据这个算法，我们就已经不用管 2 了，而是在前面 4 个元素中，随机一个元素，放在倒数第二的位置。假设我们随机的是 3。3 和现在倒数第二个位置的元素 4 交换位置。
+
+<img src="https://img-blog.csdnimg.cn/20201012223404679.png#pic_center" alt="在这里插入图片描述" style="zoom:50%;" />
+
+下面的计算非常重要。3 出现在这个位置的概率是多少？计算方式是这样的：
+<img src="https://img-blog.csdnimg.cn/20201012223415750.png#pic_center" alt="在这里插入图片描述" style="zoom:50%;" />
+其实很简单，因为 3 逃出了第一轮的筛选，概率是 4/5，但是 3 没有逃过这一轮的选择。在这一轮，一共有4个元素，所以 3 被选中的概率是 1/4。因此，最终，3 出现在这个倒数第二的位置，概率是 4/5 * 1/4 = 1/5。
+
+还是 1/5 !
+
+实际上，用这个方法计算，任意一个元素出现在这个倒数第二位置的概率，都是 1/5。
+
+<img src="https://img-blog.csdnimg.cn/2020101222344739.png#pic_center" alt="在这里插入图片描述" style="zoom:50%;" />
+
+假设我们随机的是 1。
+<img src="https://img-blog.csdnimg.cn/20201012223500161.png#pic_center" alt="在这里插入图片描述" style="zoom:50%;" />
+
+关键是：1 出现在这个位置的概率是多少？计算方式是这样的：
+
+<img src="https://img-blog.csdnimg.cn/20201012223519130.png#pic_center" alt="在这里插入图片描述" style="zoom:50%;" />
+
+即 1 首先在第一轮没被选中，概率是 4/5，在第二轮又没被选中，概率是 3/4 ，但是在第三轮被选中了，概率是 1/3。乘在一起，4/5 * 3/4 * 1/3 = 1/5。
+
+用这个方法计算，任意一个元素出现在中间位置的概率，都是 1/5。
+
+<img src="https://img-blog.csdnimg.cn/20201012223530369.png#pic_center" alt="在这里插入图片描述" style="zoom:50%;" />
+
+这个过程继续，现在，我们只剩下两个元素了，在剩下的两个元素中，随机选一个，比如是4。将4放到第二个位置。
+
+然后，4 出现在这个位置的概率是多少？4 首先在第一轮没被选中，概率是 4/5；在第二轮又没被选中，概率是 3/4；第三轮还没选中，概率是 2/3，但是在第四轮被选中了，概率是 1/2。乘在一起，4/5 * 3/4 * 2/3 * 1/2 = 1/5。
+
+用这个方法计算，任意一个元素出现在第二个位置的概率，都是 1/5。
+
+最后，就剩下元素5了。它只能在第一个位置呆着了。
+
+那么 5 留在第一个位置的概率是多少？即在前 4 轮，5 都没有选中的概率是多少？
+
+在第一轮没被选中，概率是 4/5；在第二轮又没被选中，概率是 3/4；第三轮还没选中，概率是 2/3，在第四轮依然没有被选中，概率是 1/2。乘在一起，4/5 * 3/4 * 2/3 * 1/2 = 1/5。
+
+<img src="https://img-blog.csdnimg.cn/20201012223553605.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzIzMjk1NQ==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" style="zoom:50%;" />
+算法结束。
+
+你看，在整个过程中，每一个元素出现在每一个位置的概率，都是 1/5 ！
+
+所以，这个算法是**公平**的。整个算法的复杂度是 O(n) 的。
+
+同样的思路，我们也完全可以从前向后依次决定每个位置的数字是谁。不过从前向后，代码会复杂一些，因为生成 [0, i] 范围的随机数比生成 [i, n) 范围的随机数简单，直接对 i+1 求余就好了。
+
 ```java
 class Solution {
 
@@ -1461,24 +1561,26 @@ class Solution {
 
 注意到下一个排列总是比当前排列要大，除非该排列已经是最大的排列。我们希望找到一种方法，能够找到一个大于当前序列的新序列，且变大的幅度尽可能小。具体地：
 
-- 我们需要将一个左边的「较小数」与一个右边的「较大数」交换，以能够让当前排列变大，从而得到下一个排列。
-
-- 同时我们要让这个「较小数」尽量靠右，而「较大数」尽可能小。当交换完成后，「较大数」右边的数需要按照升序重新排列。这样可以在保证新排列大于原来排列的情况下，使变大的幅度尽可能小。
+- 我们要找到下一个排列，比当前的排列要大，并且增幅要小，那么我们就要尽量把排列的后几位数字让他升序排布，例如（12384567）肯定比（12384576）要小的。我们的结果要往这样的一个趋势构造。
+- 那我们怎么决定从哪位开始给末尾的数字进行升序排布呢？我们从后往前遍历元素值，直到找到破坏递增顺序的第一个元素，那么这个元素就是最远不满足末尾数字升序排布的临界位置。
+- 如果我们直接将临界值之后的元素，反转，使其变成递增的序列，那么我们可能得到的结果比原排列还要小，比如，原排列1238**5764**，反转后1238**5467**，我们要反转后的结果比原排列要大的话，那么我们还需要交换元素，交换元素的原则就是从后面递增的序列中，选择第一个比分界点值大的元素，这样增幅也是最小的，并交换，那么最终结果就是答案了。最终结果1238**6457**。
 
 <img src="https://assets.leetcode-cn.com/solution-static/31/31.gif" alt="fig1" style="zoom:67%;" />
 
 ```java
 class Solution {
     public void nextPermutation(int[] nums) {
-        int i = nums.length - 2, j = i + 1;
-        while (i >= 0 && nums[i] >= nums[i + 1])
-            i--;
-        if (i >= 0) {
-            while (j > i && nums[j] <= nums[i])
-                j--;
-            swap(nums, i, j);
+        int p = nums.length - 2;
+        while (p >= 0 && nums[p] >= nums[p + 1]) p--;
+        reverse(nums, p + 1, nums.length - 1);
+        int j = p + 1;
+        if (j != 0) {
+            while (j < nums.length) {
+                if (nums[j] > nums[p]) break;
+                else j++;
+            }
+            swap(nums, p, j);
         }
-        reverse(nums, i + 1, nums.length - 1);
     }
 
     private void swap(int[] nums, int i, int j) {
@@ -1495,6 +1597,54 @@ class Solution {
         }
     }
 }
+```
+
+
+
+### 打家劫舍
+
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，**如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警**。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 **不触动警报装置的情况下** ，一夜之内能够偷窃到的最高金额。
+
+**示例 1：**
+
+```
+输入：[1,2,3,1]
+输出：4
+解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+     偷窃到的最高金额 = 1 + 3 = 4 。
+```
+
+**示例 2：**
+
+```
+输入：[2,7,9,3,1]
+输出：12
+解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+     偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+```
+
+**思路：**
+
+动态规划，`dp[i]`表示走到第i个房子的最大收益，第`i`个房子这里，可以拿钱，可以不拿钱。如果不拿钱，那么最大收益就是前一个房子`dp[i-1]`的最大收益。如果拿钱的话，比较一下，当前房屋`nums[i]`的收益，和前前一个的最大收益的最大值。然后返回。
+
+**代码：**
+
+```java
+public int rob(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        if (nums.length == 1)
+            return nums[0];
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < dp.length; i++) {
+            dp[i] = Math.max(dp[i - 1], Math.max(dp[i - 2] + nums[i], nums[i]));
+        }
+        return dp[nums.length - 1];
+    }
 ```
 
 
@@ -1550,22 +1700,250 @@ class Solution {
 
 
 
-### 荷兰国旗
+### 插入区间
 
-和快排的`partition`思想一样，正常的状态下，两个指针`i,j`分别指向`1，2`序列的第一个元素。如果`1，2`没都出现的时候，那么`i, j`两个指针是指在一起的。初始状态下`i = 0, j = 0`。
+给你一个 **无重叠的** *，*按照区间起始端点排序的区间列表。
+
+在列表中插入一个新的区间，你需要确保列表中的区间仍然有序且不重叠（如果有必要的话，可以合并区间）。
+
+**示例 1：**
+
+```
+输入：intervals = [[1,3],[6,9]], newInterval = [2,5]
+输出：[[1,5],[6,9]]
+```
+
+**示例 2：**
+
+```
+输入：intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
+输出：[[1,2],[3,10],[12,16]]
+解释：这是因为新的区间 [4,8] 与 [3,5],[6,7],[8,10] 重叠。
+```
+
+**示例 3：**
+
+```
+输入：intervals = [], newInterval = [5,7]
+输出：[[5,7]]
+```
+
+**示例 4：**
+
+```
+输入：intervals = [[1,5]], newInterval = [2,3]
+输出：[[1,5]]
+```
+
+**示例 5：**
+
+```
+输入：intervals = [[1,5]], newInterval = [2,7]
+输出：[[1,7]]
+```
+
+**思路：**
+
+用指针去扫 `intervals`，最多可能有三个阶段：
+
+1. 不重叠的绿区间，在蓝区间的左边
+2. 有重叠的绿区间
+3. 不重叠的绿区间，在蓝区间的右边
+
+<img src="https://pic.leetcode-cn.com/1604465027-kDWfBc-image.png" alt="image.png" style="zoom:47%;" />
+
+**代码：**
 
 ```java
-for (int k = 0; k < nums.length; k++) {
-    if (nums[k] == 0) {
-        swap(nums, i, k);
-        if (i < j)
-            swap(nums, j, k);
-        i++;
-        j++;
-    } else if (nums[k] == 1) {
-        swap(nums, j++, k);
+class Solution {
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        if (intervals.length == 0) {
+            return new int[][]{newInterval};
+        }
+        List<int[]> list = new ArrayList<>();
+        boolean placed = false;
+        int left = newInterval[0], right = newInterval[1];
+        for (int[] interval : intervals) {
+            if (interval[1] < left) // 新区间左侧不重叠部分
+                list.add(interval);
+            else if (interval[0] > right) { // 新区间右侧不重叠部分
+                if (!placed) {
+                    list.add(new int[]{left, right});
+                    placed = true;
+                }
+                list.add(interval);
+            } else {  // 重叠部分，取交集
+                left = Math.min(interval[0], left);
+                right = Math.max(right, interval[1]);
+            }
+        }
+        if (!placed) {
+            list.add(new int[]{left, right});
+        }
+        return list.toArray(new int[list.size()][]);
     }
 }
+```
+
+
+
+### 区间列表的交集
+
+给定两个由一些 **闭区间** 组成的列表，`firstList` 和 `secondList` ，其中 `firstList[i] = [starti, endi]` 而 `secondList[j] = [startj, endj]` 。每个区间列表都是成对 **不相交** 的，并且 **已经排序** 。
+
+返回这 **两个区间列表的交集** 。
+
+形式上，**闭区间** `[a, b]`（其中 `a <= b`）表示实数 `x` 的集合，而 `a <= x <= b` 。
+
+两个闭区间的 **交集** 是一组实数，要么为空集，要么为闭区间。例如，`[1, 3]` 和 `[2, 4]` 的交集为 `[2, 3]` 。
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2019/01/30/interval1.png" alt="img" style="zoom:50%;" />
+
+```
+输入：firstList = [[0,2],[5,10],[13,23],[24,25]], secondList = [[1,5],[8,12],[15,24],[25,26]]
+输出：[[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]
+```
+
+**示例 2：**
+
+```
+输入：firstList = [[1,3],[5,9]], secondList = []
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：firstList = [], secondList = [[4,8],[10,12]]
+输出：[]
+```
+
+**示例 4：**
+
+```
+输入：firstList = [[1,7]], secondList = [[3,10]]
+输出：[[3,7]]
+```
+
+**代码：**
+
+双指针，根据当前指针对应区间的相交情况，计算相交段计入结果并不断移动指针**（注意，每次选择A或B中的一个指针移动）**
+
+判断两个区间是否相交使用的是`&&`条件判断。
+
+```java
+class Solution {
+    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+        if (firstList.length == 0 || secondList.length == 0)
+            return new int[][]{};
+        List<int[]> list = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < firstList.length && j < secondList.length) {
+            int firstStart = firstList[i][0], firstEnd = firstList[i][1];
+            int secondStart = secondList[j][0], secondEnd = secondList[j][1];
+            if (firstEnd >= secondStart && firstStart <= secondEnd) { // 求交集
+                list.add(new int[]{Math.max(firstStart, secondStart), Math.min(firstEnd, secondEnd)});
+            }
+            if (firstEnd < secondEnd)
+                i++;
+            else j++;
+        }
+        return list.toArray(new int[list.size()][]);
+    }
+}
+```
+
+
+
+### 无重叠区间
+
+给定一个区间的集合 `intervals` ，其中 `intervals[i] = [starti, endi]` 。返回 *需要移除区间的最小数量，使剩余区间互不重叠* 。
+
+**示例 1:**
+
+```
+输入: intervals = [[1,2],[2,3],[3,4],[1,3]]
+输出: 1
+解释: 移除 [1,3] 后，剩下的区间没有重叠。
+```
+**代码：**
+
+本题的题意可以表达为，你今天有好几个活动，每个活动都可以用区间`[start, end]`表示开始和结束的时间，请问你今天最多能参加几个活动呢？
+
+那我们可能会自然的想到，**优先**选择参加那些**结束时间早**的，因为这样可以留下更多的时间参加其余的活动。如果有多个结束时间相同的，我们选择开始时间晚的，因为这样也有助于参加更多的活动。
+
+那我们的解题思路就很清晰了。
+
+1. 先把intervals做个优先级排序。排在前面的优先级高于排在后面的。排序规则为：按照结束时间从早到晚排序，结束时间相同的，开始时间晚的排在前面。
+2. 遍历排序好的intervals，如果后面的活动和前面的活动冲突了，就选择移除后面的活动。
+
+**按照右边界排序，从左向右记录非交叉区间的个数。最后用区间总数减去非交叉区间的个数就是需要移除的区间个数了。此时问题就是要求非交叉区间的最大个数。**
+
+```java
+    public int eraseOverlapIntervals(int[][] intervals) {
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] interval1, int[] interval2) {
+                return interval1[1] - interval2[1];
+            }
+        });
+        int right = intervals[0][1];
+        int ans = 1;
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] >= right) {
+                ans++;
+                right = intervals[i][1];
+            }
+        }
+        return intervals.length - ans;
+    }
+```
+
+
+
+### 荷兰国旗
+
+给定一个包含红色、白色和蓝色、共 `n` 个元素的数组 `nums` ，**[原地](https://baike.baidu.com/item/原地算法)**对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+我们使用整数 `0`、 `1` 和 `2` 分别表示红色、白色和蓝色。
+
+必须在不使用库内置的 sort 函数的情况下解决这个问题。
+
+**示例 1：**
+
+```
+输入：nums = [2,0,2,1,1,0]
+输出：[0,0,1,1,2,2]
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,0,1]
+输出：[0,1,2]
+```
+
+和快排的`partition`思想一样，正常的状态下，**两个指针`i,j`分别指向`1，2`序列的第一个元素。如果`1，2`没都出现的时候，那么`i, j`两个指针是指在一起的**。初始状态下`i = 0, j = 0`。
+
+```java
+public void sortColors(int[] nums) {
+        int i = 0, j = 0;
+        for (int k = 0; k < nums.length; k++) {
+            if (nums[k] == 0) {
+                swap(nums, i, k);
+                if (i < j) {
+                    swap(nums, j, k);
+                }
+                i++;
+                j++;
+            } else if (nums[k] == 1) {
+                swap(nums, j, k);
+                j++;
+            }
+        }
+    }
 ```
 
 
@@ -1659,69 +2037,6 @@ class Solution {
         nums[j] = tmp;
     }
 }
-```
-
-
-
-### 区间列表的交集
-
-双指针，根据当前指针对应区间的相交情况，计算相交段计入结果并不断移动指针**（注意，每次选择A或B中的一个指针移动）**
-
-判断两个区间是否相交使用的是`&&`条件判断。
-
-```java
-class Solution {
-    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
-        List<int[]> res = new ArrayList<>();
-        int i = 0, j = 0;
-        while (i < firstList.length && j < secondList.length) {
-            int firstStart = firstList[i][0], firstEnd = firstList[i][1];
-            int secondStart = secondList[j][0], secondEnd = secondList[j][1];
-            if (firstEnd >= secondStart && firstStart <= secondEnd) {
-                res.add(new int[]{Math.max(firstStart, secondStart), Math.min(firstEnd, secondEnd)});
-            }
-            if (firstEnd < secondEnd)
-                i++;
-            else
-                j++;
-        }
-        return res.toArray(new int[res.size()][]);
-    }
-}
-```
-
-
-
-### 无重叠区间
-
-给定一个区间的集合 `intervals` ，其中 `intervals[i] = [starti, endi]` 。返回 *需要移除区间的最小数量，使剩余区间互不重叠* 。
-
-**示例 1:**
-
-```
-输入: intervals = [[1,2],[2,3],[3,4],[1,3]]
-输出: 1
-解释: 移除 [1,3] 后，剩下的区间没有重叠。
-```
-
-```java
-    public int eraseOverlapIntervals(int[][] intervals) {
-        Arrays.sort(intervals, new Comparator<int[]>() {
-            @Override
-            public int compare(int[] interval1, int[] interval2) {
-                return interval1[1] - interval2[1];
-            }
-        });
-        int right = intervals[0][1];
-        int ans = 1;
-        for (int i = 1; i < intervals.length; i++) {
-            if (intervals[i][0] >= right) {
-                ans++;
-                right = intervals[i][1];
-            }
-        }
-        return intervals.length - ans;
-    }
 ```
 
 

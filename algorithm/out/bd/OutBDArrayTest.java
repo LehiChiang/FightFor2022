@@ -1,12 +1,13 @@
 package out.bd;
 
 import org.junit.jupiter.api.Test;
+import utils.ArrayUtils;
 
 import java.util.Arrays;
 
 class OutBDArrayTest {
 
-    int[] nums = new int[]{10, 9, 2, 5, 3, 7, 100, 18};
+    int[] nums = new int[]{1, 2};
     OutBDArray outBDArray = new OutBDArray(nums);
 
     @Test
@@ -37,5 +38,33 @@ class OutBDArrayTest {
     @Test
     void LCNRS() {
         assert outBDArray.LCNRS("qwwaew") == 3;
+    }
+
+    @Test
+    void threeSum() {
+        ArrayUtils.print(outBDArray.ThreeSum().toArray());
+    }
+
+    @Test
+    void threeSumClosest() {
+        System.out.println(outBDArray.ThreeSumClosest(-2));
+    }
+
+    @Test
+    void nextPermutation() {
+        outBDArray.NextPermutation();
+        System.out.println(Arrays.toString(outBDArray.getNums()));
+    }
+
+    @Test
+    void rob() {
+        System.out.println(outBDArray.Rob());
+    }
+
+    @Test
+    void sortColors() {
+        int[] array = new int[]{1, 2, 0, 2, 1, 1, 0, 0};
+        outBDArray.sortColors(array);
+        System.out.println(Arrays.toString(array));
     }
 }
