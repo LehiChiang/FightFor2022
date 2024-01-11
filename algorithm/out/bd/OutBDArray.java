@@ -5,6 +5,10 @@ import java.util.*;
 public class OutBDArray {
 
     private final int[] nums;
+    private List<List<String>> nQueenRes;
+    private Set<Integer> inColumns;
+    private Set<Integer> inRL;
+    private Set<Integer> inLR;
 
     public OutBDArray(int[] nums) {
         this.nums = nums;
@@ -506,5 +510,226 @@ public class OutBDArray {
                 j++;
             }
         }
+    }
+
+    /**
+     * 搜索旋转数组中的值
+     * <p>
+     * 输入：nums = [4,5,6,7,0,1,2], target = 0
+     * 输出：4
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int SearchInRotatedSortedArray(int[] nums, int target) {
+        if (nums.length == 0)
+            return -1;
+        if (nums.length == 1)
+            return nums[0] == target ? 0 : -1;
+        int left = 0, right = nums.length;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target)
+                return mid;
+            else if (nums[0] <= nums[mid]) { // 有序的半边
+                if (target >= nums[0] && target < nums[mid]) { // 这里要加上=，以便搜索第一个元素
+                    right = mid;
+                } else {
+                    left = mid + 1;
+                }
+            } else { // 无序的半边
+                if (target > nums[mid] && target <= nums[nums.length - 1]) { // 这里要加上=，以便搜索最后一个元素
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 寻找旋转排序数组中的最小值
+     * 示例 1：
+     * <p>
+     * 输入：nums = [3,4,5,1,2]
+     * 输出：1
+     * 解释：原数组为 [1,2,3,4,5] ，旋转 3 次得到输入数组。
+     * <p>
+     * 示例 2：
+     * <p>
+     * 输入：nums = [4,5,6,7,0,1,2]
+     * 输出：0
+     * 解释：原数组为 [0,1,2,4,5,6,7] ，旋转 4 次得到输入数组。
+     * <p>
+     * 示例 3：
+     * <p>
+     * 输入：nums = [11,13,15,17]
+     * 输出：11
+     * 解释：原数组为 [11,13,15,17] ，旋转 4 次得到输入数组。
+     *
+     * @param nums
+     * @return
+     */
+    public int FindMinimumInRotatedSortedArray(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] >= nums[right])
+                left = mid + 1;
+            else if (nums[mid] < nums[right])
+                right = mid;
+        }
+        return nums[left];
+    }
+
+    /**
+     * N皇后问题，输入N返回所有可能结果
+     *
+     * @param n
+     * @return
+     */
+    public List<List<String>> NQueens(int n) {
+        nQueenRes = new ArrayList<>();
+        inColumns = new HashSet<>();
+        inRL = new HashSet<>();
+        inLR = new HashSet<>();
+        // queens表示皇后的位置queens[i] = j 表示皇后在第i行和第j列
+        int[] queens = new int[n];
+        Arrays.fill(queens, -1);
+        dfs(n, queens, 0);
+        return nQueenRes;
+    }
+
+    // 行控制
+    private void dfs(int n, int[] queens, int row) {
+        if (row == n) {
+            nQueenRes.add(generateBoard(queens, n));
+            return;
+        }
+        // 这里表示列
+        for (int col = 0; col < n; col++) {
+            if (inColumns.contains(col))
+                continue;
+            int rl = row - col;
+            if (inRL.contains(rl))
+                continue;
+            int lr = row + col;
+            if (inLR.contains(lr))
+                continue;
+            queens[row] = col;
+            inColumns.add(col);
+            inRL.add(rl);
+            inLR.add(lr);
+            dfs(n, queens, row + 1);
+            queens[row] = -1;
+            inColumns.remove(col);
+            inRL.remove(rl);
+            inLR.remove(lr);
+        }
+    }
+
+    private List<String> generateBoard(int[] queens, int n) {
+        List<String> stringList = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            char[] chars = new char[n];
+            Arrays.fill(chars, '.');
+            chars[queens[i]] = 'Q';
+            stringList.add(new String(chars));
+        }
+        return stringList;
+    }
+
+    /**
+     * 最短无序连续子数组
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [2,6,4,8,10,9,15]
+     * 输出：5
+     * 解释：你只需要对 [6, 4, 8, 10, 9] 进行升序排序，那么整个表都会变为升序排序。
+     * <p>
+     * 示例 2：
+     * <p>
+     * 输入：nums = [1,2,3,4]
+     * 输出：0
+     * <p>
+     * 示例 3：
+     * <p>
+     * 输入：nums = [1]
+     * 输出：0
+     *
+     * @param nums
+     * @return
+     */
+    public int ShortestUnsortedContinuousSubarray(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        int max = nums[left], min = nums[right];
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] >= max)
+                max = nums[i];
+            else
+                right = i;
+        }
+        for (int j = nums.length - 1; j >= 0; j--) {
+            if (nums[j] <= min)
+                min = nums[j];
+            else
+                left = j;
+        }
+        if (left == 0 && right == nums.length - 1)
+            return 0;
+        return right - left + 1;
+    }
+
+    /**
+     * 给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+     * <p>
+     * 求在该柱状图中，能够勾勒出来的矩形的最大面积。
+     *
+     * @param heights
+     * @return
+     */
+    public int LargestRectangleArea(int[] heights) {
+        int area = heights[0], len = heights.length;
+        int[] leftMin = new int[len];
+        int[] rightMin = new int[len];
+        Arrays.fill(rightMin, len);
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < len; i++) {
+            while (!stack.isEmpty() && heights[stack.peek()] >= heights[i]) {
+                rightMin[stack.peek()] = i;
+                stack.pop();
+            }
+            leftMin[i] = stack.isEmpty() ? -1 : stack.peek();
+            stack.push(i);
+        }
+        for (int i = 0; i < len; i++) {
+            area = Math.max(area, (rightMin[i] - leftMin[i] - 1) * heights[i]);
+        }
+        return area;
+    }
+
+    /**
+     * 给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+     *
+     * @param height
+     * @return
+     */
+    public int Trap(int[] height) {
+        int res = 0;
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < height.length; i++) {
+            while (!stack.isEmpty() && height[stack.peek()] < height[i]) {
+                int curIndex = stack.pop();
+                int left = stack.isEmpty() ? curIndex : stack.peek();
+                int curWidth = i - left - 1;
+                int curHeight = Math.min(height[left], height[i]) - height[curIndex];
+                res += curHeight * curWidth;
+            }
+            stack.push(i);
+        }
+        return res;
     }
 }
