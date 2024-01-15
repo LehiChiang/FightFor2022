@@ -110,4 +110,11 @@ class OutBDArrayTest {
         int res = outBDArray.Trap(array);
         System.out.println(res);
     }
+
+    @Test
+    void mergeSortNoneRecur() {
+        int[] input = {4, 7, 5, 1, 6, 3, 2, 8};
+        outBDArray.MergeSortNoneRecur(input);
+        System.out.println(Arrays.toString(input));
+    }
 }

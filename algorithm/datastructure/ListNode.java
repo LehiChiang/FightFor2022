@@ -1,7 +1,5 @@
 package datastructure;
 
-import java.util.Arrays;
-
 /**
  * @author Lihao Jiang
  */
@@ -12,6 +10,7 @@ public class ListNode {
 
     /**
      * 尾节点构造器
+     *
      * @param val 节点值
      */
     public ListNode(int val) {
@@ -20,7 +19,8 @@ public class ListNode {
 
     /**
      * 链表节点构造器
-     * @param val 节点值
+     *
+     * @param val  节点值
      * @param next 指向的下一个节点
      */
     public ListNode(int val, ListNode next) {
@@ -37,6 +37,7 @@ public class ListNode {
 
     /**
      * 构造链表
+     *
      * @param nums 构造链表的数组
      * @return 构造无头结点链表
      */
@@ -49,7 +50,8 @@ public class ListNode {
 
     /**
      * 构造链表
-     * @param nums 构造链表的数组
+     *
+     * @param nums     构造链表的数组
      * @param withHead 是否需要头节点
      * @return 构造完成的链表
      */
@@ -65,9 +67,14 @@ public class ListNode {
 
     /**
      * 打印链表
+     *
      * @param linkList 链表
      */
     public static void printLinkedList(ListNode linkList) {
+        if (linkList == null) {
+            System.out.println("[]");
+            return;
+        }
         ListNode pointer = linkList;
         StringBuilder sb = new StringBuilder();
         sb.append('[');
@@ -81,6 +88,7 @@ public class ListNode {
 
     /**
      * 打印节点信息
+     *
      * @return 节点信息字符串
      */
     @Override

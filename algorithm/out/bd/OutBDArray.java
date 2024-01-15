@@ -732,4 +732,62 @@ public class OutBDArray {
         }
         return res;
     }
+
+    /**
+     * 归并排序（非递归实现）
+     * 时间复杂度O(nlogn)
+     * 空间复杂度O(n)
+     */
+    public void MergeSortNoneRecur(int[] arr) {
+        // 非递归实现，拆分的方式可以理解为：完全二叉树的分层遍历
+        // 从 1 开始分割，与递归不同的是，递归由数组长度一分为二最后到1，
+        // 而非递归则是从1开始扩大二倍直到数组长度
+
+        int start = 1;
+        // 排序前先创建一个和原始数组等长的临时数组，避免在拆分过程中频繁开辟空间
+        int[] tempArr = new int[arr.length];
+        // 步进从2->4->8直到数组长度，
+        while (start < arr.length) {
+            for (int i = 0; i + start < arr.length; i += start << 1) {
+                int left = i;
+                int mid = i + start - 1;
+                int right = i + (start << 1) - 1;
+
+                // 防止最后超过数组长度
+                if (right > arr.length - 1) {
+                    right = arr.length - 1;
+                }
+                merge(arr, tempArr, left, mid, right);
+            }
+            start <<= 1;
+        }
+    }
+
+    private void merge(int[] arr, int[] tempArr, int left, int mid, int right) {
+        int i = left;//左序列指针
+        int j = mid + 1;//右序列指针
+        int k = left;//临时数组指针
+
+        // 注意： 此处并没有全部放入temp中，当一边达到mid或right时就是退出循环
+        while (i <= mid && j <= right) {
+            if (arr[i] < arr[j]) {
+                // 降序排序，如果是升序，改为arr[i++]即可
+                tempArr[k++] = arr[i++];
+            } else {
+                tempArr[k++] = arr[j++];
+            }
+        }
+
+        while (i <= mid) {
+            tempArr[k++] = arr[i++];
+        }
+
+        while (j <= right) {
+            tempArr[k++] = arr[j++];
+        }
+
+        while (left <= right) {
+            arr[left] = tempArr[left++];
+        }
+    }
 }

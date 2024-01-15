@@ -1451,7 +1451,7 @@ class Solution {
 
 
 
-### 求区间最小数乘区间和的最大值
+### 5. 求区间最小数乘区间和的最大值
 
 首先来看一下面经原文
 
@@ -1530,7 +1530,530 @@ int main()
 
 
 
-### 数组中的逆序对
+
+
+## 【7】其他
+
+### 1. 快速选择
+
+给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。
+
+请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+
+示例 1:
+
+```
+输入: [3,2,1,5,6,4] 和 k = 2
+输出: 5
+```
+
+示例 2:
+
+```
+输入: [3,2,3,1,2,4,5,5,6] 和 k = 4
+输出: 4
+```
+
+**核心思想：**
+
+利用快速排序，正确放置轴值元素位置的思想，找到第n-k位置上的数字，使得数组能够局部排序，即得到的轴值元素为第K大的数字。
+
+**代码：**
+
+```java
+class Solution {
+    private Random random = new Random();
+
+    // 寻找nums中倒数第nums.length - k 位置上的数字
+    public int findKthLargest(int[] nums, int k) {
+        return quickSelect(nums, k, 0, nums.length - 1);
+    }
+
+    private int quickSelect(int[] nums, int k, int left, int right) {
+        int index = random_partition(nums, left, right);
+        if (index == nums.length - k)
+            return nums[nums.length - k];
+        else if (index < nums.length - k)
+            return quickSelect(nums, k, index + 1, right);
+        else
+            return quickSelect(nums, k, left, index - 1);
+    }
+
+    private int random_partition(int[] nums, int left, int right) {
+        int i = random.nextInt(right - left + 1) + left;
+        swap(nums, left, i);
+        return partition(nums, left, right);
+    }
+
+    private void swap(int[] nums, int left, int right) {
+        int temp = nums[left];
+        nums[left] = nums[right];
+        nums[right] = temp;
+    }
+
+    private int partition(int[] nums, int left, int right) {
+        int pivot = nums[left];
+        while (left < right) {
+            while (left < right && nums[right] >= pivot) right--;
+            nums[left] = nums[right];
+            while (left < right && nums[left] <= pivot) left++;
+            nums[right] = nums[left];
+        }
+        nums[left] = pivot;
+        return left;
+    }
+}
+```
+
+
+
+### 2. 堆
+
+两个操作，（一）建堆`buildHeap` （二）维护堆`heapify`
+
+（一）从元素一般的位置上，从后往前建堆；
+
+（二）维护堆的意思就是确保**堆中的所有节点**，都是父节点大于/小于子节点的；
+
+**初始化堆的时间复杂度分析**
+
+初始化堆的时候，对于每个非叶子结点，都要调用上述函数，将它与它的孩子结点进行比较和交换，顺序是从后向前。
+
+以操作2作为基本操作，对每一层都完全铺满的堆进行分析，
+
+设元素个数为n，则堆的高度`k=log（n+1）≈log n`，非叶子结点的个数为`2^（k-1）-1`。假设每个非叶子结点都需要进行调整，则第i层的非叶子结点需要的操作次数为`k-i`，第`i`层共有`2^（i-1）`个结点，则第i层的所有结点所做的操作为`k*2^（i-1）- i*2^（i-1）`，共`k-1`层非叶子结点，总的操作次数为 <img src="https://img2020.cnblogs.com/blog/2003943/202007/2003943-20200709195627860-488581102.png" alt="img" style="zoom:67%;" />
+
+化简可得，上式=`2^k-k+1`，将`k=log（n+1）≈log n`代入，得`n - log n +1`，
+
+所以，初始化堆的复杂度为`O(n)`
+
+**调整堆的间复杂度分析**
+
+调整堆的复杂度计算和初始化堆差不多，
+
+假设根节点和排在最后的序号为m的叶子结点交换，并进行调整，那么调整的操作次数 = 原来m结点所在的层数 = 堆的高度（因为m结点在堆的最后）= `log m`
+
+共n个结点，调整的总操作次数为<img src="https://img2020.cnblogs.com/blog/2003943/202007/2003943-20200709201153384-1165719037.png" alt="img" style="zoom:67%;" />
+
+化简可得，上式=`log (n-1)! ≈ n*log n`， 所以，调整堆的复杂度为`O(n*log n)`
+
+所以，总体复杂度为O(n*log n)
+
+```java
+    public int findKthLargest(int[] nums, int k) {
+        int heapSize = nums.length;
+        buildMaxHeap(nums, heapSize);
+        for (int i = nums.length - 1; i >= nums.length - k + 1; i--) {
+            swap(nums, 0, i); // 1. 先将最后元素和0号元素交换位置
+            heapSize--; // 2. heapSize减少一个
+            maxHeapify(nums, 0, heapSize); // 3. 堆化,参数一定要找对！
+        }
+        return nums[0];
+    }
+
+    private void maxHeapify(int[] nums, int i, int heapSize) { // 堆化是从上往下的
+        int left = 2 * i + 1, right = 2 * i +
+            2, maxIndex = i;
+        if (left < heapSize && nums[left] > nums[maxIndex]) // 这里只是找出最大的索引
+            maxIndex = left;
+        if (right < heapSize && nums[right] > nums[maxIndex])
+            maxIndex = right;
+        if (maxIndex != i) { // 如果索引发生变化，则交换
+            swap(nums, maxIndex, i);
+            maxHeapify(nums, maxIndex, heapSize);
+        }
+    }
+
+    private void buildMaxHeap(int[] nums, int heapSize) {
+        for (int i = nums.length / 2; i >= 0; --i) { // 将非叶子节点进行堆化
+            maxHeapify(nums, i, heapSize);
+        }
+    }
+
+    private void swap(int[] nums, int maxIndex, int i) {
+        int temp = nums[maxIndex];
+        nums[maxIndex] = nums[i];
+        nums[i] = temp;
+    }
+```
+
+
+
+### 【×】环形子数组的最大和
+
+这题一共有两种情况（也就是相当于比上一题多了一种最大子数组和是首尾连接的情况）
+下面的这个子数组指最大和的子数组
+
+第一种情况：这个子数组不是环状的，就是说首尾不相连。
+第二种情况：这个子数组一部分在首部，一部分在尾部，我们可以将这第二种情况转换成第一种情况
+
+所以这最大的环形子数组和 = `max(最大子数组和，数组总和-最小子数组和)`
+
+统一注释，`total`为数组的总和，`maxSum`为最大子数组和，`minSum`为最小子数组和，`curMax`为包含当前元素的最大子数组和，`curMin`为包含当前元素的最小子数组和
+
+```java
+    public int maxSubarraySumCircular(int[] nums) {
+        int sum = 0, maxSum = nums[0], minSum = nums[0], curMax = 0, curMin = 0;
+        for (int num : nums) {
+            curMax = Math.max(curMax + num, num);
+            maxSum = Math.max(maxSum, curMax);
+            curMin = Math.min(curMin + num, num);
+            minSum = Math.min(minSum, curMin);
+            sum += num;
+        }
+        return maxSum > 0 ? Math.max(sum - minSum, maxSum) : maxSum;
+    }
+```
+
+
+
+前缀和+最小值队列
+
+```java
+    public int maxSubarraySumCircular(int[] nums) {
+        int N = nums.length;
+        int[] preSum = new int[2 * N + 1];
+        for (int i = 0; i < 2 * N; i++)
+            preSum[i + 1] = preSum[i] + nums[i % N];
+
+        int res = nums[0];
+        // 最小值队列
+        Deque<Integer> queue = new ArrayDeque<>();
+        queue.offerLast(0);
+        for (int i = 1; i < preSum.length; i++) {
+            if (queue.peekFirst() < i - N)
+                queue.pollFirst();
+
+            res = Math.max(res, preSum[i] - preSum[queue.peekFirst()]);
+
+            while (!queue.isEmpty() && preSum[queue.peekLast()] >= preSum[i])
+                queue.pollLast();
+
+            queue.offerLast(i);
+        }
+        return res;
+    }
+```
+
+
+
+### 【×】最大子矩阵和
+
+返回一个数组 `[r1, c1, r2, c2]`，其中 `r1`, `c1` 分别代表子矩阵左上角的行号和列号，`r2`, `c2` 分别代表右下角的行号和列号。若有多个满足条件的子矩阵，返回任意一个均可。
+
+**示例：**
+
+```
+输入：
+[
+   [-1,0],
+   [0,-1]
+]
+输出：[0,1,0,1]
+解释：输入中标粗的元素即为输出所表示的矩阵
+```
+
+
+
+将二维压缩成一维，然后计算每层累计的数组的最大和（和上一题一样）
+
+```java
+public int[] getMaxMatrix(int[][] matrix) {
+    int m = matrix.length, n = matrix[0].length;
+    int[] compress = new int[n];
+    int[] res = new int[4];
+    int startRow = 0, startCol = 0;
+    int maxSum = Integer.MIN_VALUE, sum;
+    for (int i = 0; i < m; i++) {
+        Arrays.fill(compress, 0);
+        for (int j = i; j < m; j++) {
+            sum = 0;
+            for (int k = 0; k < n; k++) {
+                compress[k] += matrix[j][k];
+                if (sum > 0) {
+                    sum += compress[k];
+                } else {
+                    sum = compress[k];
+                    startRow = i;
+                    startCol = k;
+                }
+                if (sum > maxSum) {
+                    maxSum = sum;
+                    res[0] = startRow;
+                    res[1] = startCol;
+                    res[2] = j;
+                    res[3] = k;
+                }
+            }
+        }
+    }
+    return res;
+}
+```
+
+
+
+### 3. 最长连续序列
+
+```java
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+```
+
+我们的做法可以是从当前元素`num`开始，一次查找`num+1, num+2, ... num+y`是否在数字中，如果都在那么个最后的答案就是`y`。那么这个其实不是最优的，因为如果当前元素是`num+2`的话，那么找到`num+y`，这算一次了。但是如果走到`num`，还要找一遍`num+1, num+2, ... num+y`。那么前面走的那一遍就白走了。所以我们就直接找的最小的元素`num`，从`num`开始`+1`的找。既然`num`是数组中的最小值，那么数组中肯定不存在`num-1`，所以`num-1`就是我们判断最小值的条件。如果`num-1`在数组里，`num`就不是最小值，跳过。如果`num-1`不在数组中，那么`num`就是最小值，这个时候开始往上找。
+
+```java
+public int longestConsecutive(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            set.add(num);
+        }
+        int res = 0;
+        for (int num : nums) {
+            if (!set.contains(num - 1)) {
+                int currentNum = num
+                    
+                int currentLongest = 1;
+                while (set.contains(currentNum + 1)) {
+                    currentNum += 1;
+                    currentLongest += 1;
+                }
+                res = Math.max(res, currentLongest);
+            }
+        }
+        return res;
+    }
+```
+
+
+
+### 4. 乘积最大子数组
+
+给你一个整数数组 `nums` ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+**示例 1:**
+
+```
+输入: [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+```
+
+**示例 2:**
+
+```
+输入: [-2,0,-1]
+输出: 0
+解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
+```
+
+由于存在负数，那么会导致最大的变最小的，最小的变最大的。因此还需要维护当前最小值`imin`。对于当前数字，不管正负，都要分别×最大乘积和最小乘积，然后选最大的当结果。
+
+```java
+    public int maxProduct(int[] nums) {
+        int imax = nums[0], imin = nums[0], max = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int i_max = imax, i_min = imin;
+            imax = Math.max(i_min * nums[i], Math.max(i_max * nums[i], nums[i]));
+            imin = Math.min(i_max * nums[i], Math.min(i_min * nums[i], nums[i]));
+            max = i_max > max ? i_max : max;
+        }
+        return max;
+    }
+```
+
+
+
+
+
+
+
+### 5. 下一个排列
+
+注意到下一个排列总是比当前排列要大，除非该排列已经是最大的排列。我们希望找到一种方法，能够找到一个大于当前序列的新序列，且变大的幅度尽可能小。具体地：
+
+- 我们要找到下一个排列，比当前的排列要大，并且增幅要小，那么我们就要尽量把排列的后几位数字让他升序排布，例如（12384567）肯定比（12384576）要小的。我们的结果要往这样的一个趋势构造。
+- 那我们怎么决定从哪位开始给末尾的数字进行升序排布呢？我们从后往前遍历元素值，直到找到破坏递增顺序的第一个元素，那么这个元素就是最远不满足末尾数字升序排布的临界位置。
+- 如果我们直接将临界值之后的元素，反转，使其变成递增的序列，那么我们可能得到的结果比原排列还要小，比如，原排列1238**5764**，反转后1238**5467**，我们要反转后的结果比原排列要大的话，那么我们还需要交换元素，交换元素的原则就是从后面递增的序列中，选择第一个比分界点值大的元素，这样增幅也是最小的，并交换，那么最终结果就是答案了。最终结果1238**6457**。
+
+<img src="https://assets.leetcode-cn.com/solution-static/31/31.gif" alt="fig1" style="zoom:67%;" />
+
+```java
+class Solution {
+    public void nextPermutation(int[] nums) {
+        int p = nums.length - 2;
+        while (p >= 0 && nums[p] >= nums[p + 1]) p--;
+        reverse(nums, p + 1, nums.length - 1);
+        int j = p + 1;
+        if (j != 0) {
+            while (j < nums.length) {
+                if (nums[j] > nums[p]) break;
+                else j++;
+            }
+            swap(nums, p, j);
+        }
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+
+    private void reverse(int[] nums, int i, int j) {
+        while (i < j) {
+            swap(nums, i ,j);
+            i++;
+            j--;
+        }
+    }
+}
+```
+
+
+
+
+
+### 6. 荷兰国旗
+
+给定一个包含红色、白色和蓝色、共 `n` 个元素的数组 `nums` ，**[原地](https://baike.baidu.com/item/原地算法)**对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+我们使用整数 `0`、 `1` 和 `2` 分别表示红色、白色和蓝色。
+
+必须在不使用库内置的 sort 函数的情况下解决这个问题。
+
+**示例 1：**
+
+```
+输入：nums = [2,0,2,1,1,0]
+输出：[0,0,1,1,2,2]
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,0,1]
+输出：[0,1,2]
+```
+
+和快排的`partition`思想一样，正常的状态下，**两个指针`i,j`分别指向`1，2`序列的第一个元素。如果`1，2`没都出现的时候，那么`i, j`两个指针是指在一起的**。初始状态下`i = 0, j = 0`。
+
+```java
+public void sortColors(int[] nums) {
+        int i = 0, j = 0;
+        for (int k = 0; k < nums.length; k++) {
+            if (nums[k] == 0) {
+                swap(nums, i, k);
+                if (i < j) {
+                    swap(nums, j, k);
+                }
+                i++;
+                j++;
+            } else if (nums[k] == 1) {
+                swap(nums, j, k);
+                j++;
+            }
+        }
+    }
+```
+
+
+
+### 7. 摆动排序
+
+给你一个整数数组 `nums`，将它重新排列成 `nums[0] < nums[1] > nums[2] < nums[3]...` 的顺序。
+
+方法：
+
+- 使用快速选择，选择好中位数
+- 使用3-way-partition将小于中位数的数字都放在中位数的左边，大于中位数的数字放在中位数的右边
+- 逆序分别选择两半数字，进行插入组成摆动的排序
+
+```java
+class Solution {
+    private Random random = new Random();
+    public void wiggleSort(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        // 找出中位数
+        int mid_index = quickSelect(nums, left, right, left + (right - left) / 2);
+        // 左右两边分开
+        threePartPartition(nums, mid_index);
+        System.out.println(Arrays.toString(nums));
+        // 交缠在一起
+        int[] leftPart = Arrays.copyOfRange(nums, left, mid_index + 1);
+        int[] rightPart = Arrays.copyOfRange(nums, mid_index + 1, nums.length);
+
+        System.out.println(Arrays.toString(leftPart));
+        System.out.println(Arrays.toString(rightPart));
+
+        int len = 0, m = leftPart.length - 1, n = rightPart.length - 1;
+        boolean fromLeft = true;
+        while (len < nums.length) {
+            if (fromLeft) {
+                nums[len] = leftPart[m--];
+                fromLeft = false;
+            } else {
+                nums[len] = rightPart[n--];
+                fromLeft = true;
+            }
+            len++;
+        }
+
+        System.out.println(Arrays.toString(nums));
+    }
+
+    private int quickSelect(int[] nums, int start, int end, int k) {
+        int index = randomPartition(nums, start, end);
+        if (k == index)
+            return index;
+        else if (k < index)
+            return quickSelect(nums, start, index - 1, k);
+        else
+            return quickSelect(nums, index + 1, end, k);
+    }
+
+    private int randomPartition(int[] nums, int left, int right) {
+        int random_index = random.nextInt(right - left + 1);
+        swap(nums, right, left + random_index);
+        return partition(nums, left, right);
+    }
+
+    private int partition(int[] nums, int start, int end) {
+        int i = start - 1, j = start, r = nums[end];
+        for (; j < end; j++) {
+            if (nums[j] < r) {
+                swap(nums, ++i, j);
+            }
+        }
+        swap(nums, ++i, end);
+        return i;
+    }
+
+    private void threePartPartition(int[] nums, int mid) {
+        int r = nums[mid], i = 0, j = 0, end = nums.length - 1;
+        for (; j < end; j++) {
+            if (nums[j] < r) {
+                swap(nums, i++, j++);
+            } else if (nums[j] > r) {
+                swap(nums, end--, j);
+            } else {
+                j++;
+            }
+        }
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+}
+```
+
+
+
+### 8. 数组中的逆序对
 
 归并排序并统计前一个元素大于后一个元素的数量
 
@@ -1573,7 +2096,32 @@ int main()
 
 
 
-### 缺失的第一个正数
+### 9. 缺失的第一个正数
+
+给你一个未排序的整数数组 `nums` ，请你找出其中没有出现的最小的正整数。
+
+请你实现时间复杂度为 `O(n)` 并且只使用常数级别 额外空间的解决方案。
+
+**示例 1：**
+
+```
+输入：nums = [1,2,0]
+输出：3
+```
+
+**示例 2：**
+
+```
+输入：nums = [3,4,-1,1]
+输出：2
+```
+
+**示例 3：**
+
+```
+输入：nums = [7,8,9,11,12]
+输出：1
+```
 
 最早知道这个思路是在《剑指 Offe》这本书上看到的，感兴趣的朋友不妨做一下这道问题：剑指 Offer 03. 数组中重复的数字。下面简要叙述：
 
@@ -1951,527 +2499,6 @@ int main()
             }
         }
     }
-```
-
-
-
-## 【】其他
-
-### 快速选择
-
-给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。
-
-请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
-
-示例 1:
-
-```
-输入: [3,2,1,5,6,4] 和 k = 2
-输出: 5
-```
-
-示例 2:
-
-```
-输入: [3,2,3,1,2,4,5,5,6] 和 k = 4
-输出: 4
-```
-
-**核心思想：**
-
-利用快速排序，正确放置轴值元素位置的思想，找到第n-k位置上的数字，使得数组能够局部排序，即得到的轴值元素为第K大的数字。
-
-**代码：**
-
-```java
-class Solution {
-    private Random random = new Random();
-
-    // 寻找nums中倒数第nums.length - k 位置上的数字
-    public int findKthLargest(int[] nums, int k) {
-        return quickSelect(nums, k, 0, nums.length - 1);
-    }
-
-    private int quickSelect(int[] nums, int k, int left, int right) {
-        int index = random_partition(nums, left, right);
-        if (index == nums.length - k)
-            return nums[nums.length - k];
-        else if (index < nums.length - k)
-            return quickSelect(nums, k, index + 1, right);
-        else
-            return quickSelect(nums, k, left, index - 1);
-    }
-
-    private int random_partition(int[] nums, int left, int right) {
-        int i = random.nextInt(right - left + 1) + left;
-        swap(nums, left, i);
-        return partition(nums, left, right);
-    }
-
-    private void swap(int[] nums, int left, int right) {
-        int temp = nums[left];
-        nums[left] = nums[right];
-        nums[right] = temp;
-    }
-
-    private int partition(int[] nums, int left, int right) {
-        int pivot = nums[left];
-        while (left < right) {
-            while (left < right && nums[right] >= pivot) right--;
-            nums[left] = nums[right];
-            while (left < right && nums[left] <= pivot) left++;
-            nums[right] = nums[left];
-        }
-        nums[left] = pivot;
-        return left;
-    }
-}
-```
-
-
-
-### 堆
-
-两个操作，（一）建堆`buildHeap` （二）维护堆`heapify`
-
-（一）从元素一般的位置上，从后往前建堆；
-
-（二）维护堆的意思就是确保**堆中的所有节点**，都是父节点大于/小于子节点的；
-
-**初始化堆的时间复杂度分析**
-
-初始化堆的时候，对于每个非叶子结点，都要调用上述函数，将它与它的孩子结点进行比较和交换，顺序是从后向前。
-
-以操作2作为基本操作，对每一层都完全铺满的堆进行分析，
-
-设元素个数为n，则堆的高度`k=log（n+1）≈log n`，非叶子结点的个数为`2^（k-1）-1`。假设每个非叶子结点都需要进行调整，则第i层的非叶子结点需要的操作次数为`k-i`，第`i`层共有`2^（i-1）`个结点，则第i层的所有结点所做的操作为`k*2^（i-1）- i*2^（i-1）`，共`k-1`层非叶子结点，总的操作次数为 <img src="https://img2020.cnblogs.com/blog/2003943/202007/2003943-20200709195627860-488581102.png" alt="img" style="zoom:67%;" />
-
-化简可得，上式=`2^k-k+1`，将`k=log（n+1）≈log n`代入，得`n - log n +1`，
-
-所以，初始化堆的复杂度为`O(n)`
-
-**调整堆的间复杂度分析**
-
-调整堆的复杂度计算和初始化堆差不多，
-
-假设根节点和排在最后的序号为m的叶子结点交换，并进行调整，那么调整的操作次数 = 原来m结点所在的层数 = 堆的高度（因为m结点在堆的最后）= `log m`
-
-共n个结点，调整的总操作次数为<img src="https://img2020.cnblogs.com/blog/2003943/202007/2003943-20200709201153384-1165719037.png" alt="img" style="zoom:67%;" />
-
-化简可得，上式=`log (n-1)! ≈ n*log n`， 所以，调整堆的复杂度为`O(n*log n)`
-
-所以，总体复杂度为O(n*log n)
-
-```java
-    public int findKthLargest(int[] nums, int k) {
-        int heapSize = nums.length;
-        buildMaxHeap(nums, heapSize);
-        for (int i = nums.length - 1; i >= nums.length - k + 1; i--) {
-            swap(nums, 0, i); // 1. 先将最后元素和0号元素交换位置
-            heapSize--; // 2. heapSize减少一个
-            maxHeapify(nums, 0, heapSize); // 3. 堆化,参数一定要找对！
-        }
-        return nums[0];
-    }
-
-    private void maxHeapify(int[] nums, int i, int heapSize) { // 堆化是从上往下的
-        int left = 2 * i + 1, right = 2 * i +
-            2, maxIndex = i;
-        if (left < heapSize && nums[left] > nums[maxIndex]) // 这里只是找出最大的索引
-            maxIndex = left;
-        if (right < heapSize && nums[right] > nums[maxIndex])
-            maxIndex = right;
-        if (maxIndex != i) { // 如果索引发生变化，则交换
-            swap(nums, maxIndex, i);
-            maxHeapify(nums, maxIndex, heapSize);
-        }
-    }
-
-    private void buildMaxHeap(int[] nums, int heapSize) {
-        for (int i = nums.length / 2; i >= 0; --i) { // 将非叶子节点进行堆化
-            maxHeapify(nums, i, heapSize);
-        }
-    }
-
-    private void swap(int[] nums, int maxIndex, int i) {
-        int temp = nums[maxIndex];
-        nums[maxIndex] = nums[i];
-        nums[i] = temp;
-    }
-```
-
-
-
-### 【×】环形子数组的最大和
-
-这题一共有两种情况（也就是相当于比上一题多了一种最大子数组和是首尾连接的情况）
-下面的这个子数组指最大和的子数组
-
-第一种情况：这个子数组不是环状的，就是说首尾不相连。
-第二种情况：这个子数组一部分在首部，一部分在尾部，我们可以将这第二种情况转换成第一种情况
-
-所以这最大的环形子数组和 = `max(最大子数组和，数组总和-最小子数组和)`
-
-统一注释，`total`为数组的总和，`maxSum`为最大子数组和，`minSum`为最小子数组和，`curMax`为包含当前元素的最大子数组和，`curMin`为包含当前元素的最小子数组和
-
-```java
-    public int maxSubarraySumCircular(int[] nums) {
-        int sum = 0, maxSum = nums[0], minSum = nums[0], curMax = 0, curMin = 0;
-        for (int num : nums) {
-            curMax = Math.max(curMax + num, num);
-            maxSum = Math.max(maxSum, curMax);
-            curMin = Math.min(curMin + num, num);
-            minSum = Math.min(minSum, curMin);
-            sum += num;
-        }
-        return maxSum > 0 ? Math.max(sum - minSum, maxSum) : maxSum;
-    }
-```
-
-
-
-前缀和+最小值队列
-
-```java
-    public int maxSubarraySumCircular(int[] nums) {
-        int N = nums.length;
-        int[] preSum = new int[2 * N + 1];
-        for (int i = 0; i < 2 * N; i++)
-            preSum[i + 1] = preSum[i] + nums[i % N];
-
-        int res = nums[0];
-        // 最小值队列
-        Deque<Integer> queue = new ArrayDeque<>();
-        queue.offerLast(0);
-        for (int i = 1; i < preSum.length; i++) {
-            if (queue.peekFirst() < i - N)
-                queue.pollFirst();
-
-            res = Math.max(res, preSum[i] - preSum[queue.peekFirst()]);
-
-            while (!queue.isEmpty() && preSum[queue.peekLast()] >= preSum[i])
-                queue.pollLast();
-
-            queue.offerLast(i);
-        }
-        return res;
-    }
-```
-
-
-
-### 【×】最大子矩阵和
-
-返回一个数组 `[r1, c1, r2, c2]`，其中 `r1`, `c1` 分别代表子矩阵左上角的行号和列号，`r2`, `c2` 分别代表右下角的行号和列号。若有多个满足条件的子矩阵，返回任意一个均可。
-
-**示例：**
-
-```
-输入：
-[
-   [-1,0],
-   [0,-1]
-]
-输出：[0,1,0,1]
-解释：输入中标粗的元素即为输出所表示的矩阵
-```
-
-
-
-将二维压缩成一维，然后计算每层累计的数组的最大和（和上一题一样）
-
-```java
-public int[] getMaxMatrix(int[][] matrix) {
-    int m = matrix.length, n = matrix[0].length;
-    int[] compress = new int[n];
-    int[] res = new int[4];
-    int startRow = 0, startCol = 0;
-    int maxSum = Integer.MIN_VALUE, sum;
-    for (int i = 0; i < m; i++) {
-        Arrays.fill(compress, 0);
-        for (int j = i; j < m; j++) {
-            sum = 0;
-            for (int k = 0; k < n; k++) {
-                compress[k] += matrix[j][k];
-                if (sum > 0) {
-                    sum += compress[k];
-                } else {
-                    sum = compress[k];
-                    startRow = i;
-                    startCol = k;
-                }
-                if (sum > maxSum) {
-                    maxSum = sum;
-                    res[0] = startRow;
-                    res[1] = startCol;
-                    res[2] = j;
-                    res[3] = k;
-                }
-            }
-        }
-    }
-    return res;
-}
-```
-
-
-
-### 最长连续序列
-
-```java
-输入：nums = [100,4,200,1,3,2]
-输出：4
-解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
-```
-
-我们的做法可以是从当前元素`num`开始，一次查找`num+1, num+2, ... num+y`是否在数字中，如果都在那么个最后的答案就是`y`。那么这个其实不是最优的，因为如果当前元素是`num+2`的话，那么找到`num+y`，这算一次了。但是如果走到`num`，还要找一遍`num+1, num+2, ... num+y`。那么前面走的那一遍就白走了。所以我们就直接找的最小的元素`num`，从`num`开始`+1`的找。既然`num`是数组中的最小值，那么数组中肯定不存在`num-1`，所以`num-1`就是我们判断最小值的条件。如果`num-1`在数组里，`num`就不是最小值，跳过。如果`num-1`不在数组中，那么`num`就是最小值，这个时候开始往上找。
-
-```java
-public int longestConsecutive(int[] nums) {
-        Set<Integer> set = new HashSet<>();
-        for (int num : nums) {
-            set.add(num);
-        }
-        int res = 0;
-        for (int num : nums) {
-            if (!set.contains(num - 1)) {
-                int currentNum = num
-                    
-                int currentLongest = 1;
-                while (set.contains(currentNum + 1)) {
-                    currentNum += 1;
-                    currentLongest += 1;
-                }
-                res = Math.max(res, currentLongest);
-            }
-        }
-        return res;
-    }
-```
-
-
-
-### 乘积最大子数组
-
-给你一个整数数组 `nums` ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
-
-**示例 1:**
-
-```
-输入: [2,3,-2,4]
-输出: 6
-解释: 子数组 [2,3] 有最大乘积 6。
-```
-
-**示例 2:**
-
-```
-输入: [-2,0,-1]
-输出: 0
-解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
-```
-
-由于存在负数，那么会导致最大的变最小的，最小的变最大的。因此还需要维护当前最小值`imin`。对于当前数字，不管正负，都要分别×最大乘积和最小乘积，然后选最大的当结果。
-
-```java
-    public int maxProduct(int[] nums) {
-        int imax = nums[0], imin = nums[0], max = nums[0];
-        for (int i = 1; i < nums.length; i++) {
-            int i_max = imax, i_min = imin;
-            imax = Math.max(i_min * nums[i], Math.max(i_max * nums[i], nums[i]));
-            imin = Math.min(i_max * nums[i], Math.min(i_min * nums[i], nums[i]));
-            max = i_max > max ? i_max : max;
-        }
-        return max;
-    }
-```
-
-
-
-
-
-
-
-### 下一个排列
-
-注意到下一个排列总是比当前排列要大，除非该排列已经是最大的排列。我们希望找到一种方法，能够找到一个大于当前序列的新序列，且变大的幅度尽可能小。具体地：
-
-- 我们要找到下一个排列，比当前的排列要大，并且增幅要小，那么我们就要尽量把排列的后几位数字让他升序排布，例如（12384567）肯定比（12384576）要小的。我们的结果要往这样的一个趋势构造。
-- 那我们怎么决定从哪位开始给末尾的数字进行升序排布呢？我们从后往前遍历元素值，直到找到破坏递增顺序的第一个元素，那么这个元素就是最远不满足末尾数字升序排布的临界位置。
-- 如果我们直接将临界值之后的元素，反转，使其变成递增的序列，那么我们可能得到的结果比原排列还要小，比如，原排列1238**5764**，反转后1238**5467**，我们要反转后的结果比原排列要大的话，那么我们还需要交换元素，交换元素的原则就是从后面递增的序列中，选择第一个比分界点值大的元素，这样增幅也是最小的，并交换，那么最终结果就是答案了。最终结果1238**6457**。
-
-<img src="https://assets.leetcode-cn.com/solution-static/31/31.gif" alt="fig1" style="zoom:67%;" />
-
-```java
-class Solution {
-    public void nextPermutation(int[] nums) {
-        int p = nums.length - 2;
-        while (p >= 0 && nums[p] >= nums[p + 1]) p--;
-        reverse(nums, p + 1, nums.length - 1);
-        int j = p + 1;
-        if (j != 0) {
-            while (j < nums.length) {
-                if (nums[j] > nums[p]) break;
-                else j++;
-            }
-            swap(nums, p, j);
-        }
-    }
-
-    private void swap(int[] nums, int i, int j) {
-        int tmp = nums[i];
-        nums[i] = nums[j];
-        nums[j] = tmp;
-    }
-
-    private void reverse(int[] nums, int i, int j) {
-        while (i < j) {
-            swap(nums, i ,j);
-            i++;
-            j--;
-        }
-    }
-}
-```
-
-
-
-
-
-### 荷兰国旗
-
-给定一个包含红色、白色和蓝色、共 `n` 个元素的数组 `nums` ，**[原地](https://baike.baidu.com/item/原地算法)**对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
-
-我们使用整数 `0`、 `1` 和 `2` 分别表示红色、白色和蓝色。
-
-必须在不使用库内置的 sort 函数的情况下解决这个问题。
-
-**示例 1：**
-
-```
-输入：nums = [2,0,2,1,1,0]
-输出：[0,0,1,1,2,2]
-```
-
-**示例 2：**
-
-```
-输入：nums = [2,0,1]
-输出：[0,1,2]
-```
-
-和快排的`partition`思想一样，正常的状态下，**两个指针`i,j`分别指向`1，2`序列的第一个元素。如果`1，2`没都出现的时候，那么`i, j`两个指针是指在一起的**。初始状态下`i = 0, j = 0`。
-
-```java
-public void sortColors(int[] nums) {
-        int i = 0, j = 0;
-        for (int k = 0; k < nums.length; k++) {
-            if (nums[k] == 0) {
-                swap(nums, i, k);
-                if (i < j) {
-                    swap(nums, j, k);
-                }
-                i++;
-                j++;
-            } else if (nums[k] == 1) {
-                swap(nums, j, k);
-                j++;
-            }
-        }
-    }
-```
-
-
-
-### 摆动排序
-
-给你一个整数数组 `nums`，将它重新排列成 `nums[0] < nums[1] > nums[2] < nums[3]...` 的顺序。
-
-方法：
-
-- 使用快速选择，选择好中位数
-- 使用3-way-partition将小于中位数的数字都放在中位数的左边，大于中位数的数字放在中位数的右边
-- 逆序分别选择两半数字，进行插入组成摆动的排序
-
-```java
-class Solution {
-    private Random random = new Random();
-    public void wiggleSort(int[] nums) {
-        int left = 0, right = nums.length - 1;
-        // 找出中位数
-        int mid_index = quickSelect(nums, left, right, left + (right - left) / 2);
-        // 左右两边分开
-        threePartPartition(nums, mid_index);
-        System.out.println(Arrays.toString(nums));
-        // 交缠在一起
-        int[] leftPart = Arrays.copyOfRange(nums, left, mid_index + 1);
-        int[] rightPart = Arrays.copyOfRange(nums, mid_index + 1, nums.length);
-
-        System.out.println(Arrays.toString(leftPart));
-        System.out.println(Arrays.toString(rightPart));
-
-        int len = 0, m = leftPart.length - 1, n = rightPart.length - 1;
-        boolean fromLeft = true;
-        while (len < nums.length) {
-            if (fromLeft) {
-                nums[len] = leftPart[m--];
-                fromLeft = false;
-            } else {
-                nums[len] = rightPart[n--];
-                fromLeft = true;
-            }
-            len++;
-        }
-
-        System.out.println(Arrays.toString(nums));
-    }
-
-    private int quickSelect(int[] nums, int start, int end, int k) {
-        int index = randomPartition(nums, start, end);
-        if (k == index)
-            return index;
-        else if (k < index)
-            return quickSelect(nums, start, index - 1, k);
-        else
-            return quickSelect(nums, index + 1, end, k);
-    }
-
-    private int randomPartition(int[] nums, int left, int right) {
-        int random_index = random.nextInt(right - left + 1);
-        swap(nums, right, left + random_index);
-        return partition(nums, left, right);
-    }
-
-    private int partition(int[] nums, int start, int end) {
-        int i = start - 1, j = start, r = nums[end];
-        for (; j < end; j++) {
-            if (nums[j] < r) {
-                swap(nums, ++i, j);
-            }
-        }
-        swap(nums, ++i, end);
-        return i;
-    }
-
-    private void threePartPartition(int[] nums, int mid) {
-        int r = nums[mid], i = 0, j = 0, end = nums.length - 1;
-        for (; j < end; j++) {
-            if (nums[j] < r) {
-                swap(nums, i++, j++);
-            } else if (nums[j] > r) {
-                swap(nums, end--, j);
-            } else {
-                j++;
-            }
-        }
-    }
-
-    private void swap(int[] nums, int i, int j) {
-        int tmp = nums[i];
-        nums[i] = nums[j];
-        nums[j] = tmp;
-    }
-}
 ```
 
 
@@ -8631,7 +8658,7 @@ public class InsertionSort {
 
 
 
-### 归并排序
+### 归并排序（递归）
 
 ```java
 public class MergeSort {
@@ -8666,6 +8693,73 @@ public class MergeSort {
             nums[numsP++] = rightPart[rightP++];
     }
 }
+```
+
+
+
+### 归并排序（非递归） 
+
+**原数组：4, 7, 5, 1, 6, 3, 2, 8**
+
+**第一次（两个排序）：4, 7, 1, 5, 3, 6, 2, 8**
+
+**第二次（四个排序）：1, 4, 5, 7, 2, 3, 6, 8**
+
+**第三次（八个排序）：1, 2, 3, 4, 5, 6, 7, 8**
+
+```java
+public void MergeSortNoneRecur(int[] arr) {
+        // 非递归实现，拆分的方式可以理解为：完全二叉树的分层遍历
+        // 从 1 开始分割，与递归不同的是，递归由数组长度一分为二最后到1，
+        // 而非递归则是从1开始扩大二倍直到数组长度
+
+        int start = 1;
+        // 排序前先创建一个和原始数组等长的临时数组，避免在拆分过程中频繁开辟空间
+        int[] tempArr = new int[arr.length];
+        // 步进从2->4->8直到数组长度，
+        while (start < arr.length) {
+            for (int i = 0; i + start < arr.length; i += start << 1) {
+                int left = i;
+                int mid = i + start - 1;
+                int right = i + (start << 1) - 1;
+
+                // 防止最后超过数组长度
+                if (right > arr.length - 1) {
+                    right = arr.length - 1;
+                }
+                merge(arr, tempArr, left, mid, right);
+            }
+            start <<= 1;
+        }
+    }
+
+    private void merge(int[] arr, int[] tempArr, int left, int mid, int right) {
+        int i = left;//左序列指针
+        int j = mid + 1;//右序列指针
+        int k = left;//临时数组指针
+
+        // 注意： 此处并没有全部放入temp中，当一边达到mid或right时就是退出循环
+        while (i <= mid && j <= right) {
+            if (arr[i] < arr[j]) {
+                // 降序排序，如果是升序，改为arr[i++]即可
+                tempArr[k++] = arr[i++];
+            } else {
+                tempArr[k++] = arr[j++];
+            }
+        }
+
+        while (i <= mid) {
+            tempArr[k++] = arr[i++];
+        }
+
+        while (j <= right) {
+            tempArr[k++] = arr[j++];
+        }
+
+        while (left <= right) {
+            arr[left] = tempArr[left++];
+        }
+    }
 ```
 
 
