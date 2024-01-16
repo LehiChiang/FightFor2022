@@ -1,4 +1,4 @@
-package out.bd;
+package out.bd.java;
 
 import datastructure.ListNode;
 

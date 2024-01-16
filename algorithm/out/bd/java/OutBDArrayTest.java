@@ -1,4 +1,4 @@
-package out.bd;
+package out.bd.java;
 
 import org.junit.jupiter.api.Test;
 import utils.ArrayUtils;
