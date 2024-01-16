@@ -37,6 +37,7 @@ public class TreeNode {
 
     /**
      * 字符串构造二叉树
+     *
      * @param data
      * @param SEP
      * @param NULL
@@ -45,26 +46,28 @@ public class TreeNode {
     public static TreeNode deserialize(String data, String SEP, String NULL) {
         if (data.isEmpty()) return null;
         String[] values = data.split(SEP);
+        if (values.length == 0)
+            return null;
         TreeNode root = new TreeNode(Integer.parseInt(values[0]));
         Queue<TreeNode> queue = new LinkedList<>();
         queue.offer(root);
-        for (int i = 1 ; i < values.length ; ){
+        for (int i = 1; i < values.length; ) {
             TreeNode cur = queue.poll();
             String ch = values[i++];
-            if (!ch.equals(NULL)){
+            if (!ch.equals(NULL)) {
                 TreeNode left = new TreeNode(Integer.parseInt(ch));
                 cur.left = left;
                 queue.offer(cur.left);
-            }else {
+            } else {
                 cur.left = null;
             }
 
             String ch2 = values[i++];
-            if (!ch2.equals(NULL)){
+            if (!ch2.equals(NULL)) {
                 TreeNode right = new TreeNode(Integer.parseInt(ch2));
                 cur.right = right;
                 queue.offer(cur.right);
-            }else {
+            } else {
                 cur.right = null;
             }
         }
@@ -74,14 +77,14 @@ public class TreeNode {
     /**
      * 外部调用前序遍历
      */
-    public void preTraverse(){
+    public void preTraverse() {
         System.out.print("Preorder Traversal: ");
         List<String> res = new ArrayList<>();
         preTraverseRecur(this, res);
         System.out.println(res);
     }
 
-    private void preTraverseRecur(TreeNode root, List<String> res){
+    private void preTraverseRecur(TreeNode root, List<String> res) {
         if (root == null)
             return;
         res.add(String.valueOf(root.val));
@@ -92,14 +95,14 @@ public class TreeNode {
     /**
      * 外部调用中序遍历
      */
-    public void inTraverse(){
+    public void inTraverse() {
         System.out.print("Inorder Traversal: ");
         List<String> res = new ArrayList<>();
         inTraverseRecur(this, res);
         System.out.println(res);
     }
 
-    private void inTraverseRecur(TreeNode root, List<String> res){
+    private void inTraverseRecur(TreeNode root, List<String> res) {
         if (root == null)
             return;
         inTraverseRecur(root.left, res);
@@ -110,14 +113,14 @@ public class TreeNode {
     /**
      * 外部调用后序遍历
      */
-    public void postTraverse(){
+    public void postTraverse() {
         System.out.print("Postorder Traversal: ");
         List<String> res = new ArrayList<>();
         postTraverseRecur(this, res);
         System.out.println(res);
     }
 
-    private void postTraverseRecur(TreeNode root, List<String> res){
+    private void postTraverseRecur(TreeNode root, List<String> res) {
         if (root == null)
             return;
         postTraverseRecur(root.left, res);
@@ -128,13 +131,13 @@ public class TreeNode {
     /**
      * 外部调用层序遍历
      */
-    public void levelTraverse(){
+    public void levelTraverse() {
         System.out.print("Levelorder Traversal: ");
         List<String> res = levelTraverseBFS(this);
         System.out.println(res);
     }
 
-    private List<String> levelTraverseBFS(TreeNode root){
+    private List<String> levelTraverseBFS(TreeNode root) {
         if (root == null)
             return new ArrayList<>();
         LinkedList<TreeNode> queue = new LinkedList<>();

@@ -828,6 +828,56 @@ public int lengthOfLongestSubstring(String s) {
 
 
 
+### 4. 连续的组合求和
+
+返回一些连续的序列，这些序列的和与target相等的所有组合
+
+**示例 1：**
+
+```
+输入：target = 12
+输出：[[3, 4, 5]]
+解释：在上述示例中，存在一个连续正整数序列的和为 12，为 [3, 4, 5]。
+```
+
+**示例 2：**
+
+```
+输入：target = 18
+输出：[[3,4,5,6],[5,6,7]]
+解释：在上述示例中，存在两个连续正整数序列的和分别为 18，分别为 [3, 4, 5, 6] 和 [5, 6, 7]。
+```
+
+**代码：**
+
+```java
+public int[][] continuedCombineSum(int target) {
+    List<int[]> res = new ArrayList<>();
+    int sum = 0;
+    for (int i = 1, j = 1; j < target; ) {
+        while (sum < target) {
+            sum += j;
+            j++;
+        }
+        while (sum > target) {
+            sum -= i;
+            i++;
+        }
+        if (sum == target) {
+            int[] array = new int[j - i];
+            for (int k = i; k < j; k++)
+                array[k - i] = k;
+            res.add(array);
+            sum -= i;
+            i++;
+        }
+    }
+    return res.toArray(new int[res.size()][]);
+}
+```
+
+
+
 ## 【4】区间问题
 
 ### 1. 合并区间
@@ -1530,9 +1580,139 @@ int main()
 
 
 
+## 【7】矩阵打印
+
+### 1. ZigZag打印
+
+定义A，B两点，A往右走，不能走再往下走；B往下走，不能走再往右走；
+
+```java
+    public static void PrintZigZag(int[][] matrix) {
+        int ACol = 0, ARow = 0, BCol = 0, BRow = 0;
+        int EndCol = matrix[0].length - 1;
+        int EndRow = matrix.length - 1;
+        boolean fromUp = false;
+        while (ARow != EndRow + 1) {
+            printRoute(matrix, ARow, ACol, BRow, BCol, fromUp);
+            ARow = ACol == EndCol ? ARow + 1 : ARow; // 这四行不能换
+            ACol = ACol == EndCol ? ACol : ACol + 1;
+            BCol = BRow == EndRow ? BCol + 1 : BCol;
+            BRow = BRow == EndRow ? BRow : BRow + 1;
+            fromUp = !fromUp;
+        }
+        System.out.println();
+    }
+
+    private static void printRoute(int[][] matrix, int aRow, int aCol, int bRow, int bCol, boolean fromUp) {
+        if (fromUp) {
+            while (aRow <= bRow) {
+                System.out.print(matrix[aRow++][aCol--] + " ");
+            }
+        } else {
+            while (bRow >= aRow) {
+                System.out.print(matrix[bRow--][bCol++] + " ");
+            }
+        }
+    }
+```
 
 
-## 【7】其他
+
+### 2. 旋转打印
+
+<img src="https://img-blog.csdnimg.cn/20190722140141231.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODUxNTMx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" style="zoom:50%;" />
+
+定义A，B两点，A点在左上角，B点在右下角
+
+```java
+public class PrintMatrixSpiralOrder {
+
+	public static void spiralOrderPrint(int[][] matrix) {
+		// 我们自己找两个点，用于确定第一圈
+		int aX = 0;
+		int aY = 0;
+		// b点，我们用二维数组的大小来确定最右下角的坐标
+		int bX = matrix.length - 1;
+		int bY = matrix[0].length - 1;
+		// 第一圈循环完了再循环第二圈，当a点的x轴大于b点的x轴，并且a的y大于b的y时，说明已经全部扫描一圈了
+		while (aX <= bX && aY <= bY) {
+			printEdge(matrix, aX++, aY++, bX--, bY--);
+		}
+	}
+
+	public static void printEdge(int[][] m, int aX, int aY, int bX, int bY) {
+		if (aX == bX) {
+			// a,b点的横坐标相同，说明这个矩阵就一行了
+			for (int i = aY; i <= bY; i++) {
+				System.out.print(m[aX][i] + " ");
+			}
+		} else if (aY == bY) {
+			// a,b点的纵坐标相同，这个矩阵就只有一列了
+			for (int i = aX; i <= bX; i++) {
+				System.out.print(m[i][aY] + " ");
+			}
+		} else {
+			int curX = aX;
+			int curY = aY;
+			while (curX != bX) {
+				System.out.print(m[aX][curX] + " ");
+				curX++;
+			}
+			while (curY != bY) {
+				System.out.print(m[curY][bX] + " ");
+				curY++;
+			}
+			while (curX != aX) {
+				System.out.print(m[bY][curX] + " ");
+				curX--;
+			}
+			while (curY != aY) {
+				System.out.print(m[curY][aY] + " ");
+				curY--;
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		int[][] matrix = { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 9, 10, 11, 12 }, { 13, 14, 15, 16 } };
+		spiralOrderPrint(matrix);
+	}
+}
+```
+
+
+
+### 3. 原地旋转矩阵(正方形)
+
+将矩阵顺时针旋转`90`度
+
+解法：将第`i`行和第`length - i - 1`行交换，这样数组的行就是倒序的了，然后按照对角线反转元素就行。
+
+```java
+public void rotate(int[][] matrix) {
+        // 先0维度反转
+        int len = matrix.length;
+        for (int row = 0; row < len / 2; row++) {
+            for (int col = 0; col < len; col++) {
+                int temp = matrix[row][col];
+                matrix[row][col] = matrix[len - row - 1][col];
+                matrix[len - row - 1][col] = temp;
+            }
+        }
+        // 再对角线元素交换位置
+        for (int row = 0; row < len; row++) {
+            for (int col = 0; col < row; col++) {
+                int temp = matrix[row][col];
+                matrix[row][col] = matrix[col][row];
+                matrix[col][row] = temp;
+            }
+        }
+    }
+```
+
+
+
+## 【8】其他
 
 ### 1. 快速选择
 
@@ -2505,7 +2685,89 @@ class Solution {
 
 
 
-## 二. 链表
+# 二. 链表
+
+### 1. 链表中返回中间节点
+
+```Java
+public class OutBDNode {
+    /**
+     * 无头结点链表，奇数节点个数返回中间节点，偶数节点个数返回下中间节点
+     *
+     * @param head
+     * @return
+     */
+    public static ListNode MidOrLowMidNode(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+    /**
+     * 无头结点链表，奇数节点个数返回中间节点，偶数节点个数返回上中间节点
+     *
+     * @param head
+     * @return
+     */
+    public static ListNode MidOrUpMidNode(ListNode head) {
+        if (head == null || head.next == null || head.next.next == null)
+            return head;
+        ListNode slow = head;
+        ListNode fast = head.next;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+    /**
+     * 带头结点链表，奇数节点个数返回中间节点，偶数节点个数返回上中间前一个节点
+     *
+     * @param head
+     * @return
+     */
+    public static ListNode MidOrUpMidPreNode(ListNode head) {
+        if (head == null || head.next == null || head.next.next == null)
+            return null;
+        ListNode slow = head;
+        ListNode fast = head.next.next;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return fast == null ? slow.next : slow;
+    }
+
+    /**
+     * 带头结点链表，奇数节点个数返回中间节点，偶数节点个数返回下中间前一个节点
+     *
+     * @param head
+     * @return
+     */
+    public static ListNode MidOrDownMidPreNode(ListNode head) {
+        if (head == null || head.next == null || head.next.next == null)
+            return null;
+        ListNode slow = head;
+        ListNode fast = head.next;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return fast == null ? slow : slow.next;
+    }
+}
+
+```
+
+
 
 ### 单向链表的快速排序
 
@@ -3189,131 +3451,7 @@ class Solution {
 
 
 
-## 三. 排列组合
-
-### 组合求和
-
-去重复的方法：
-
-- 使用HashSet；
-- 排序，排完序，如果当前元素和前一个元素相同，那么当前元素略过，不选择；因为有序是 **深度优先遍历** 过程中实现「剪枝」的前提。
-
-回溯模板，书写要规范：
-
-```java
-class Solution {
-    private List<List<Integer>> res;
-    public List<List<Integer>> combinationSum(int[] candidates, int target) {
-        res = new ArrayList<>();
-        Arrays.sort(candidates);
-        dfs(candidates, target, new LinkedList<Integer>(), 0, 0);
-        return res;
-    }
-
-    private void dfs(int[] candidates, int target, LinkedList<Integer> path, int index, int sum) {
-        if (sum == target) {
-            // 满足条件，加入到结果集里面
-        }
-        for (int i = index; i < candidates.length; i++) {
-            // 结束条件都在for循环里判断
-            // 大剪枝操作
-            if (sum + candidates[i] > target)
-                break;
-            if (i > index && candidates[i] == candidates[i - 1]) // 去重复的写法
-                continue;
-            path.addLast(candidates[i]);
-            dfs(candidates, target, path, i + 1, sum + candidates[i]);
-            path.removeLast();
-        }
-    }
-}
-```
-
-
-
-### 全排列
-
-分两种情况：
-
-- 数组不重复元素的全排列
-- 数组中有重复元素的全排列（涉及重复元素的，都需要**排序**解决去重，比较`nums[i] == nums[i - 1]`），此外由于重复元素的全排列问题，不能单单判断数字是否在path中决定是否添加，要使用下标判断，因为下标是唯一的。
-
-```java
-private List<List<Integer>> res;
-private boolean[] visited;
-private void dfs(int[] nums, LinkedList<Integer> path) {
-    if (path.size() == nums.length) {
-        res.add(new ArrayList<>(path));
-        return;
-    }
-    for (int i = 0; i < nums.length; i++) {
-        // visited[i]表示过滤掉当前的元素，避免被重复选中
-        // nums[i] == nums[i - 1] && !visited[i - 1] 如果两个数连续一样的话，当从第二个数字开始选的话，那么第一个数组应该就不选了，
-        // 并且第一个visited数组应该为false,这样才能表示是从第二个数字开始选的。
-        if (visited[i] || (i > 0 && nums[i] == nums[i - 1] && !visited[i - 1]))
-            continue;
-       visited[i] = true;
-       path.add(nums[i]);
-       dfs(nums, path);
-       path.removeLast();
-       visited[i] = false;
-    }
-}
-```
-
-
-
-### 排列序列
-
-给定 `n` 和 `k`，返回第 `k` 个`1 ~ n - 1`的排列。
-
-思路：就是正常的递归求解排列，这里让求出第K个，那么就计算当前分支下，剩余的数字有几种组合方式fact，如果`k < fact`，那就说明第K个排列在当前分支下，然后就往下继续进行，选择当前节点，设置当前节点为访问的。如果`k > fact`，那就说明我要在下一个分支下寻找第`k - fact`个排列，然后依次计算，直到`fact = 1`，这样就通过剪枝的方式找到了第K个排列了。
-
-```java
-class Solution {
-    private StringBuilder stringBuilder;
-    private boolean[] visited;
-    private int[] factorial;
-    public String getPermutation(int n, int k) {
-        calculateFactorial(n);
-        stringBuilder = new StringBuilder();
-        visited = new boolean[n + 1];
-        dfs(n, k, 0);
-        return stringBuilder.toString();
-    }
-
-    private void dfs(int n, int k, int index) {
-        if (index == n)
-            return;
-
-        for (int i = 1; i <= n; i++) {
-            if (visited[i])
-                continue;
-            int fact = factorial[n - index - 1];
-            if (fact < k) {
-                k -= fact;
-                continue;
-            }
-            visited[i] = true;
-            stringBuilder.append(i);
-            dfs(n, k, index + 1);
-            return;
-        }
-    }
-
-    private void calculateFactorial(int n) {
-        factorial = new int[n + 1];
-        factorial[0] = 1;
-        for (int i = 1; i <= n; i++) {
-            factorial[i] = i * factorial[i -1];
-        }
-    }
-}
-```
-
-
-
-## 四. 字符串
+# 三. 字符串
 
 ### 翻转单词顺序
 
@@ -4477,9 +4615,9 @@ class Solution {
 
 
 
-## 五. 设计
+# 四. 设计
 
-### Knuth洗牌算法
+### 1. Knuth洗牌算法
 
 **共有 n 个不同的数，根据每个位置能够选择什么数，共有n! 种组合。**
 
@@ -4583,6 +4721,304 @@ class Solution {
         }
         return nums;
     }
+}
+```
+
+
+
+### 2. 并查集
+
+https://www.runoob.com/data-structures/union-find-basic.html
+
+一、概念及其介绍
+
+并查集是一种树型的数据结构，用于处理一些不相交集合的合并及查询问题。
+
+并查集的思想是用一个数组表示了整片森林（parent），树的根节点唯一标识了一个集合，我们只要找到了某个元素的的树根，就能确定它在哪个集合里。
+
+二、适用说明
+
+并查集用在一些有 **N** 个元素的集合应用问题中，我们通常是在开始时让每个元素构成一个单元素的集合，然后按一定顺序将属于同一组的元素所在的集合合并，其间要反复查找一个元素在哪个集合中。这个过程看似并不复杂，但数据量极大，若用其他的数据结构来描述的话，往往在空间上过大，计算机无法承受，也无法在短时间内计算出结果，所以只能用并查集来处理。
+
+我们将用另外一种方式实现并查集。把每一个元素，看做是一个节点并且指向自己的父节点，根节点指向自己。如下图所示，节点 3 指向节点 2，代表 3 和 2 是连接在一起的，节点2本身是根节点，所以指向自己。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/quickUnion-01.png" alt="img" style="zoom:50%;" />
+
+同样用数组表示并查集，但是下面一组元素用 **parent** 表示当前元素指向的父节点，每个元素指向自己，都是独立的。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/quickUnion-02.png" alt="img" style="zoom:50%;" />
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/quickUnion-03.png" alt="img" style="zoom:50%;" />
+
+如果此时操作 **union(4,3)**，将元素 4 指向元素 3：
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/quickUnion-04.png" alt="img" style="zoom:50%;" />
+
+数组也进行相应改变：
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/quickUnion-05.png" alt="img" style="zoom: 50%;" />
+
+判断两个元素是否连接，只需要判断根节点是否相同即可。
+
+如下图，节点 4 和节点 9 的根节点都是 8，所以它们是相连的。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/quickUnion-06.png" alt="img" style="zoom:50%;" />
+
+连接两个元素，只需要找到它们对应的根节点，使根节点相连，那它们就是相连的节点。
+
+假设要使上图中的 6 和 4 相连，只需要把 6 的根节点 5 指向 4 的根节点 8 即可。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/quickUnion-07.png" alt="img" style="zoom:50%;" />
+
+构建这种指向父节点的树形结构， 使用一个数组构建一棵指向父节点的树，parent[i] 表示 i 元素所指向的父节点。
+
+```java
+...
+private int[] parent;
+private int count;  // 数据个数
+...
+```
+
+查找过程, 查找元素 p 所对应的集合编号，不断去查询自己的父亲节点, 直到到达根节点，根节点的特点 parent[p] == p，O(h) 复杂度, h 为树的高度。
+
+```java
+...
+private int find(int p){
+  assert(p >= 0 && p < count);
+  while(p != parent[p])
+    p = parent[p];
+  return p;
+}
+...
+```
+
+合并元素 p 和元素 q 所属的集合，分别查询两个元素的根节点，使其中一个根节点指向另外一个根节点，两个集合就合并了。这个操作是 O(h) 的时间复杂度，h 为树的高度。
+
+```java
+public void unionElements(int p, int q){
+  int pRoot = find(p);
+  int qRoot = find(q);
+  if( pRoot == qRoot )
+    return;
+  parent[pRoot] = qRoot;
+}
+```
+
+整合版代码：
+
+```Java
+package runoob.union;
+/**
+ * 第二版unionFind
+ */
+public class UnionFind2 {
+    // 我们的第二版Union-Find, 使用一个数组构建一棵指向父节点的树
+    // parent[i]表示第一个元素所指向的父节点
+    private int[] parent;
+    private int count;  // 数据个数
+    // 构造函数
+    public UnionFind2(int count){
+        parent = new int[count];
+        this.count = count;
+        // 初始化, 每一个parent[i]指向自己, 表示每一个元素自己自成一个集合
+        for( int i = 0 ; i < count ; i ++ )
+            parent[i] = i;
+    }
+    // 查找过程, 查找元素p所对应的集合编号
+    // O(h)复杂度, h为树的高度
+    private int find(int p){
+        assert( p >= 0 && p < count );
+        // 不断去查询自己的父亲节点, 直到到达根节点
+        // 根节点的特点: parent[p] == p
+        while( p != parent[p] )
+            p = parent[p];
+        return p;
+    }
+    // 查看元素p和元素q是否所属一个集合
+    // O(h)复杂度, h为树的高度
+    public boolean isConnected( int p , int q ){
+        return find(p) == find(q);
+    }
+    // 合并元素p和元素q所属的集合
+    // O(h)复杂度, h为树的高度
+    public void unionElements(int p, int q){
+        int pRoot = find(p);
+        int qRoot = find(q);
+        if( pRoot == qRoot )
+            return;
+        parent[pRoot] = qRoot;
+    }
+}
+```
+
+
+
+三、基于`size`的优化
+
+如果树的层相对较高，当元素数量增多时，产生的消耗就会相对较大。解决这个问题其实很简单，在进行具体指向操作的时候先进行判断，**把元素少的集合根节点指向元素多的根节点，能更高概率的生成一个层数比较低的树**。
+
+构造并查集的时候需要多一个参数，**`sz`** 数组，**`sz[i]`** 表示以 `i` 为根的集合中元素个数。
+
+```java
+class UnionFind {
+    private int[] parents;
+     // 数据个数
+    private int count;
+    // sz[i]表示以i为根的集合中元素个数
+    private int[] sz;
+
+    public UnionFind(int totalNodes) {
+        count = totalNodes;
+        parents = new int[totalNodes];
+        sz = new int[totalNodes];
+        for (int i = 0; i < totalNodes; i++) {
+            parents[i] = i;
+            sz[i] = 1;
+        }
+    }
+    
+    // 合并元素p和元素q所属的集合
+    // O(h)复杂度, h为树的高度
+    void union(int p, int q) {
+        int pRoot = find(p);
+        int qRoot = find(q);
+        if( pRoot == qRoot )
+            return;
+        // 根据两个元素所在树的元素个数不同判断合并方向
+        // 将元素个数少的集合合并到元素个数多的集合上
+        if( sz[pRoot] < sz[qRoot] ){
+            parents[pRoot] = qRoot;
+            sz[qRoot] += sz[pRoot];
+        }
+        else{
+            parents[qRoot] = pRoot;
+            sz[pRoot] += sz[qRoot];
+        }
+    }
+    
+    // 查找过程, 查找元素p所对应的集合编号
+    // O(h)复杂度, h为树的高度
+    int find(int node) {
+        // 不断去查询自己的父亲节点, 直到到达根节点
+        // 根节点的特点: parent[node] == node
+        while (parents[node] != node) {
+            // 当前节点的父节点 指向父节点的父节点.
+            // 保证一个连通区域最终的parents只有一个.
+            parent[p] = parent[parent[p]];
+            node = parent[p];  // 路径压缩
+        }
+        return node;
+    }
+    
+    // 查看元素p和元素q是否所属一个集合
+    // O(h)复杂度, h为树的高度
+    boolean isConnected(int node1, int node2) {
+        return find(node1) == find(node2);
+    }
+}
+```
+
+四、基于`rank`的优化
+
+上一小节介绍了并查集基于 size 的优化，但是某些场景下，也会存在某些问题，如下图所示，操作 union(4,2)。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/rank-01.png" alt="img" style="zoom:67%;" />
+
+根据上一小节，size 的优化，元素少的集合根节点指向元素多的根节点。操完后，层数变为4，比之前增多了一层，如下图所示：
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/rank-02.png" alt="img" style="zoom:67%;" />
+
+依靠集合的 size 判断指向并不是完全正确的，更准确的是，根据两个集合层数，具体判断根节点的指向，层数少的集合根节点指向层数多的集合根节点，如下图所示，这就是基于 rank 的优化。我们在并查集的属性中，添加 rank 数组，rank[i] 表示以 i 为根的集合所表示的树的层数。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/rank-03.png" alt="img" style="zoom: 67%;" />
+
+```java
+class UnionFind {
+    private int[] parents;
+     // 数据个数
+    private int count;
+    private int[] rank;   // rank[i]表示以i为根的集合所表示的树的层数
+
+    public UnionFind(int totalNodes) {
+        count = totalNodes;
+        parents = new int[totalNodes];
+        rank = new int[totalNodes];
+        for (int i = 0; i < totalNodes; i++) {
+            parents[i] = i;
+            rank[i] = 1;
+        }
+    }
+    
+    // 合并元素p和元素q所属的集合
+    // O(h)复杂度, h为树的高度
+    void union(int p, int q) {
+        int pRoot = find(p);
+        int qRoot = find(q);
+        if( pRoot == qRoot )
+            return;
+        if( rank[pRoot] < rank[qRoot] ){
+            parent[pRoot] = qRoot;
+        }
+        else if( rank[qRoot] < rank[pRoot]){
+            parent[qRoot] = pRoot;
+        }
+        else{ // rank[pRoot] == rank[qRoot]
+            parent[pRoot] = qRoot;
+            rank[qRoot] += 1;   // 维护rank的值
+        }
+    }
+    
+    // 查找过程, 查找元素p所对应的集合编号
+    // O(h)复杂度, h为树的高度
+    int find(int node) {
+        // 不断去查询自己的父亲节点, 直到到达根节点
+        // 根节点的特点: parent[node] == node
+        while (parents[node] != node) {
+            // 当前节点的父节点 指向父节点的父节点.
+            // 保证一个连通区域最终的parents只有一个.
+            parents[node] = parents[parents[node]];
+            node = parents[node];  // 路径压缩
+        }
+
+        return node;
+    }
+    
+    // 查看元素p和元素q是否所属一个集合
+    // O(h)复杂度, h为树的高度
+    boolean isConnected(int node1, int node2) {
+        return find(node1) == find(node2);
+    }
+}
+```
+
+五、路径压缩
+
+上面的路径优化过程如下图所示：
+
+如下图中，find(4) 的过程就可以路径压缩，让树的层数更少。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/compress-01.png" alt="img" style="zoom:67%;" />
+
+节点 4 往上寻找根节点时，压缩第一步，树的层数就减少了一层：
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/compress-02.png" alt="img" style="zoom:67%;" />
+
+节点 2 向上寻找，也不是根节点，那么把元素 2 指向原来父节点的父节点，操后后树的层数相应减少了一层，同时返回根节点 0。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/compress-03.png" alt="img" style="zoom:67%;" />
+
+上述路径压缩并不是最优的方式，我们可以把最初的树压缩成下图所示，层数是最少的。
+
+<img src="https://www.runoob.com/wp-content/uploads/2020/10/conpress-04.png" alt="img" style="zoom:67%;" />
+
+第二种路径压缩方式是使用递归：
+
+```java
+public int find(int p) {
+    //第二种路径压缩算法
+    if (p != parent[p])
+        parent[p] = find(parent[p]);
+    return parent[p];
 }
 ```
 
@@ -4984,186 +5420,6 @@ class Solution {
 
 
 
-### 并查集
-
-一、概念及其介绍
-
-并查集是一种树型的数据结构，用于处理一些不相交集合的合并及查询问题。
-
-并查集的思想是用一个数组表示了整片森林（parent），树的根节点唯一标识了一个集合，我们只要找到了某个元素的的树根，就能确定它在哪个集合里。
-
-二、适用说明
-
-并查集用在一些有 **N** 个元素的集合应用问题中，我们通常是在开始时让每个元素构成一个单元素的集合，然后按一定顺序将属于同一组的元素所在的集合合并，其间要反复查找一个元素在哪个集合中。这个过程看似并不复杂，但数据量极大，若用其他的数据结构来描述的话，往往在空间上过大，计算机无法承受，也无法在短时间内计算出结果，所以只能用并查集来处理。
-
-三、基于`size`的优化
-
-```java
-class UnionFind {
-    private int[] parents;
-     // 数据个数
-    private int count;
-    // sz[i]表示以i为根的集合中元素个数
-    private int[] sz;
-
-    public UnionFind(int totalNodes) {
-        count = totalNodes;
-        parents = new int[totalNodes];
-        sz = new int[totalNodes];
-        for (int i = 0; i < totalNodes; i++) {
-            parents[i] = i;
-            sz[i] = 1;
-        }
-    }
-    
-    // 合并元素p和元素q所属的集合
-    // O(h)复杂度, h为树的高度
-    void union(int p, int q) {
-        int pRoot = find(p);
-        int qRoot = find(q);
-        if( pRoot == qRoot )
-            return;
-        // 根据两个元素所在树的元素个数不同判断合并方向
-        // 将元素个数少的集合合并到元素个数多的集合上
-        if( sz[pRoot] < sz[qRoot] ){
-            parents[pRoot] = qRoot;
-            sz[qRoot] += sz[pRoot];
-        }
-        else{
-            parents[qRoot] = pRoot;
-            sz[pRoot] += sz[qRoot];
-        }
-    }
-    
-    // 查找过程, 查找元素p所对应的集合编号
-    // O(h)复杂度, h为树的高度
-    int find(int node) {
-        // 不断去查询自己的父亲节点, 直到到达根节点
-        // 根节点的特点: parent[node] == node
-        while (parents[node] != node) {
-            // 当前节点的父节点 指向父节点的父节点.
-            // 保证一个连通区域最终的parents只有一个.
-            parents[node] = parents[parents[node]];
-            node = parents[node];
-        }
-
-        return node;
-    }
-    
-    // 查看元素p和元素q是否所属一个集合
-    // O(h)复杂度, h为树的高度
-    boolean isConnected(int node1, int node2) {
-        return find(node1) == find(node2);
-    }
-}
-```
-
-四、基于`rank`的优化
-
-上一小节介绍了并查集基于 size 的优化，但是某些场景下，也会存在某些问题，如下图所示，操作 union(4,2)。
-
-<img src="https://www.runoob.com/wp-content/uploads/2020/10/rank-01.png" alt="img" style="zoom:67%;" />
-
-根据上一小节，size 的优化，元素少的集合根节点指向元素多的根节点。操完后，层数变为4，比之前增多了一层，如下图所示：
-
-<img src="https://www.runoob.com/wp-content/uploads/2020/10/rank-02.png" alt="img" style="zoom:67%;" />
-
-依靠集合的 size 判断指向并不是完全正确的，更准确的是，根据两个集合层数，具体判断根节点的指向，层数少的集合根节点指向层数多的集合根节点，如下图所示，这就是基于 rank 的优化。我们在并查集的属性中，添加 rank 数组，rank[i] 表示以 i 为根的集合所表示的树的层数。
-
-<img src="https://www.runoob.com/wp-content/uploads/2020/10/rank-03.png" alt="img" style="zoom: 67%;" />
-
-```java
-class UnionFind {
-    private int[] parents;
-     // 数据个数
-    private int count;
-    private int[] rank;   // rank[i]表示以i为根的集合所表示的树的层数
-
-    public UnionFind(int totalNodes) {
-        count = totalNodes;
-        parents = new int[totalNodes];
-        rank = new int[totalNodes];
-        for (int i = 0; i < totalNodes; i++) {
-            parents[i] = i;
-            rank[i] = 1;
-        }
-    }
-    
-    // 合并元素p和元素q所属的集合
-    // O(h)复杂度, h为树的高度
-    void union(int p, int q) {
-        int pRoot = find(p);
-        int qRoot = find(q);
-        if( pRoot == qRoot )
-            return;
-        if( rank[pRoot] < rank[qRoot] ){
-            parent[pRoot] = qRoot;
-        }
-        else if( rank[qRoot] < rank[pRoot]){
-            parent[qRoot] = pRoot;
-        }
-        else{ // rank[pRoot] == rank[qRoot]
-            parent[pRoot] = qRoot;
-            rank[qRoot] += 1;   // 维护rank的值
-        }
-    }
-    
-    // 查找过程, 查找元素p所对应的集合编号
-    // O(h)复杂度, h为树的高度
-    int find(int node) {
-        // 不断去查询自己的父亲节点, 直到到达根节点
-        // 根节点的特点: parent[node] == node
-        while (parents[node] != node) {
-            // 当前节点的父节点 指向父节点的父节点.
-            // 保证一个连通区域最终的parents只有一个.
-            parents[node] = parents[parents[node]];
-            node = parents[node];
-        }
-
-        return node;
-    }
-    
-    // 查看元素p和元素q是否所属一个集合
-    // O(h)复杂度, h为树的高度
-    boolean isConnected(int node1, int node2) {
-        return find(node1) == find(node2);
-    }
-}
-```
-
-五、路径压缩
-
-上面的路径优化过程如下图所示：
-
-如下图中，find(4) 的过程就可以路径压缩，让树的层数更少。
-
-<img src="https://www.runoob.com/wp-content/uploads/2020/10/compress-01.png" alt="img" style="zoom:67%;" />
-
-节点 4 往上寻找根节点时，压缩第一步，树的层数就减少了一层：
-
-<img src="https://www.runoob.com/wp-content/uploads/2020/10/compress-02.png" alt="img" style="zoom:67%;" />
-
-节点 2 向上寻找，也不是根节点，那么把元素 2 指向原来父节点的父节点，操后后树的层数相应减少了一层，同时返回根节点 0。
-
-<img src="https://www.runoob.com/wp-content/uploads/2020/10/compress-03.png" alt="img" style="zoom:67%;" />
-
-上述路径压缩并不是最优的方式，我们可以把最初的树压缩成下图所示，层数是最少的。
-
-<img src="https://www.runoob.com/wp-content/uploads/2020/10/conpress-04.png" alt="img" style="zoom:67%;" />
-
-第二种路径压缩方式是使用递归：
-
-```java
-public int find(int p) {
-    //第二种路径压缩算法
-    if (p != parent[p])
-        parent[p] = find(parent[p]);
-    return parent[p];
-}
-```
-
-
-
 ### 二叉搜索树迭代器
 
 迭代法的中序遍历
@@ -5441,7 +5697,7 @@ class RangeFreqQuery {
 
 
 
-## 六. 栈
+# 五. 栈
 
 ### 出栈顺序的判断
 
@@ -5737,64 +5993,127 @@ class Solution {
 
 
 
-## 七. 树
+# 六. 树
 
-### 非递归遍历
-
-前序：
+### 1. 非递归遍历
 
 ```java
-while(!stack.isEmpty() || root != null) {
-    while (root != null) {
-        // 输出节点值
-        stack.push(root);
-        root = root.left;
+public class OutBDTree {
+    /**
+     * 非递归-先序遍历
+     * 0. 先将根节点入栈
+     * 1. 弹出栈，打印元素
+     * 2. 有右子树，右子树入栈
+     * 3. 有左子树，左子树入栈
+     *
+     * @param root
+     */
+    public static void PreOrderTraverse(TreeNode root) {
+        if (root != null) {
+            Stack<TreeNode> stack = new Stack<>();
+            stack.push(root);
+            while (!stack.isEmpty()) {
+                TreeNode node = stack.pop();
+                System.out.print(node.val + " ");
+                if (node.right != null) stack.push(node.right);
+                if (node.left != null) stack.push(node.left);
+            }
+        }
     }
-    root = stack.pop();
-    root = root.right;
+
+    /**
+     * 非递归-后序遍历
+     * 0. 先将根节点入栈
+     * 1. 弹出栈，压入辅助栈中
+     * 2. 有左子树，左子树入栈
+     * 3. 有右子树，右子树入栈
+     * 4. 辅助栈元素全部弹出
+     *
+     * @param root
+     */
+    public static void PostOrderTraverse(TreeNode root) {
+        if (root != null) {
+            Stack<TreeNode> stack1 = new Stack<>();
+            Stack<TreeNode> stack2 = new Stack<>();
+            stack1.push(root);
+            while (!stack1.isEmpty()) {
+                TreeNode node = stack1.pop();
+                stack2.push(node);
+                if (node.left != null) stack1.push(node.left);
+                if (node.right != null) stack1.push(node.right);
+            }
+            while (!stack2.isEmpty()) {
+                System.out.print(stack2.pop().val + " ");
+            }
+        }
+    }
+
+    /**
+     * 非递归-中序遍历
+     * 1. 一直压入左子树，直到左子树为空
+     * 2. 出栈，输出元素
+     * 3. 当前节点赋值为右子树
+     *
+     * @param root
+     */
+    public static void InOrderTraverse(TreeNode root) {
+        if (root != null) {
+            Stack<TreeNode> stack = new Stack<>();
+            while (!stack.isEmpty() || root != null) {
+                if (root != null) {
+                    stack.push(root);
+                    root = root.left;
+                } else {
+                    root = stack.pop();
+                    System.out.print(root.val + " ");
+                    root = root.right;
+                }
+            }
+        }
+    }
 }
 ```
 
-中序：
 
-```java
-while (!stack.isEmpty() || root != null) {
-    while (root != null) {
-        stack.push(root);
-        root = root.left;
+
+### 2. 统计层中最多的节点数量
+
+```Java
+public static int MaxNodeNumsInLayer(TreeNode root) {
+        if (root == null)
+            return 0;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        TreeNode curLayerLastNode = root; // 当前层最后一个节点（最右侧节点）
+        TreeNode nextLayerLastNode = null; // 下一层最后一个节点（最右侧节点）
+        int curLayerNodeNums = 0; // 当前层节点数量
+        int maxNodeNums = 0;  // 最多的节点数量，返回的结果
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            if (node.left != null) {
+                queue.offer(node.left);
+                nextLayerLastNode = node.left;
+            }
+            if (node.right != null) {
+                queue.offer(node.right);
+                nextLayerLastNode = node.right;
+            }
+            curLayerNodeNums++; //统计这一层节点数量
+            if (node == curLayerLastNode) {
+                maxNodeNums = Math.max(maxNodeNums, curLayerNodeNums);
+                curLayerNodeNums = 0;
+                curLayerLastNode = nextLayerLastNode;
+            }
+        }
+        return maxNodeNums;
     }
-    root = stack.pop();
-    // 输出节点值
-    root = root.right;
-}
 ```
 
-后序：
-
-```java
-TreeNode prev = null; // 指向当前节点的前一个节点，判断右子树遍历完后，遍历根节点的情况。
-while (!stack.isEmpty() || root != null) {
-    while (root != null) {
-        stack.push(root);
-        root = root.left;
-    }
-    root = stack.pop();
-    if (root.right == null || root.right == prev) {
-        // 输出节点值    
-        prev = root;
-        root = null;
-    } else {
-        stack.push(root); // 将右子树压入栈中
-        root = root.right;
-    }
-}
-```
 
 
+### 3. 序列化二叉树
 
-### 序列化二叉树
-
-层序遍历序列化和深度优先遍历序列化
+**深度（前序）优先遍历序列化**
 
 ```java
     // Encodes a tree to a single string.
@@ -5830,6 +6149,97 @@ while (!stack.isEmpty() || root != null) {
          root.left = rdeserialize(nodeList);
          root.right = rdeserialize(nodeList);
          return root;
+    }
+```
+
+
+
+**层序遍历序列化**
+
+```java
+public static TreeNode deserialize(String data, String SEP, String NULL) {
+        if (data.isEmpty()) return null;
+        String[] values = data.split(SEP);
+        if (values.length == 0)
+            return null;
+        TreeNode root = new TreeNode(Integer.parseInt(values[0]));
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        for (int i = 1; i < values.length; ) {
+            TreeNode cur = queue.poll();
+            String ch = values[i++];
+            if (!ch.equals(NULL)) {
+                TreeNode left = new TreeNode(Integer.parseInt(ch));
+                cur.left = left;
+                queue.offer(cur.left);
+            } else {
+                cur.left = null;
+            }
+
+            String ch2 = values[i++];
+            if (!ch2.equals(NULL)) {
+                TreeNode right = new TreeNode(Integer.parseInt(ch2));
+                cur.right = right;
+                queue.offer(cur.right);
+            } else {
+                cur.right = null;
+            }
+        }
+        return root;
+    }
+```
+
+
+
+### 4. 二叉树中序遍历的后继结点
+
+方法一：迭代式中序遍历
+
+因为中序遍历的顺序是，左子树，根节点，右子树。所以如果寻找p节点下一个节点的话，那么它下一个节点一定出现在右子树中。所以分两种情况讨论。
+
+- 如果p节点**有**右子树，那么下一个节点，一定是**右子树最左侧的节点**
+- 如果p节点**没有**右子树，那么它肯定是某个父祖节点的左子树（因为遍历完了），那么下一个节点，一定是**左子树出现的根节点**
+
+```java
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        Deque<TreeNode> queue = new LinkedList<>();
+        TreeNode curNode = null;
+        while(!queue.isEmpty() || root != null) {
+            while (root != null) {
+                queue.offerLast(root);
+                root = root.left;
+            }
+            TreeNode node = queue.pollLast();
+            if (curNode != null)
+                return node;
+            if (node.val == p.val) {
+                if (node.right == null)
+                    return queue.pollLast();
+                else curNode = p;
+            }
+            root = node.right;
+        }
+        return null;
+    }
+```
+
+方法二：指针法**（二叉搜索树！！！）**
+
+`cur`节点指向当前节点，`res`节点指向`cur`的父节点。如果`cur`节点值大于`p`节点值，那么说明`p`的下一个节点可能就是`cur`，`res`指向`cur`。`cur`指向他左边的节点，以此寻找最小节点。如果`cur`节点值小于`p`节点值，那么`cur`就转向右子树搜索。
+
+```java
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        TreeNode cur = root;
+        TreeNode res = null;
+        while (cur != null) {
+           if (cur.val > p.val) {
+               res = cur;
+               cur = cur.left;
+           } else {
+               cur = cur.right;
+           }
+        }
+        return res;
     }
 ```
 
@@ -6326,53 +6736,6 @@ class Solution {
 
 
 
-### 二叉树中序遍历的后继结点
-
-方法一：迭代式中序遍历
-
-```java
-    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
-        Deque<TreeNode> queue = new LinkedList<>();
-        TreeNode curNode = null;
-        while(!queue.isEmpty() || root != null) {
-            while (root != null) {
-                queue.offerLast(root);
-                root = root.left;
-            }
-            TreeNode node = queue.pollLast();
-            if (curNode != null)
-                return node;
-            if (node.val == p.val) {
-                if (node.right == null)
-                    return queue.pollLast();
-                else curNode = p;
-            }
-            root = node.right;
-        }
-        return null;
-    }
-```
-
-方法二：指针法
-
-`cur`节点指向当前节点，`res`节点指向`cur`的父节点。如果`cur`节点值大于`p`节点值，那么说明`p`的下一个节点可能就是`cur`，`res`指向`cur`。`cur`指向他左边的节点，以此寻找最小节点。如果`cur`节点值小于`p`节点值，那么`cur`就转向右子树搜索。
-
-```java
-    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
-        TreeNode cur = root;
-        TreeNode res = null;
-        while (cur != null) {
-           if (cur.val > p.val) {
-               res = cur;
-               cur = cur.left;
-           } else {
-               cur = cur.right;
-           }
-        }
-        return res;
-    }
-```
-
 
 
 ### 二叉树的两数之和
@@ -6454,7 +6817,11 @@ $$
 
 
 
-## 八. 图
+# 七. 图
+
+### 深度优先遍历
+
+### 广度优先遍历
 
 ### 所有的可能路径
 
@@ -6948,7 +7315,7 @@ bfs
 
 
 
-## 九. 背包问题
+# 八. 背包问题
 
 ### 01背包
 
@@ -7128,7 +7495,7 @@ class Solution {
 
 
 
-## 十. 数学
+# 九. 数学
 
 ### 快速幂
 
@@ -7699,7 +8066,7 @@ public class CountPrime {
 
 
 
-## 十一. 动态规划
+# 十. 动态规划
 
 ### 1. 最大连续子数组和
 
@@ -8316,9 +8683,408 @@ dp[i][1] = min(dp[i-1][1], dp[i-1][0]) + (s.charAt(i)=='1'?0:1)；
 
 
 
-## 十二. 回溯
+# 十一. 回溯
 
-### N皇后
+### 1. 组合
+
+```
+输入：n = 4, k = 2
+输出：
+[
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
+]
+```
+
+
+
+```java
+public List<List<Integer>> combine(int n, int k) {
+    List<List<Integer>> res = new ArrayList<>();
+    Deque<Integer> path = new ArrayDeque<>();
+    if (k > n || k < 0) return res;
+    dfs(n, k, 1, res, path);
+    return res;
+}
+
+private void dfs(int n, int k, int start, List<List<Integer>> res, Deque<Integer> path) {
+    if (path.size() == k) {
+        res.add(new ArrayList<>(path));
+        return;
+    }
+    for (int i = start; i <= n; i++) {  // 可以剪枝操作 i <= n - (k - path.size()) + 1
+        path.offerLast(i);
+        dfs(n, k, i + 1, res, path);
+        path.removeLast();
+    }
+}
+```
+
+
+
+### 2. 组合总和
+
+一个 **无重复元素** 的整数数组 `candidates` 和一个目标整数 `target` ，找出 `candidates` 中可以使数字和为目标数 `target` 的 所有 **不同组合**。`candidates` 中的 **同一个** 数字可以 **无限制重复被选取** 。
+
+**示例 1：**
+
+```
+输入：candidates = [2,3,6,7], target = 7
+输出：[[2,2,3],[7]]
+解释：
+2 和 3 可以形成一组候选，2 + 2 + 3 = 7 。注意 2 可以使用多次。
+7 也是一个候选， 7 = 7 。
+仅有这两种组合。
+```
+
+**示例 2：**
+
+```
+输入: candidates = [2,3,5], target = 8
+输出: [[2,2,2,2],[2,3,3],[3,5]]
+```
+
+**示例 3：**
+
+```
+输入: candidates = [2], target = 1
+输出: []
+```
+
+**代码：**
+
+```java
+public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> res = new ArrayList<>();
+        Deque<Integer> path = new ArrayDeque<>();
+        if (candidates.length == 0)
+            return res;
+        dfs(candidates, res, path, target, 0, 0);
+        return res;
+    }
+
+    private void dfs(int[] candidates, List<List<Integer>> res, Deque<Integer> path, int target, int start, int sum) {
+        if (sum == target) {
+            res.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = start; i < candidates.length; i++) {
+            if (sum + candidates[i] > target) {
+                continue;
+            }
+            path.offerLast(candidates[i]);
+            sum += candidates[i];
+            dfs(candidates, res, path, target, i, sum);
+            sum -= candidates[i];
+            path.pollLast();
+        }
+    }
+```
+
+
+
+### 3. 组合总和 II
+
+给定集合 `candidates` 和一个目标数 `target` ，找出 `candidates` 中所有可以使数字和为 `target` 的组合。`candidates` 中的每个数字在每个组合中**只能使用 一次** 。
+
+**示例 1:**
+
+```
+输入: candidates = [10,1,2,7,6,1,5], target = 8,
+输出:
+[
+[1,1,6],
+[1,2,5],
+[1,7],
+[2,6]
+]
+```
+
+**示例 2:**
+
+```
+输入: candidates = [2,5,2,1,2], target = 5,
+输出:
+[
+[1,2,2],
+[5]
+]
+```
+
+**代码：**
+
+```java
+public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+    List<List<Integer>> res = new ArrayList<>();
+    Deque<Integer> path = new ArrayDeque<>();
+    Arrays.sort(candidates);
+    dfs(candidates, res, path, target, 0, 0);
+    return res;
+}
+
+private void dfs(int[] candidates, List<List<Integer>> res, Deque<Integer> path, int target, int start, int sum) {
+    if (sum == target) {
+        res.add(new ArrayList<>(path));
+        return;
+    }
+    for (int i = start; i < candidates.length; i++) {
+        if (sum + candidates[i] > target)//这里注意一下
+            break;
+        if (i > start && candidates[i] == candidates[i - 1]) //这里注意一下
+            continue;
+        path.offerLast(candidates[i]);
+        sum += candidates[i];
+        dfs(candidates, res, path, target, i + 1, sum);
+        sum -= candidates[i];
+        path.pollLast();
+    }
+}
+```
+
+
+
+### 4. 组合总和 III
+
+找出所有相加之和为 `n` 的 `k` 个数的组合，且满足下列条件：
+
+- `k`只使用数字1到9
+- 每个数字 **最多使用一次** 
+
+返回 *所有可能的有效组合的列表* 。该列表不能包含相同的组合两次，组合可以以任何顺序返回。
+
+**示例 1:**
+
+```
+输入: k = 3, n = 7
+输出: [[1,2,4]]
+解释:
+1 + 2 + 4 = 7
+没有其他符合的组合了。
+```
+
+**示例 2:**
+
+```
+输入: k = 3, n = 9
+输出: [[1,2,6], [1,3,5], [2,3,4]]
+解释:
+1 + 2 + 6 = 9
+1 + 3 + 5 = 9
+2 + 3 + 4 = 9
+没有其他符合的组合了。
+```
+
+**示例 3:**
+
+```
+输入: k = 4, n = 1
+输出: []
+解释: 不存在有效的组合。
+在[1,9]范围内使用4个不同的数字，我们可以得到的最小和是1+2+3+4 = 10，因为10 > 1，没有有效的组合。
+```
+
+ **代码：**
+
+```java
+public List<List<Integer>> combinationSum3(int k, int n) {
+    List<List<Integer>> res = new ArrayList<>();
+    Deque<Integer> path = new ArrayDeque<>();
+    dfs(k, n, res, path, 1, 0);
+    return res;
+}
+
+private void dfs(int k, int n, List<List<Integer>> res, Deque<Integer> path, int start, int sum) {
+    if (sum == n && path.size() == k) {
+        res.add(new ArrayList<>(path));
+        return;
+    }
+    for (int i = start; i <= 9; i++) {
+        if (sum + i > n)
+            break;
+        path.offerLast(i);
+        dfs(k, n, res, path, i + 1, sum + i);
+        path.pollLast();
+    }
+}
+```
+
+
+
+### 5. 组合总和 Ⅳ
+
+给你一个由 **不同** 整数组成的数组 `nums` ，和一个目标整数 `target` 。请你从 `nums` 中找出并返回总和为 `target` 的元素组合的个数。
+
+请注意，**顺序不同的序列被视作不同的组合**。
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3], target = 4
+输出：7
+解释：
+所有可能的组合为：
+(1, 1, 1, 1)
+(1, 1, 2)
+(1, 2, 1)
+(1, 3)
+(2, 1, 1)
+(2, 2)
+(3, 1)
+```
+
+**示例 2：**
+
+```
+输入：nums = [9], target = 3
+输出：0
+```
+
+**代码：**
+
+```java
+public int combinationSum4(int[] nums, int target) {
+    int[] dp = new int[target + 1];
+    dp[0] = 1;
+    for (int i = 1; i <= target; i++) {
+        for (int num : nums) {
+            if (num <= i) {
+                dp[i] += dp[i - num];
+            }
+        }
+    }
+    return dp[target];
+}
+```
+
+
+
+### 组合求和
+
+去重复的方法：
+
+- 使用HashSet；
+- 排序，排完序，如果当前元素和前一个元素相同，那么当前元素略过，不选择；因为有序是 **深度优先遍历** 过程中实现「剪枝」的前提。
+
+回溯模板，书写要规范：
+
+```java
+class Solution {
+    private List<List<Integer>> res;
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        res = new ArrayList<>();
+        Arrays.sort(candidates);
+        dfs(candidates, target, new LinkedList<Integer>(), 0, 0);
+        return res;
+    }
+
+    private void dfs(int[] candidates, int target, LinkedList<Integer> path, int index, int sum) {
+        if (sum == target) {
+            // 满足条件，加入到结果集里面
+        }
+        for (int i = index; i < candidates.length; i++) {
+            // 结束条件都在for循环里判断
+            // 大剪枝操作
+            if (sum + candidates[i] > target)
+                break;
+            if (i > index && candidates[i] == candidates[i - 1]) // 去重复的写法
+                continue;
+            path.addLast(candidates[i]);
+            dfs(candidates, target, path, i + 1, sum + candidates[i]);
+            path.removeLast();
+        }
+    }
+}
+```
+
+
+
+### 全排列
+
+分两种情况：
+
+- 数组不重复元素的全排列
+- 数组中有重复元素的全排列（涉及重复元素的，都需要**排序**解决去重，比较`nums[i] == nums[i - 1]`），此外由于重复元素的全排列问题，不能单单判断数字是否在path中决定是否添加，要使用下标判断，因为下标是唯一的。
+
+```java
+private List<List<Integer>> res;
+private boolean[] visited;
+private void dfs(int[] nums, LinkedList<Integer> path) {
+    if (path.size() == nums.length) {
+        res.add(new ArrayList<>(path));
+        return;
+    }
+    for (int i = 0; i < nums.length; i++) {
+        // visited[i]表示过滤掉当前的元素，避免被重复选中
+        // nums[i] == nums[i - 1] && !visited[i - 1] 如果两个数连续一样的话，当从第二个数字开始选的话，那么第一个数组应该就不选了，
+        // 并且第一个visited数组应该为false,这样才能表示是从第二个数字开始选的。
+        if (visited[i] || (i > 0 && nums[i] == nums[i - 1] && !visited[i - 1]))
+            continue;
+       visited[i] = true;
+       path.add(nums[i]);
+       dfs(nums, path);
+       path.removeLast();
+       visited[i] = false;
+    }
+}
+```
+
+
+
+### 排列序列
+
+给定 `n` 和 `k`，返回第 `k` 个`1 ~ n - 1`的排列。
+
+思路：就是正常的递归求解排列，这里让求出第K个，那么就计算当前分支下，剩余的数字有几种组合方式fact，如果`k < fact`，那就说明第K个排列在当前分支下，然后就往下继续进行，选择当前节点，设置当前节点为访问的。如果`k > fact`，那就说明我要在下一个分支下寻找第`k - fact`个排列，然后依次计算，直到`fact = 1`，这样就通过剪枝的方式找到了第K个排列了。
+
+```java
+class Solution {
+    private StringBuilder stringBuilder;
+    private boolean[] visited;
+    private int[] factorial;
+    public String getPermutation(int n, int k) {
+        calculateFactorial(n);
+        stringBuilder = new StringBuilder();
+        visited = new boolean[n + 1];
+        dfs(n, k, 0);
+        return stringBuilder.toString();
+    }
+
+    private void dfs(int n, int k, int index) {
+        if (index == n)
+            return;
+
+        for (int i = 1; i <= n; i++) {
+            if (visited[i])
+                continue;
+            int fact = factorial[n - index - 1];
+            if (fact < k) {
+                k -= fact;
+                continue;
+            }
+            visited[i] = true;
+            stringBuilder.append(i);
+            dfs(n, k, index + 1);
+            return;
+        }
+    }
+
+    private void calculateFactorial(int n) {
+        factorial = new int[n + 1];
+        factorial[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            factorial[i] = i * factorial[i -1];
+        }
+    }
+}
+```
+
+
+
+### 1. N皇后
 
 列表回溯法
 
@@ -8544,9 +9310,9 @@ dp[i][1] = min(dp[i-1][1], dp[i-1][0]) + (s.charAt(i)=='1'?0:1)；
 
 
 
-## 十三. 排序算法
+# 十二. 排序算法
 
-### 快速排序
+### 1. 快速排序
 
 ```java
 class Solution {
@@ -8615,7 +9381,7 @@ class Solution {
 
 
 
-### 冒泡排序
+### 2. 冒泡排序
 
 ```java
     public void sort(int[] nums) {
@@ -8634,7 +9400,7 @@ class Solution {
 
 
 
-### 插入排序
+### 3. 插入排序
 
 ```java
 /**
@@ -8658,7 +9424,7 @@ public class InsertionSort {
 
 
 
-### 归并排序（递归）
+### 4. 归并排序（递归）
 
 ```java
 public class MergeSort {
@@ -8697,7 +9463,7 @@ public class MergeSort {
 
 
 
-### 归并排序（非递归） 
+### 5. 归并排序（非递归） 
 
 **原数组：4, 7, 5, 1, 6, 3, 2, 8**
 
@@ -8764,7 +9530,7 @@ public void MergeSortNoneRecur(int[] arr) {
 
 
 
-### 选择排序
+### 6. 选择排序
 
 ```java
 /**

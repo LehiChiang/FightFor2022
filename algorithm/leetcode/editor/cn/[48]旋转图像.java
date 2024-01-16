@@ -23,10 +23,18 @@ package leetcode.editor.cn;
 // Related Topics 数组 数学 矩阵 👍 1073 👎 0
 
 
-import java.util.Arrays;
-
 //leetcode submit region begin(Prohibit modification and deletion)
 class rotateSolution {
+    public static void main(String[] args) {
+        rotateSolution solution = new rotateSolution();
+        solution.rotate(new int[][]{
+                {1, 2, 3, 4},
+                {5, 6, 7, 8},
+                {9, 10, 11, 12},
+                {13, 14, 15, 16}
+        });
+    }
+
     public void rotate(int[][] matrix) {
         // 先0维度反转
         int len = matrix.length;
@@ -45,16 +53,6 @@ class rotateSolution {
                 matrix[col][row] = temp;
             }
         }
-    }
-
-    public static void main(String[] args) {
-        rotateSolution solution = new rotateSolution();
-        solution.rotate(new int[][]{
-                {5,1,9,11},
-                {2,4,8,10},
-                {13,3,6,7},
-                {15,14,12,16}
-        });
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
