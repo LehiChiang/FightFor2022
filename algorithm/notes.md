@@ -405,7 +405,35 @@ private int getKth(int[] nums1, int start1, int end1, int[] nums2, int start2, i
 
 
 
+### 9. 0~n-1有序数组中唯一缺失的数
 
+一个长度为`n-1`的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围`0～n-1`之内。在范围`0～n-1`内的`n`个数字中有且只有一个数字不在该数组中，请找出这个数字。
+
+```
+示例 1: 
+输入: [0,1,3]
+输出: 2
+
+示例 2: 
+输入: [0,1,2,3,4,5,6,7,9]
+输出: 8 
+```
+
+**代码**：
+
+```java
+public int missingNumber(int[] nums) {
+    int l = 0, r = nums.length;
+    while (l < r) {
+        int mid = l + (r - l) / 2;
+        if (nums[mid] == mid)
+            l = mid + 1;
+        else if (nums[mid] > mid)
+            r = mid;
+    }
+    return l >= nums.length ? nums.length : nums[l] - 1;
+}
+```
 
 
 
@@ -2769,6 +2797,35 @@ public class OutBDNode {
 
 
 
+### 2. BST转换成排序的循环双向链表
+
+`left`指向前驱节点，`right`指向后继节点
+
+```java
+public TreeListNode treeToDoublyList(TreeListNode root) {
+    if (root == null)
+        return null;
+    dfs(root);
+    head.left = tail;
+    tail.right = head;
+    return head;
+}
+
+private void dfs(TreeListNode root) {
+    if (root == null) return;
+    dfs(root.left);
+    if (tail != null)
+        tail.right = root;
+    else
+        head = root;
+    root.left = tail;
+    tail = root;
+    dfs(root.right);
+}
+```
+
+
+
 ### 单向链表的快速排序
 
 **算法思想**：对于一个链表，以head节点的值作为key，然后遍历之后的节点，可以得到一个小于key的链表和大于等于key的链表；由此递归可以对两个链表分别进行快速。这里用到了快速排序的思想即经过一趟排序能够将小于key的元素放在一边，将大于等于key的元素放在另一边。
@@ -3045,7 +3102,7 @@ class Solution {
 
 
 
-### 复制带随机指针的链表
+### 7. 复制带随机指针的链表
 
 先用一个循环把新旧链表对应的两个结点捆绑在一个`HashMap`二元组里，然后再用一个循环完成对新链表每个结点的`next`域和`random`域的赋值，学习到了！
 
@@ -6245,6 +6302,169 @@ public static TreeNode deserialize(String data, String SEP, String NULL) {
 
 
 
+### 5. 验证二叉搜索树的后序遍历序列
+
+[验证二叉搜索树的后序遍历序列](https://leetcode.cn/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)
+
+判断整数数组 `postorder` 是否为某个二叉搜索树的后序遍历结果。
+
+**示例 1：**
+
+<img src="https://pic.leetcode.cn/1694762751-fwHhWX-%E5%89%91%E6%8C%8733%E7%A4%BA%E4%BE%8B1.png" alt="img" style="zoom:50%;" />
+
+```
+输入: postorder = [4,9,6,9,8]
+输出: false 
+解释：从上图可以看出这不是一颗二叉搜索树
+```
+
+**示例 2：**
+
+<img src="https://pic.leetcode.cn/1694762510-vVpTic-%E5%89%91%E6%8C%8733.png" alt="img" style="zoom:50%;" />
+
+```
+输入: postorder = [4,6,5,9,8]
+输出: true 
+解释：可构建的二叉搜索树如上图
+```
+
+ **方法一：递归法：**
+
+```java
+
+dfs(postorder, 0, postorder.length() - 1);
+
+private boolean dfs(int[] postorder, int start, int end) {
+    if (start >= end)
+        return true;
+    int m = start;
+    while (postorder[m] < postorder[end]) m++;
+    int n = m;
+    while (postorder[n] > postorder[end]) n++;
+    return n == end && dfs(postorder, start, m - 1) && dfs(postorder, m, n - 1);
+}
+```
+
+**方法二：单调栈法：**
+
+我们先来画一个节点多一些的二叉搜索树，然后观察一下他的规律
+
+<img src="https://pic.leetcode-cn.com/1597978800-kbKrIm-image.png" alt="image.png" style="zoom:60%;" />
+
+他的后续遍历结果是 `[3,6,5,9,8,11,13,12,10]`，从前往后不好看，我们来从后往前看`[10,12,13,11,8,9,5,6,3]`
+
+两个数如果`arr[i]<arr[i+1]`，那么`arr[i+1]`一定是`arr[i]`的右子节点，上面的`10`和`12`是挨着的并且`10<12`，所以`12`是`10`的右子节点。同理`12`和`13`，`8`和`9`，`5`和`6`。如果想证明也很简单，因为比`arr[i]`大的肯定都是他的右子节点，如果还是挨着他的，肯定是在后续遍历中所有的右子节点最后一个遍历的，所以他一定是`arr[i]`的右子节点。
+
+看一下降序。如果`arr[i]>arr[i+1]`，那么`arr[i+1]`一定是`arr[0]……arr[i]`中某个节点的左子节点，并且这个值是大于`arr[i+1]`中最小的。比如`13`，`11`是降序的，那么`11`肯定是他前面某一个节点的左子节点，并且这个值是大于`11`中最小的，我们看到`12`和`13`都是大于`11`的，但`12`最小，所以`11`就是`12`的左子节点。同理`8`就是`10`的左子节点。`9`和`5`是降序，`6`和`3`是降序。
+
+**单调递增栈**来解决。遍历数组的所有元素，如果栈为空，就把当前元素压栈。如果栈不为空，并且当前元素大于栈顶元素，说明是升序的，那么就说明当前元素是栈顶元素的右子节点，就把当前元素压栈，如果一直升序，就一直压栈**（把右子树所有的右侧节点都压入栈种）**。当前元素小于栈顶元素，说明是倒序的，**说明当前元素是某个节点的左子节点**，**我们目的是要找到这个左子节点的父节点**，**就让栈顶元素出栈**，直到栈为空或者栈顶元素小于当前值为止，**其中最后一个出栈的就是当前元素的父节点**。
+
+```java
+public boolean verifyPostorder(int[] postorder) {
+    Deque<Integer> stack = new LinkedList<>();
+    int root = Integer.MAX_VALUE;
+    for (int i = postorder.length - 1; i >= 0; i--) {
+        if (postorder[i] > root)
+            return false;
+        //当如果前节点小于栈顶元素，说明栈顶元素和当前值构成了倒叙，
+        //说明当前节点是前面某个节点的左子节点，我们要找到他的父节点
+        while (!stack.isEmpty() && stack.peek() > postorder[i])
+            root = stack.pop();
+        stack.push(postorder[i]);
+    }
+    return true;
+}
+```
+
+
+
+### 6. 路径总和（判断是否）
+
+```
+示例 1：
+输入：root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22
+输出：true
+
+示例 2：
+输入：root = [1,2,3], targetSum = 5
+输出：false
+
+示例 3：
+输入：root = [1,2], targetSum = 0
+输出：false
+```
+
+**代码：**
+
+```java
+public boolean hasPathSum(TreeNode root, int targetSum) {
+    return dfs(root, targetSum);
+}
+
+private boolean dfs(TreeNode root, int targetSum) {
+    if (root == null)
+        return false;
+    if (root.left == null && root.right == null && targetSum == root.val)
+        return true;
+    return dfs(root.left, targetSum - root.val) || dfs(root.right, targetSum - root.val);
+}
+```
+
+
+
+### 7. 路径总和（输出所有路径）
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/01/18/pathsumii1.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+输出：[[5,4,11,2],[5,8,4,5]]
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2021/01/18/pathsum2.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [1,2,3], targetSum = 5
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：root = [1,2], targetSum = 0
+输出：[]
+```
+
+**代码：**
+
+```java
+public List<List<Integer>> pathSum(TreeNode root, int target) {
+    List<List<Integer>> res = new ArrayList<>();
+    Deque<Integer> path = new ArrayDeque<>();
+    dfs(root, res, target, path);
+    return res;
+}
+
+private void dfs(TreeNode root, List<List<Integer>> res, int target, Deque<Integer> path) {
+    if (root == null)
+        return;
+    path.add(root.val);
+    target -= root.val;
+    if (root.left == null && root.right == null && target == 0) {
+        res.add(new ArrayList<>(path));
+    }
+    dfs(root.left, res, target, path);
+    dfs(root.right, res, target, path);
+    path.removeLast();
+}
+```
+
+
+
 ### 删除二叉搜索树中的节点
 
 除某节点，可以用左子树的最大值或者右子树的最小值替换，这里选右子树最小值替换要删除的节点
@@ -7533,7 +7753,7 @@ public int[][] pow(int[][] a, int n) {
 
 
 
-### 数字 1 的个数
+### 3. 数字 1 的个数
 
 输入一个整数 n ，求1～n这n个整数的十进制表示中1出现的次数。
 
@@ -7631,7 +7851,7 @@ while high != 0 or cur != 0: # 当 high 和 cur 同时为 0 时，说明已经�
 
 
 
-### 第N位数字
+### 4. 第N位数字
 
 给你一个整数 n ，请你在无限的整数序列 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...] 中找出并返回第 n 位上的数字。
 
@@ -7649,6 +7869,8 @@ while high != 0 or cur != 0: # 当 high 和 cur 同时为 0 时，说明已经�
 输出：0
 解释：第 11 位数字在序列 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ... 里是 0 ，它是 10 的一部分。
 ```
+
+<img src="https://pic.leetcode-cn.com/1599888213-CYhLfm-Picture1.png" alt="Picture1.png" style="zoom:40%;" />
 
 1. 首先计算出第n位数字是几位数字的
 
@@ -8269,6 +8491,161 @@ class Solution {
 
 
 
+### 5. 编辑距离
+
+给你两个单词 `word1` 和 `word2`， *请返回将 `word1` 转换成 `word2` 所使用的最少操作数* 。
+
+你可以对一个单词进行如下三种操作：
+
+- 插入一个字符
+- 删除一个字符
+- 替换一个字符
+
+**示例 1：**
+
+```
+输入：word1 = "horse", word2 = "ros"
+输出：3
+解释：
+horse -> rorse (将 'h' 替换为 'r')
+rorse -> rose (删除 'r')
+rose -> ros (删除 'e')
+```
+
+**示例 2：**
+
+```
+输入：word1 = "intention", word2 = "execution"
+输出：5
+解释：
+intention -> inention (删除 't')
+inention -> enention (将 'i' 替换为 'e')
+enention -> exention (将 'n' 替换为 'x')
+exention -> exection (将 'n' 替换为 'c')
+exection -> execution (插入 'u')
+```
+
+<img src="https://pic.leetcode-cn.com/3241789f2634b72b917d769a92d4f6e38c341833247391fb1b45eb0441fe5cd2-72_fig2.PNG" alt="72_fig2.PNG" style="zoom:20%;" />
+
+**代码：**
+
+```java
+class Solution {
+    public int minDistance(String word1, String word2) {
+        int len1 = word1.length();
+        int len2 = word2.length();
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        for (int j = 0; j < len2 + 1; j++)
+            dp[0][j] = j;
+        for (int i = 0; i < len1 + 1; i++)
+            dp[i][0] = i;
+        for (int i = 1; i <= len1; i++) {
+            for (int j = 1; j <= len2; j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1))
+                    dp[i][j] = dp[i - 1][j - 1];
+                else
+                    dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i][j - 1], dp[i - 1][j])) + 1;
+            }
+        }
+        return dp[len1][len2];
+    }
+}
+```
+
+
+
+### 6. 把数字翻译成字符串
+
+给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+
+```
+示例 1:
+输入: 12258
+输出: 5
+解释: 12258有5种不同的翻译，分别是"bccfi", "bwfi", "bczi", "mcfi"和"mzi"
+```
+
+**代码：**
+
+```java
+private int translateNum(int num) {
+    if (num < 10)
+        return 1;
+    String nums = String.valueOf(num);
+    int[] dp = new int[nums.length() + 1];
+    dp[0] = 1;
+    dp[1] = 1;
+    for (int i = 1; i < nums.length(); i++) {
+        if (nums.charAt(i - 1) != '0' && (nums.charAt(i - 1) - '0') * 10 + (nums.charAt(i) - '0') < 26) {
+            dp[i + 1] = dp[i] + dp[i - 1];
+        } else
+            dp[i + 1] = dp[i];
+    }
+    return dp[nums.length()];
+}
+```
+
+
+
+### 7. 丑数
+
+我们把只包含质因子 `2、3` 和 `5` 的数称作丑数`（Ugly Number）`。求按从小到大的顺序的第 `n` 个丑数。
+
+```
+示例: 
+输入: n = 10
+输出: 12
+解释: 1, 2, 3, 4, 5, 6, 8, 9, 10, 12 是前 10 个丑数。 
+
+说明:
+1 是丑数。 
+n 不超过1690。
+```
+
+那就根据`2，3，5`的因子计算出第`n`个丑数，然后返回。第一种方法用小根堆保存生成的数字，第二种使用动态`dp`数组。
+
+**优先队列（小根堆）**
+
+```java
+public int nthUglyNumber(int n) {
+    int[] factors = new int[]{2, 3, 5};
+    PriorityQueue<Long> queue = new PriorityQueue<>();
+    queue.offer(1L);
+    Set<Long> seen = new HashSet<>();
+    int uglyNum = 0;
+    for (int i = 0; i < n; i++) {
+        long num = queue.poll();
+        uglyNum = (int) num;
+        for (int factor : factors) {
+            if (seen.add(factor * num))
+                queue.offer(factor * num);
+        }
+    }
+    return uglyNum;
+}
+```
+
+**动态规划**
+
+```java
+public int nthUglyNumber(int n) {
+    int[] dp = new int[n + 1];
+    dp[1] = 1;
+    int p2 = dp[1], p3 = dp[1], p5 = dp[1];
+    for (int i = 2; i <= n; i++) {
+        int num2 = dp[p2] * 2, num3 = dp[p3] * 3, num5 = dp[p5] * 5;
+        dp[i] = Math.min(Math.min(num2, num3), num5);
+        if (dp[i] == num2)
+            p2++;
+        if (dp[i] == num3)
+            p3++;
+        if (dp[i] == num5)
+            p5++;
+    }
+    return dp[n];
+}
+```
+
 
 
 ### 完全平方和
@@ -8488,43 +8865,6 @@ class Solution {
             }
         }
         return dp[amount] == amount + 1 ? -1 : dp[amount];
-    }
-```
-
-
-
-### 组合总和
-
-给定一个由 **不同** 正整数组成的数组 `nums` ，和一个目标整数 `target` 。请从 `nums` 中找出并返回总和为 `target` 的元素组合的个数。数组中的数字可以在一次排列中出现任意次，但是顺序不同的序列被视作不同的组合。
-
-**示例 1：**
-
-```
-输入：nums = [1,2,3], target = 4
-输出：7
-解释：
-所有可能的组合为：
-(1, 1, 1, 1)
-(1, 1, 2)
-(1, 2, 1)
-(1, 3)
-(2, 1, 1)
-(2, 2)
-(3, 1)
-请注意，顺序不同的序列被视作不同的组合。
-```
-
-```java
-    public int combinationSum4(int[] nums, int target) {
-        int[] dp = new int[target + 1];
-        dp[0] = 1;
-        for (int i = 1; i <= target; i++) {
-            for (int num : nums) {
-                if (num <= i)
-                    dp[i] = dp[i] + dp[i - num];
-            }
-        }
-        return dp[target];
     }
 ```
 
@@ -9312,6 +9652,8 @@ class Solution {
 
 # 十二. 排序算法
 
+## 【1】基础算法
+
 ### 1. 快速排序
 
 ```java
@@ -9554,3 +9896,199 @@ public class SelectionSort {
 }
 ```
 
+
+
+## 【2】排序应用
+
+### 1. 把数组排成最小的数
+
+```
+输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+
+示例 1: 
+输入: [10,2]
+输出: "102" 
+
+示例 2: 
+输入: [3,30,34,5,9]
+输出: "3033459" 
+```
+
+这道题目实际上是想要找到一种排序规则，根据这种规则排序后的数组满足题目要求。排序规则要从两个元素的比较开始，我们可以定义数字`a`和`b`，假设其可以拼接成`ab`和`ba`两个数字。
+
+我们定义若：
+
+`ab > ba`，则`a > b`；
+
+`ab < ba`，则`a < b`;
+
+`ab==ba`，则`a = b`。
+
+**代码：**
+
+```java
+public String minNumber(int[] nums) {
+    list = new ArrayList<>();
+    for (int num : nums) {
+        list.add(String.valueOf(num));
+    }
+    quicksort(list, 0, list.size() - 1);
+    System.out.println(list);
+    return list.stream().collect(Collectors.joining());
+}
+
+private void quicksort(List<String> list, int start, int end) {
+    if (start >= end)
+        return;
+    int index = partition(list, start, end);
+    quicksort(list, start, index - 1);
+    quicksort(list, index + 1, end);
+}
+
+private int partition(List<String> list, int start, int end) {
+    int i = start, j = end;
+    String pivot = list.get(i);
+    while (i < j) {
+        while (i < j && (list.get(j) + pivot).compareTo(pivot + list.get(j)) >= 0) j--; // 重新定义排序规则
+        list.set(i, list.get(j));
+        while (i < j && (list.get(i) + pivot).compareTo(pivot + list.get(i)) <= 0) i++; // 重新定义排序规则
+        list.set(j, list.get(i));
+    }
+    list.set(j, pivot);
+    return j;
+}
+```
+
+
+
+# 十三. 位运算
+
+### 1. 判定字符是否唯一
+
+实现一个算法，确定一个字符串 `s` 的所有字符是否全都不同。
+
+**示例 1：**
+
+```
+输入: s = "leetcode"
+输出: false 
+```
+
+**示例 2：**
+
+```
+输入: s = "abc"
+输出: true
+```
+
+**限制：**
+
+- `0 <= len(s) <= 100 `
+- `s[i]`仅包含小写字母
+
+```java
+class IsUniqueSolution {
+    public static boolean isUnique(String astr) {
+        int bitmap = 0;
+        for (int i = 0; i < astr.length(); i++) {
+            int index = astr.charAt(i) - 'a';
+            int bit = 1 << index;
+            if ((bitmap & bit) != 0)
+                return false;
+            bitmap = bitmap | bit;
+        }
+        return true;
+    }
+}
+```
+
+
+
+### 2. 只出现一次的数字I
+
+一个整型数组 `nums` 里除两个数字之外，其他数字都出现了两次。请写程序找出这两个只出现一次的数字。
+
+```
+示例 1：
+输入：nums = [4,1,4,6]
+输出：[1,6] 或 [6,1]
+示例 2：
+输入：nums = [1,2,10,4,1,4,3,3]
+输出：[2,10] 或 [10,2]
+```
+
+如果是在一个数组找只出现一次的数，就可以将所有的数进行`^`（异或）运算。在数组中寻找两个只出现一次的数，需要对数组进行分类，相同的数进行分类一定在同一个内别里。`&`运算可以用来区某一位数，列如区分奇偶数`num & 1`。难点是如何将只出现一次的两个数分开，**如果两个数不相同那么他们的二进制数至少有一位0和1不相同， 可以用一个标记数来标记那一位将两个数分开，取那个数能取的最小值，然后将`nums`数组用标记数分开进行`^`运算。**
+
+　　　**num1: 101110   110  1111**
+
+　　　**num2:** **111110   001  1001**
+
+**num1^num2: 010000  111  0110** 
+
+**可行的mask:  010000   001  0010**
+
+**代码**：
+
+```java
+public int[] singleNumbers(int[] nums) {
+    int xorAll = 0;
+    int resA = 0, resB = 0;
+    for (int num : nums) {
+        xorAll ^= num;
+    }
+    int mask = 1;
+    while ((mask & xorAll) == 0)
+        mask <<= 1;
+    for (int num : nums) {
+        if ((num & mask) == 0)
+            resA ^= num;
+        else
+            resB ^= num;
+    }
+    return new int[]{resA, resB};
+}
+```
+
+
+
+### 3. 只出现一次的数字II
+
+在一个数组 `nums` 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
+
+```
+示例 1： 
+输入：nums = [3,4,3,3]
+输出：4
+
+
+示例 2： 
+输入：nums = [9,1,7,9,7,9,7]
+输出：1 
+```
+
+因此，统计所有数字的各二进制位中 1 的出现次数，并对 3 求余，结果则为只出现一次的数字。
+
+<img src="https://pic.leetcode-cn.com/28f2379be5beccb877c8f1586d8673a256594e0fc45422b03773b8d4c8418825-Picture1.png" alt="Picture1.png" style="zoom:50%;" />
+
+**代码**：
+
+```java
+public int singleNumber(int[] nums) {
+    int res = 0;
+    int[] digits = new int[32];
+    for (int num : nums) {
+        int mask = 1;
+        for (int i = 31; i >= 0; --i) {
+            int bit = num & mask;
+            if (bit != 0)
+                digits[i] += 1;
+            mask <<= 1;
+        }
+    }
+    for (int i = 0; i < 32; i++) {
+        res <<= 1;
+        res += digits[i] % 3 == 0 ? 0 : 1;
+    }
+    return res;
+}
+```
