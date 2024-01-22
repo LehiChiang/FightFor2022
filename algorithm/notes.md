@@ -774,6 +774,70 @@ class Solution {
 
 
 
+### 6. 除自身以外数组的乘积
+
+给你一个整数数组 `nums`，返回 *数组 `answer` ，其中 `answer[i]` 等于 `nums` 中除 `nums[i]` 之外其余各元素的乘积* 。
+
+题目数据 **保证** 数组 `nums`之中任意元素的全部前缀元素和后缀的乘积都在 **32 位** 整数范围内。
+
+请 **不要使用除法，**且在 `O(*n*)` 时间复杂度内完成此题。
+
+**示例 1:**
+
+```
+输入: nums = [1,2,3,4]
+输出: [24,12,8,6]
+```
+
+**示例 2:**
+
+```
+输入: nums = [-1,1,0,-3,3]
+输出: [0,0,9,0,0]
+```
+
+ **代码：**
+
+**方法一：空间复杂度O(n)**
+
+```java
+public int[] constructArr(int[] a) {
+    int n = a.length;
+    int[] leftRes = new int[n];
+    leftRes[0] = a[0];
+    int[] rightRes = new int[n];
+    rightRes[n - 1] = a[n - 1];
+    for (int i = 1; i < n; i++) {
+        leftRes[i] = a[i] * leftRes[i - 1];
+        rightRes[n - i - 1] = a[n - i - 1] * rightRes[n - i];
+    }
+    int[] res = new int[n];
+    res[0] = rightRes[1];
+    res[n - 1] = leftRes[n - 2];
+    for (int i = 1; i < n - 1; i++) {
+        res[i] = leftRes[i - 1] * rightRes[i + 1];
+    }
+    return res;
+}
+```
+
+**方法二：空间复杂度O(1)**
+
+```java
+public int[] constructArr(int[] a) {
+    int[] leftPart = new int[a.length];
+    leftPart[0] = 1;
+    for (int i = 1; i < leftPart.length; ++i)
+        leftPart[i] = leftPart[i - 1] * a[i - 1];
+    int tmp = 1;
+    for (int i = leftPart.length - 2; i >= 0; --i) {
+        tmp *= a[i + 1];
+        leftPart[i] = leftPart[i] * tmp;
+    }
+    return leftPart;
+}
+```
+
 
 
 ## 【3】滑动窗口
@@ -853,56 +917,6 @@ public int lengthOfLongestSubstring(String s) {
 ### 3. 最长不含重复字符的子字符串
 
 和上一题一样的思想！（也是滑动窗口）
-
-
-
-### 4. 连续的组合求和
-
-返回一些连续的序列，这些序列的和与target相等的所有组合
-
-**示例 1：**
-
-```
-输入：target = 12
-输出：[[3, 4, 5]]
-解释：在上述示例中，存在一个连续正整数序列的和为 12，为 [3, 4, 5]。
-```
-
-**示例 2：**
-
-```
-输入：target = 18
-输出：[[3,4,5,6],[5,6,7]]
-解释：在上述示例中，存在两个连续正整数序列的和分别为 18，分别为 [3, 4, 5, 6] 和 [5, 6, 7]。
-```
-
-**代码：**
-
-```java
-public int[][] continuedCombineSum(int target) {
-    List<int[]> res = new ArrayList<>();
-    int sum = 0;
-    for (int i = 1, j = 1; j < target; ) {
-        while (sum < target) {
-            sum += j;
-            j++;
-        }
-        while (sum > target) {
-            sum -= i;
-            i++;
-        }
-        if (sum == target) {
-            int[] array = new int[j - i];
-            for (int k = i; k < j; k++)
-                array[k - i] = k;
-            res.add(array);
-            sum -= i;
-            i++;
-        }
-    }
-    return res.toArray(new int[res.size()][]);
-}
-```
 
 
 
@@ -1314,6 +1328,58 @@ public List<List<Integer>> threeSum(int[] nums) {
         return res;
     }
 ```
+
+
+
+### 5. 和为s的连续正数序列
+
+返回一些连续的序列，这些序列的和与target相等的所有组合
+
+**示例 1：**
+
+```
+输入：target = 12
+输出：[[3, 4, 5]]
+解释：在上述示例中，存在一个连续正整数序列的和为 12，为 [3, 4, 5]。
+```
+
+**示例 2：**
+
+```
+输入：target = 18
+输出：[[3,4,5,6],[5,6,7]]
+解释：在上述示例中，存在两个连续正整数序列的和分别为 18，分别为 [3, 4, 5, 6] 和 [5, 6, 7]。
+```
+
+**代码：**
+
+```java
+public int[][] continuedCombineSum(int target) {
+    List<int[]> res = new ArrayList<>();
+    int sum = 0;
+    for (int i = 1, j = 1; j < target; ) {
+        while (sum < target) {
+            sum += j;
+            j++;
+        }
+        while (sum > target) {
+            sum -= i;
+            i++;
+        }
+        if (sum == target) {
+            int[] array = new int[j - i];
+            for (int k = i; k < j; k++)
+                array[k - i] = k;
+            res.add(array);
+            sum -= i;
+            i++;
+        }
+    }
+    return res.toArray(new int[res.size()][]);
+}
+```
+
+
 
 
 
@@ -3510,7 +3576,7 @@ class Solution {
 
 # 三. 字符串
 
-### 翻转单词顺序
+### 1. 翻转单词顺序
 
 ```
 输入: "the sky is blue"
@@ -3552,7 +3618,7 @@ class Solution {
 
 
 
-### 滑动窗口框架
+### 2. 滑动窗口框架
 
 最长***模板
 
@@ -5285,9 +5351,11 @@ class LFUCache {
 
 
 
-### 设计一个HashSet
+### 5. 设计一个HashSet
 
-为了实现哈希集合这一数据结构，有以下几个关键问题需要解决：
+为了实现哈希集合这一数据结构，有以下几
+
+个关键问题需要解决：
 
 - 哈希函数：能够将集合中任意可能的元素映射到一个固定范围的整数值，并将该元素存储到整数值对应的地址上。
 
@@ -5369,7 +5437,7 @@ class MyHashSet {
 
 
 
-### 设计一个HashMap
+### 6. 设计一个HashMap
 
 ```java
 class MyHashMap {
@@ -5448,31 +5516,6 @@ class MyHashMap {
  * int param_2 = obj.get(key);
  * obj.remove(key);
  */
-```
-
-
-
-### 格雷码
-
-https://zhuanlan.zhihu.com/p/29254973
-
-属于位运算把，常规二进制转化为格雷码编码的公式为：`n ^ (n >> 1)`
-
-```java
-class Solution {
-    private List<Integer> res;
-    public List<Integer> grayCode(int n) {
-        res = new ArrayList<>();
-        for (int i = 0; i < Math.pow(2, n); i++) {
-            res.add(getGrayCode(i));
-        }
-        return res;
-    }
-
-    private Integer getGrayCode(int n) {
-        return n ^ (n >> 1);
-    }
-}
 ```
 
 
@@ -7915,7 +7958,7 @@ class Solution {
 
 
 
-### 约瑟夫环问题
+### 5. 约瑟夫环问题
 
 问题描述：编号为 1-N 的 N 个士兵围坐在一起形成一个圆圈，从编号为 1 的士兵开始依次报数（1，2，3…这样依次报），数到 m 的 士兵会被杀死出列，之后的士兵再从 1 开始报数。直到最后剩下一士兵，求这个士兵的编号。
 
@@ -8027,28 +8070,7 @@ int f(int n, int m){
 
 
 
-### 不用加减乘除实现加法
-
-用与运算实现进位，异或运算实现加法。直到算到进位为0即可。**无进位和** 与 **异或运算** 规律相同，**进位** 和 **与运算** 规律相同（并需左移一位）
-
-```java
-class Solution {
-    public int add(int a, int b) {
-        int carry = 0;
-        while (b != 0) {
-            carry = (a & b) << 1;
-            a ^= b;
-            b = carry;
-        
-        }
-        return a;
-    }
-}
-```
-
-
-
-### 整数除法
+### 6. 整数除法
 
 给定两个整数 `a` 和 `b` ，求它们的除法的商 `a/b` ，要求不得使用乘号 `'*'`、除号 `'/'` 以及求余符号 `'%'` 。
 
@@ -9961,6 +9983,42 @@ private int partition(List<String> list, int start, int end) {
 
 
 
+### 2. 缺失数字的数组是否有序
+
+判断数组是否能构成有序序列，0可以充当任何数字，使数组成为有序的。
+
+**示例 1：**
+
+```
+输入: places = [0, 6, 9, 0, 7]
+输出: True
+```
+
+**示例 2：**
+
+```
+输入: places = [7, 8, 9, 10, 11]
+输出: True
+```
+
+**代码：**
+
+排序，找出非零序列的第一个元素和最后一个元素的位置，然后计算差值，看是不是小于`n`，如果小于`n`，那么就说明长度为n的数组能够成有序的。
+
+```java
+public boolean isStraight(int[] nums) {
+    int unknown = 0;
+    Arrays.sort(nums); // 数组排序
+    for (int i = 0; i < 4; i++) {
+        if (nums[i] == 0) unknown++; // 统计未知朝代数量
+        else if (nums[i] == nums[i + 1]) return false; // 若有重复，提前返回 false
+    }
+    return nums[4] - nums[unknown] < 5; // 最大编号朝代 - 最小编号朝代 < 5 则连续
+}
+```
+
+
+
 # 十三. 位运算
 
 ### 1. 判定字符是否唯一
@@ -10092,3 +10150,115 @@ public int singleNumber(int[] nums) {
     return res;
 }
 ```
+
+
+
+### 4. 不用加减乘除实现加法
+
+用**与运算实现进位**，**异或运算实现加法**。直到算到进位为0即可。**无进位和** 与 **异或运算** 规律相同，**进位** 和 **与运算** 规律相同（并需左移一位）
+
+```java
+class Solution {
+    public int add(int a, int b) {
+        int carry = 0;
+        while (b != 0) {
+            carry = (a & b) << 1;
+            a ^= b;
+            b = carry;
+        
+        }
+        return a;
+    }
+}
+```
+
+
+
+### 5. 格雷码
+
+https://zhuanlan.zhihu.com/p/29254973
+
+属于位运算把，常规二进制转化为格雷码编码的公式为：`n ^ (n >> 1)`
+
+```java
+class Solution {
+    private List<Integer> res;
+    public List<Integer> grayCode(int n) {
+        res = new ArrayList<>();
+        for (int i = 0; i < Math.pow(2, n); i++) {
+            res.add(getGrayCode(i));
+        }
+        return res;
+    }
+
+    private Integer getGrayCode(int n) {
+        return n ^ (n >> 1);
+    }
+}
+```
+
+
+
+### 6. 二进制中1的个数
+
+给你一个整数 `n` ，对于 `0 <= i <= n` 中的每个 `i` ，计算其二进制表示中 **`1` 的个数** ，返回一个长度为 `n + 1` 的数组 `ans` 作为答案。
+
+**示例 1：**
+
+```
+输入：n = 2
+输出：[0,1,1]
+解释：
+0 --> 0
+1 --> 1
+2 --> 10
+```
+
+**示例 2：**
+
+```
+输入：n = 5
+输出：[0,1,1,2,1,2]
+解释：
+0 --> 0
+1 --> 1
+2 --> 10
+3 --> 11
+4 --> 100
+5 --> 101
+```
+
+定义正整数 `x` 的「最低设置位」为 `x`的二进制表示中的最低的`1`所在位。例如，`10` 的二进制表示是 
+$$
+1010_{(2)}
+$$
+ ，其最低设置位为 `2`，对应的二进制表示是 
+$$
+10_{(2)}
+$$
+令 
+$$
+y=x~\&~(x-1)
+$$
+，则 `y` 为将 `x` 的最低设置位从 `1`变成 `0`之后的数，显然 
+$$
+0 \le y<x，\textit{bits}[x]=\textit{bits}[y]+1
+$$
+因此对任意正整数 `x`，都有
+$$
+\textit{bits}[x]=\textit{bits}[x~\&~(x-1)]+1
+$$
+遍历从 `1` 到 `n` 的每个正整数 `i`，计算 `bits` 的值。最终得到的数组 `bits` 即为答案。
+
+**代码：**
+
+```java
+public int[] countBits(int n) {
+    int[] res = new int[n + 1];
+    for (int i = 1; i <= n; i++) {
+        res[i] = res[i & (i - 1)] + 1;
+    }
+    return res;
+}
+```
+
