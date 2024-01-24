@@ -437,7 +437,118 @@ public int missingNumber(int[] nums) {
 
 
 
+### 10. 排序数组中只出现一次的数字
+
+给定一个只包含整数的有序数组 `nums` ，每个元素都会出现两次，唯有一个数只会出现一次，请找出这个唯一的数字。
+
+**示例 1:**
+
+```
+输入: nums = [1,1,2,3,3,4,4,8,8]
+输出: 2
+```
+
+**示例 2:**
+
+```
+输入: nums =  [3,3,7,7,10,11,11]
+输出: 10
+```
+
+方法一：位运算方法
+
+方法二：二分搜索
+
+难点是如何挪动左右指针！
+
+如果两个连续的数字相等，那么一定是第一个数在偶数的索引，第二个数在奇数索引的位置上。
+
+那么只出现一次的数字也是在偶数的索引上。
+
+那么只出现一次的数字打破这个规律后，两个连续相等的数字第一个数字一定是在奇数索引位置上，第二个数在偶数索引上。
+
+所以就是看当前位置是偶数索引还是奇数索引来决定移动哪个指针？
+
+```java
+    public int singleNonDuplicate(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == nums[mid + 1]) {
+                if (mid % 2 == 1) right = mid;
+                else left = mid + 1;
+            } else {
+                if (mid % 2 == 0) right = mid;
+                else left = mid + 1;
+            }
+        }
+        return nums[left];
+    }
+```
+
+
+
+
+
 ## 【2】前缀和
+
+### 0. 寻找数组中心下标
+
+给你一个整数数组 `nums` ，请计算数组的 **中心下标** 。
+
+数组 **中心下标** 是数组的一个下标，其左侧所有元素相加的和等于右侧所有元素相加的和。
+
+**示例 1：**
+
+```
+输入：nums = [1,7,3,6,5,6]
+输出：3
+解释：
+中心下标是 3 。
+左侧数之和 sum = nums[0] + nums[1] + nums[2] = 1 + 7 + 3 = 11 ，
+右侧数之和 sum = nums[4] + nums[5] = 5 + 6 = 11 ，二者相等。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1, 2, 3]
+输出：-1
+解释：
+数组中不存在满足此条件的中心下标。
+```
+
+**示例 3：**
+
+```
+输入：nums = [2, 1, -1]
+输出：0
+解释：
+中心下标是 0 。
+左侧数之和 sum = 0 ，（下标 0 左侧不存在元素），
+右侧数之和 sum = nums[1] + nums[2] = 1 + -1 = 0 。
+```
+
+**代码：**
+
+使用`leftSum`表示从`0`开始逐个元素累加的结果，`preSum`表示所有元素累加的结果，既然中心索引两侧的元素和相等，那么应该`2leftSum = preSum-nums[i]`恒成立。所以
+
+```java
+public int pivotIndex(int[] nums) {
+    int preSum = 0;
+    for (int num : nums)
+        preSum += num;
+    int leftSum = 0;
+    for (int i = 0; i < nums.length; i++) {
+        if (leftSum == preSum - nums[i] - leftSum)
+            return i;
+        leftSum += nums[i];
+    }
+    return -1;
+}
+```
+
+
 
 ### 1. 和为K的子数组
 
@@ -840,6 +951,48 @@ public int[] constructArr(int[] a) {
 
 
 
+### 7. 相同数量0和1的最长连续子数组
+
+给定一个二进制数组 `nums` , 找到含有相同数量的 `0` 和 `1` 的最长连续子数组，并返回该子数组的长度。
+
+**示例 1：**
+
+```
+输入: nums = [0,1]
+输出: 2
+说明: [0, 1] 是具有相同数量 0 和 1 的最长连续子数组。
+```
+
+**示例 2：**
+
+```
+输入: nums = [0,1,0]
+输出: 2
+说明: [0, 1] (或 [1, 0]) 是具有相同数量 0 和 1 的最长连续子数组。
+```
+
+**代码：**
+
+`map`存`<前缀和,index>`的映射关系，如果遇到相同的`前缀和（key）`，那么，他们之间的`index（index）`的元素和为`0`。
+
+```java
+public int findMaxLength(int[] nums) {
+    Map<Integer, Integer> map = new HashMap<>();
+    map.put(0, -1);
+    int res = 0, preSum = 0;
+    for (int i = 0; i < nums.length; i++) {
+        preSum += nums[i] == 1 ? 1 : -1;
+        if (map.containsKey(preSum))
+            res = Math.max(res, i - map.get(preSum));
+        else
+            map.put(preSum, map.getOrDefault(preSum, i));
+    }
+    return res;
+}
+```
+
+
+
 ## 【3】滑动窗口
 
 ### 1. 滑动窗口模板
@@ -858,7 +1011,7 @@ for (int i = 0, j = 0; i < n; i++)
 
 
 
-### 2. 最长连续不重复子序列/子串(下标连续)
+### 2. 最长连续不重复子序列(下标连续)
 
 ```java
 输入: nums= [1,2,2,3,5]
@@ -914,9 +1067,56 @@ public int lengthOfLongestSubstring(String s) {
 
 
 
-### 3. 最长不含重复字符的子字符串
+### 3. 和>=target的长度最小的子数组
 
-和上一题一样的思想！（也是滑动窗口）
+给定一个含有 `n` 个正整数的数组和一个正整数 `target` **。**
+
+找出该数组中满足其和 `≥ target` 的长度最小的 **连续子数组** `[numsl, numsl+1, ..., numsr-1, numsr]` ，并返回其长度**。**如果不存在符合条件的子数组，返回 `0` 。
+
+**示例 1：**
+
+```
+输入：target = 7, nums = [2,3,1,2,4,3]
+输出：2
+解释：子数组 [4,3] 是该条件下的长度最小的子数组。
+```
+
+**示例 2：**
+
+```
+输入：target = 4, nums = [1,4,4]
+输出：1
+```
+
+**示例 3：**
+
+```
+输入：target = 11, nums = [1,1,1,1,1,1,1,1]
+输出：0
+```
+
+滑动窗口解法：
+
+```java
+public int minSubArrayLen(int target, int[] nums) {
+        int res = target + 1;
+        int i = 0, j = 0;
+        int curSum = 0;
+        while (i <= j && j < nums.length) {
+            if (j < nums.length) {
+                curSum += nums[j];
+                j++;
+            }
+            while (curSum >= target) {
+                res = Math.min(res, j - i);
+                curSum -= nums[i++];
+            }
+        }
+        return res == target + 1 ? 0 : res;
+    }
+```
+
+
 
 
 
@@ -2428,6 +2628,65 @@ class Solution {
 
 
 
+### 10. 差分数组
+
+<img src="https://mmbiz.qpic.cn/sz_mmbiz_jpg/gibkIz0MVqdGFL8VaGGr0vzRcmibenAMtM7WPic7ibdW5LJEcJnaUnz45Kc6Uy1ozVaSWBGSfLGzAJxL1ziaAG9WhgQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:33%;" />
+
+通过这个`diff`差分数组是可以反推出原始数组`nums`的，代码逻辑如下：
+
+```java
+int[] res = new int[diff.length];
+// 根据差分数组构造结果数组
+res[0] = diff[0];
+for (int i = 1; i < diff.length; i++) {
+    res[i] = res[i - 1] + diff[i];
+}
+```
+
+**这样构造差分数组`diff`，就可以快速进行区间增减的操作**，如果你想对区间`nums[i..j]`的元素全部加 3，那么只需要让`diff[i] += 3`，然后再让`diff[j+1] -= 3`即可：
+
+<img src="https://mmbiz.qpic.cn/sz_mmbiz_jpg/gibkIz0MVqdGFL8VaGGr0vzRcmibenAMtMrmOvrjeoHOICN9ZsZD2CMn4oruTVicz6evf6fflQxPTqSnkO5bpQ7CQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:33%;" />
+
+```java
+// 差分数组工具类
+class Difference {
+    // 差分数组
+    private int[] diff;
+
+    /* 输入一个初始数组，区间操作将在这个数组上进行 */
+    public Difference(int[] nums) {
+        assert nums.length > 0;
+        diff = new int[nums.length];
+        // 根据初始数组构造差分数组
+        diff[0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            diff[i] = nums[i] - nums[i - 1];
+        }
+    }
+
+    /* 给闭区间 [i,j] 增加 val（可以是负数）*/
+    public void increment(int i, int j, int val) {
+        diff[i] += val;
+        if (j + 1 < diff.length) {
+            diff[j + 1] -= val;
+        }
+    }
+
+    /* 返回结果数组 */
+    public int[] result() {
+        int[] res = new int[diff.length];
+        // 根据差分数组构造结果数组
+        res[0] = diff[0];
+        for (int i = 1; i < diff.length; i++) {
+            res[i] = res[i - 1] + diff[i];
+        }
+        return res;
+    }
+}
+```
+
+
+
 ### 和最小的K个数对
 
 ```
@@ -2502,39 +2761,6 @@ class Solution {
 ```
 
 
-
-### 排序数组中只出现一次的数字
-
-方法一：位运算方法
-
-方法二：二分搜索
-
-难点是如何挪动左右指针！
-
-如果两个连续的数字相等，那么一定是第一个数在偶数的索引，第二个数在奇数索引的位置上。
-
-那么只出现一次的数字也是在偶数的索引上。
-
-那么只出现一次的数字打破这个规律后，两个连续相等的数字第一个数字一定是在奇数索引位置上，第二个数在偶数索引上。
-
-所以就是看当前位置是偶数索引还是奇数索引来决定移动哪个指针？
-
-```java
-    public int singleNonDuplicate(int[] nums) {
-        int left = 0, right = nums.length - 1;
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (nums[mid] == nums[mid + 1]) {
-                if (mid % 2 == 1) right = mid;
-                else left = mid + 1;
-            } else {
-                if (mid % 2 == 0) right = mid;
-                else left = mid + 1;
-            }
-        }
-        return nums[left];
-    }
-```
 
 
 
@@ -2634,53 +2860,6 @@ class Solution {
 ```
 
 
-
-### 和大于等于target的长度最小的子数组
-
-给定一个含有 `n` 个正整数的数组和一个正整数 `target` **。**
-
-找出该数组中满足其和 `≥ target` 的长度最小的 **连续子数组** `[numsl, numsl+1, ..., numsr-1, numsr]` ，并返回其长度**。**如果不存在符合条件的子数组，返回 `0` 。
-
-**示例 1：**
-
-```
-输入：target = 7, nums = [2,3,1,2,4,3]
-输出：2
-解释：子数组 [4,3] 是该条件下的长度最小的子数组。
-```
-
-**示例 2：**
-
-```
-输入：target = 4, nums = [1,4,4]
-输出：1
-```
-
-**示例 3：**
-
-```
-输入：target = 11, nums = [1,1,1,1,1,1,1,1]
-输出：0
-```
-
-滑动窗口解法：
-
-```java
-    public int minSubArrayLen(int target, int[] nums) {
-        int sum = 0, res = Integer.MAX_VALUE;
-        int start = 0, end = 0;
-        while (end < nums.length) {
-            sum += nums[end];
-            while (sum >= target) {
-                res = Math.min(res, end - start + 1);
-                sum -= nums[start];
-                start++;
-            }
-            end++;
-        }
-        return res == Integer.MAX_VALUE ? 0 : res;
-    }
-```
 
 
 
@@ -2867,27 +3046,30 @@ public class OutBDNode {
 
 `left`指向前驱节点，`right`指向后继节点
 
-```java
-public TreeListNode treeToDoublyList(TreeListNode root) {
-    if (root == null)
-        return null;
-    dfs(root);
-    head.left = tail;
-    tail.right = head;
-    return head;
-}
+思路：二叉树搜索时中序遍历有序，那么我们从中序遍历开始。既然是双向循环链表，那么需要两个指针分别指向头部节点`head`，和尾部节点`tail`。双向链表的构造过程是`tail.right = cur; cur.left = tail;` 然后`tail = cur`。`tail`指针向后移动一个。最后`cur`指针为空时，所有节点的双向链构造完成，最后将头尾相连。
 
-private void dfs(TreeListNode root) {
-    if (root == null) return;
-    dfs(root.left);
-    if (tail != null)
-        tail.right = root;
-    else
-        head = root;
-    root.left = tail;
-    tail = root;
-    dfs(root.right);
-}
+```java
+    TreeListNode head, tail;
+    public TreeListNode treeToDoublyList(TreeListNode root) {
+        if (root == null)
+            return null;
+        dfs(root);
+        head.left = tail;
+        tail.right = head;
+        return head;
+    }
+
+    private void dfs(TreeListNode root) {
+        if (root == null) return;
+        dfs(root.left);
+        if (tail != null)
+            tail.right = root;
+        else
+            head = root;
+        root.left = tail;
+        tail = root;
+        dfs(root.right);
+    }
 ```
 
 
@@ -3023,7 +3205,7 @@ public class DoubleLinkedListQuickSort {
 
 
 
-### 链表两数相加(高位头结点)
+### 5. 链表两数相加(高位头结点)
 
 给你两个 **非空** 链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。
 
@@ -3374,36 +3556,6 @@ class Solution {
 
 
 
-### 二叉搜索树与双向循环链表的转换
-
-思路：二叉树搜索时中序遍历有序，那么我们从中序遍历开始。既然是双向循环链表，那么需要两个指针分别指向头部节点`head`，和尾部节点`tail`。双向链表的构造过程是`tail.right = cur; cur.left = tail;` 然后`tail = cur`。`tail`指针向后移动一个。最后`cur`指针为空时，所有节点的双向链构造完成，最后将头尾相连。
-
-```java
-    TreeListNode head, tail;
-    public TreeListNode treeToDoublyList(TreeListNode root) {
-        if (root == null)
-            return null;
-        dfs(root);
-        head.left = tail;
-        tail.right = head;
-        return head;
-    }
-
-    private void dfs(TreeListNode root) {
-        if (root == null) return;
-        dfs(root.left);
-        if (tail != null)
-            tail.right = root;
-        else
-            head = root;
-        root.left = tail;
-        tail = root;
-        dfs(root.right);
-    }
-```
-
-
-
 ### K个一组翻转链表
 
 ```java
@@ -3445,7 +3597,45 @@ class Solution {
 
 
 
-### 排序的循环链表中插入节点
+### 11. 排序的循环链表中插入节点
+
+给定**循环单调非递减列表**中的一个点，写一个函数向这个列表中插入一个新元素 `insertVal` ，使这个列表仍然是循环升序的。
+
+给定的可以是这个列表中任意一个顶点的指针，并不一定是这个列表中最小元素的指针。
+
+如果有多个满足条件的插入位置，可以选择任意一个位置插入新的值，插入后整个列表仍然保持有序。
+
+如果列表为空（给定的节点是 `null`），需要创建一个循环有序列表并返回这个节点。否则。请返回原先给定的节点。
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2019/01/19/example_1_before_65p.jpg)
+ 
+
+```
+输入：head = [3,4,1], insertVal = 2
+输出：[3,4,1,2]
+解释：在上图中，有一个包含三个元素的循环有序列表，你获得值为 3 的节点的指针，我们需要向表中插入元素 2 。新插入的节点应该在 1 和 3 之间，插入之后，整个列表如上图所示，最后返回节点 3 。
+```
+
+**示例 2：**
+
+```
+输入：head = [], insertVal = 1
+输出：[1]
+解释：列表为空（给定的节点是 null），创建一个循环有序列表并返回这个节点。
+```
+
+**示例 3：**
+
+```
+输入：head = [1], insertVal = 0
+输出：[1,0]
+```
+
+**代码：**
+
+依次遍历链表中的每个节点，找到合适位置，然后插入节点，主要分为三种情况。
 
 ```java
     public Node insert(Node head, int insertVal) {
@@ -3479,68 +3669,33 @@ class Solution {
 
 
 
-### 差分数组
+### 12. 扁平化多级双向链表
 
-<img src="https://mmbiz.qpic.cn/sz_mmbiz_jpg/gibkIz0MVqdGFL8VaGGr0vzRcmibenAMtM7WPic7ibdW5LJEcJnaUnz45Kc6Uy1ozVaSWBGSfLGzAJxL1ziaAG9WhgQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:33%;" />
+你会得到一个双链表，其中包含的节点有一个下一个指针、一个前一个指针和一个额外的 **子指针** 。这个子指针可能指向一个单独的双向链表，也包含这些特殊的节点。这些子列表可以有一个或多个自己的子列表，以此类推，以生成如下面的示例所示的 **多层数据结构** 。
 
-通过这个`diff`差分数组是可以反推出原始数组`nums`的，代码逻辑如下：
+给定链表的头节点 head ，将链表 **扁平化** ，以便所有节点都出现在单层双链表中。让 `curr` 是一个带有子列表的节点。子列表中的节点应该出现在**扁平化列表**中的 `curr` **之后** 和 `curr.next` **之前** 。
 
-```java
-int[] res = new int[diff.length];
-// 根据差分数组构造结果数组
-res[0] = diff[0];
-for (int i = 1; i < diff.length; i++) {
-    res[i] = res[i - 1] + diff[i];
-}
-```
-
-**这样构造差分数组`diff`，就可以快速进行区间增减的操作**，如果你想对区间`nums[i..j]`的元素全部加 3，那么只需要让`diff[i] += 3`，然后再让`diff[j+1] -= 3`即可：
-
-<img src="https://mmbiz.qpic.cn/sz_mmbiz_jpg/gibkIz0MVqdGFL8VaGGr0vzRcmibenAMtMrmOvrjeoHOICN9ZsZD2CMn4oruTVicz6evf6fflQxPTqSnkO5bpQ7CQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:33%;" />
-
-```java
-// 差分数组工具类
-class Difference {
-    // 差分数组
-    private int[] diff;
-
-    /* 输入一个初始数组，区间操作将在这个数组上进行 */
-    public Difference(int[] nums) {
-        assert nums.length > 0;
-        diff = new int[nums.length];
-        // 根据初始数组构造差分数组
-        diff[0] = nums[0];
-        for (int i = 1; i < nums.length; i++) {
-            diff[i] = nums[i] - nums[i - 1];
-        }
-    }
-
-    /* 给闭区间 [i,j] 增加 val（可以是负数）*/
-    public void increment(int i, int j, int val) {
-        diff[i] += val;
-        if (j + 1 < diff.length) {
-            diff[j + 1] -= val;
-        }
-    }
-
-    /* 返回结果数组 */
-    public int[] result() {
-        int[] res = new int[diff.length];
-        // 根据差分数组构造结果数组
-        res[0] = diff[0];
-        for (int i = 1; i < diff.length; i++) {
-            res[i] = res[i - 1] + diff[i];
-        }
-        return res;
-    }
-}
-```
-
-
-
-### 扁平化多级双向链表
+返回 *扁平列表的 `head` 。列表中的节点必须将其 **所有** 子指针设置为 `null` 。*
 
 <img src="https://assets.leetcode.com/uploads/2021/11/09/flatten11.jpg" class="css-btcloa-ZoomImage e13l6k8o5" style="zoom: 50%;" >
+
+```
+输入：head = [1,2,3,4,5,6,null,null,null,7,8,9,10,null,null,11,12]
+输出：[1,2,3,7,8,11,12,9,10,4,5,6]
+解释：输入的多级列表如上图所示。
+扁平化后的链表如下图：
+```
+
+![img](https://assets.leetcode.com/uploads/2021/11/09/flatten12.jpg)
+
+**代码：**
+
+使用递归结构：
+
+- 三个指针，`head`指向遍历过程中有`child`的节点，`last`指向`head`的前一个节点，`temp`指向`head`的后一个节点。
+- 递归结构返回的是last指针
+- 递归内的结构使用`childLast`来指向扁平化后的child节点们
+- 剩下的工作就是`head`,`childLast`和`temp`之间的连接了
 
 ```java
 class Solution {
@@ -3652,7 +3807,34 @@ return bestRes;
 
 
 
-### 无重复字符的最长子串
+### 3. 无重复字符的最长子串
+
+给定一个字符串 `s` ，请你找出其中**不含有重复**字符的最长连续子字符串的长度。
+
+```
+示例 1: 
+输入: s = "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子字符串是 "abc"，所以其长度为 3。
+
+
+示例 2: 
+输入: s = "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子字符串是 "b"，所以其长度为 1。
+
+
+示例 3: 
+输入: s = "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+
+
+示例 4: 
+输入: s = ""
+输出: 0
+```
 
 **滑动窗口法：**
 
@@ -3689,7 +3871,7 @@ return res;
 
 
 
-### 最小覆盖子串
+### 4. 最小覆盖子串
 
 给你一个字符串 `s` 、一个字符串 `t` 。返回 `s` 中涵盖 `t` 所有字符的最小子串。如果 `s` 中不存在涵盖 `t` 所有字符的子串，则返回空字符串 `""` 。
 
@@ -4121,13 +4303,30 @@ p = "a*c?b"
 
 
 
-### 字符串的排列
+### 11. 字符串的排列
+
+给定两个字符串 `s1` 和 `s2`，写一个函数来判断 `s2` 是否包含 `s1` 的某个变位词。换句话说，第一个字符串的排列之一是第二个字符串的 **子串** 。
+
+**示例 1：**
+
+```
+输入: s1 = "ab" s2 = "eidbaooo"
+输出: True
+解释: s2 包含 s1 的排列之一 ("ba").
+```
+
+**示例 2：**
+
+```
+输入: s1= "ab" s2 = "eidboaoo"
+输出: False
+```
 
 如下题！
 
 
 
-### 字符串中的变位词
+### 12. 字符串中的变位词
 
 ```java
     public boolean checkInclusion(String s1, String s2) {
@@ -4153,7 +4352,7 @@ p = "a*c?b"
 
 
 
-### 字符串中的所有变位词
+### 13. 字符串中的所有变位词
 
 ```java
     public List<Integer> findAnagrams(String s, String p) {
@@ -4184,9 +4383,84 @@ p = "a*c?b"
 
 
 
-### 最长回文子串
+### 14. 最多删除一个字符得到回文
 
-中心扩展法
+给定一个非空字符串 `s`，请判断如果 **最多** 从字符串中删除一个字符能否得到一个回文字符串。
+
+**示例 1:**
+
+```
+输入: s = "aba"
+输出: true
+```
+
+**示例 2:**
+
+```
+输入: s = "abca"
+输出: true
+解释: 可以删除 "c" 字符 或者 "b" 字符
+```
+
+**示例 3:**
+
+```
+输入: s = "abc"
+输出: false
+```
+
+**代码：**
+
+还是使用正常比较回文串的方法，如果遇到两个元素不一样的话，那么比较过的字符我们不用管了，只看剩下没比较的。如果分别去掉不相等字符剩下的子串都不是回文串的话，那么就是不满足条件的。
+
+```java
+public boolean validPalindrome(String s) {
+    int i = 0, j = s.length() - 1;
+    while (i < j) {
+        if (s.charAt(i) == s.charAt(j)) {
+            i++;
+            j--;
+        } else {
+            return isPalindrome(s, i + 1, j) || isPalindrome(s, i, j - 1);
+        }
+    }
+    return true;
+}
+
+private boolean isPalindrome(String s, int start, int end) {
+    int i = start, j = end;
+    while (i < j) {
+        if (s.charAt(i) != s.charAt(j))
+            return false;
+        i++;
+        j--;
+    }
+    return true;
+}
+```
+
+
+
+### 15. 最长回文子串
+
+给一个字符串 `s`，找到 `s` 中最长的回文子串。如果字符串的反序与原始字符串相同，则该字符串称为回文字符串。
+
+**示例 1：**
+
+```
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+```
+
+**示例 2：**
+
+```
+输入：s = "cbbd"
+输出："bb"
+```
+
+**中心扩展法**
 
 ```java
 class Solution {
@@ -4202,7 +4476,7 @@ class Solution {
                 start = i - (len - 1) / 2;
                 end = i + len / 2;
             }
-        }
+        } 
         return s.substring(start, end + 1);
     }
 
@@ -4218,9 +4492,31 @@ class Solution {
 
 
 
-### 回文子串的个数
+### 16. 回文子串的个数
 
-动态规划法：如果`s[i] == s[j]`，那么`[i, j]`区间是否会构成回文串的条件是`s[i + 1, j - 1]`是不是回文串。并且考虑`[i, j]`区间长度小于2的时候是否是回文子串
+给定一个字符串 `s` ，请计算这个字符串中有多少个回文子字符串。
+
+具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被视作不同的子串。
+
+**示例 1：**
+
+```
+输入：s = "abc"
+输出：3
+解释：三个回文子串: "a", "b", "c"
+```
+
+**示例 2：**
+
+```
+输入：s = "aaa"
+输出：6
+解释：6个回文子串: "a", "a", "a", "aa", "aa", "aaa"
+```
+
+**代码：**
+
+**动态规划法：**如果`s[i] == s[j]`，那么`[i, j]`区间是否会构成回文串的条件是`s[i + 1, j - 1]`是不是回文串。并且考虑`[i, j]`区间长度小于2的时候是否是回文子串
 
 ```java
     public int countSubstrings(String s) {
@@ -4239,7 +4535,7 @@ class Solution {
     }
 ```
 
-中心扩张法：以`s[i]`和`s[i, i + 1]`作为核心，分别向两段扩张，如果两段的字符相等，那么这就是一个回文子串。
+**中心扩张法：**以`s[i]`和`s[i, i + 1]`作为核心，分别向两段扩张，如果两段的字符相等，那么这就是一个回文子串。
 
 ```java
     public int countSubstrings(String s) {
@@ -4258,6 +4554,53 @@ class Solution {
             right++;
         }
         return res;
+    }
+```
+
+
+
+### 17. 字母异位词分组
+
+给定一个字符串数组 `strs` ，将 **变位词** 组合在一起。 可以按任意顺序返回结果列表。
+
+**注意：**若两个字符串中每个字符出现的次数都相同，则称它们互为变位词。
+
+**示例 1:**
+
+```
+输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
+```
+
+**示例 2:**
+
+```
+输入: strs = [""]
+输出: [[""]]
+```
+
+**示例 3:**
+
+```
+输入: strs = ["a"]
+输出: [["a"]]
+```
+
+**代码：**
+
+```java
+    public List<List<String>> groupAnagrams(String[] strs) {
+        HashMap<String, List<String>> map = new HashMap<>();
+        char[] cl;
+        for (String word : strs){
+            cl = word.toCharArray();
+            Arrays.sort(cl);
+            String key = new String(cl);
+            List<String> list = map.getOrDefault(key, new ArrayList<>());
+            list.add(word);
+            map.put(key, list);
+        }
+        return new ArrayList<>(map.values());
     }
 ```
 
@@ -5606,7 +5949,82 @@ class Trie {
 
 
 
-### O(1)时间插入，删除，随机访问一个元素
+### 9. 完全二叉树插入器
+
+设计一个用完全二叉树初始化的数据结构 `CBTInserter`，它支持以下几种操作：
+
+- `CBTInserter(TreeNode root)` 使用根节点为 `root` 的给定树初始化该数据结构；
+- `CBTInserter.insert(int v)` 向树中插入一个新节点，节点类型为 `TreeNode`，值为 `v` 。使树保持完全二叉树的状态，**并返回插入的新节点的父节点的值**；
+- `CBTInserter.get_root()` 将返回树的根节点。
+
+**示例 1：**
+
+```
+输入：inputs = ["CBTInserter","insert","get_root"], inputs = [[[1]],[2],[]]
+输出：[null,1,[1,2]]
+```
+
+**示例 2：**
+
+```
+输入：inputs = ["CBTInserter","insert","insert","get_root"], inputs = [[[1,2,3,4,5,6]],[7],[8],[]]
+输出：[null,3,4,[1,2,3,4,5,6,7,8]]
+```
+
+**代码：**
+
+使用层序遍历方法，将`叶子节点`和`未满的父节点`加入到队列中，这样插入的时候，就直接可以插入到未满的父节点上。
+
+```java
+class CBTInserterOffer2 {
+
+    private Deque<TreeNode> queue;
+    private TreeNode root;
+    public CBTInserterOffer2(TreeNode root) {
+        this.root = root;
+        queue = new LinkedList<>();
+        queue.offerLast(root);
+        while (!queue.isEmpty()) {
+            if (queue.peekFirst().left != null && queue.peekFirst().right != null) {
+                TreeNode node = queue.pollFirst();
+                queue.offerLast(node.left);
+                queue.offerLast(node.right);
+            } else if (queue.peekFirst().left != null) {
+                queue.offerLast(queue.peekFirst().left);
+                break;
+            } else break;
+        }
+    }
+    
+    public int insert(int v) {
+        TreeNode newNode = new TreeNode(v);
+        if (queue.peekFirst().left == null) {
+            queue.peekFirst().left = newNode;
+            queue.offerLast(newNode);
+            return queue.peekFirst().val;
+        } else {
+            queue.peekFirst().right = newNode;
+            queue.offerLast(newNode);
+            return queue.pollFirst().val;
+        }
+    }
+    
+    public TreeNode get_root() {
+        return this.root;
+    }
+
+    public static void main(String[] args) {
+        CBTInserterOffer2 solution = new CBTInserterOffer2(TreeNode.deserialize("1,2,3,4,5,6,null"));
+        System.out.println(solution.insert(7));
+        System.out.println(solution.insert(8));
+        System.out.println(solution.get_root());
+    }
+}
+```
+
+
+
+### 10. O(1)时间插入，删除，随机访问一个元素
 
 既然`O(1)`的时间复杂度，那么可以想到的数据结构有`Map`，和`List`
 
@@ -5794,6 +6212,10 @@ class RangeFreqQuery {
     }
 }
 ```
+
+
+
+
 
 
 
@@ -9324,46 +9746,6 @@ public int combinationSum4(int[] nums, int target) {
 
 
 
-### 组合求和
-
-去重复的方法：
-
-- 使用HashSet；
-- 排序，排完序，如果当前元素和前一个元素相同，那么当前元素略过，不选择；因为有序是 **深度优先遍历** 过程中实现「剪枝」的前提。
-
-回溯模板，书写要规范：
-
-```java
-class Solution {
-    private List<List<Integer>> res;
-    public List<List<Integer>> combinationSum(int[] candidates, int target) {
-        res = new ArrayList<>();
-        Arrays.sort(candidates);
-        dfs(candidates, target, new LinkedList<Integer>(), 0, 0);
-        return res;
-    }
-
-    private void dfs(int[] candidates, int target, LinkedList<Integer> path, int index, int sum) {
-        if (sum == target) {
-            // 满足条件，加入到结果集里面
-        }
-        for (int i = index; i < candidates.length; i++) {
-            // 结束条件都在for循环里判断
-            // 大剪枝操作
-            if (sum + candidates[i] > target)
-                break;
-            if (i > index && candidates[i] == candidates[i - 1]) // 去重复的写法
-                continue;
-            path.addLast(candidates[i]);
-            dfs(candidates, target, path, i + 1, sum + candidates[i]);
-            path.removeLast();
-        }
-    }
-}
-```
-
-
-
 ### 全排列
 
 分两种情况：
@@ -10262,3 +10644,48 @@ public int[] countBits(int n) {
 }
 ```
 
+
+
+### 7. 单词长度的最大乘积
+
+给定一个字符串数组 `words`，请计算当两个字符串 `words[i]` 和 `words[j]` 不包含相同字符时，它们长度的乘积的最大值。假设字符串中只包含英语的小写字母。如果没有不包含相同字符的一对字符串，返回 `0`。 
+
+```
+示例 1: 
+输入: words = ["abcw","baz","foo","bar","fxyz","abcdef"]
+输出: 16 
+解释: 这两个单词为 "abcw", "fxyz"。它们不包含相同字符，且长度的乘积最大。 
+
+示例 2: 
+输入: words = ["a","ab","abc","d","cd","bcd","abcd"]
+输出: 4 
+解释: 这两个单词为 "ab", "cd"。 
+
+示例 3: 
+输入: words = ["a","aa","aaa","aaaa"]
+输出: 0 
+解释: 不存在这样的两个单词。
+```
+
+**代码：**
+
+```java
+public int maxProduct(String[] words) {
+    int[] bits = new int[words.length];
+    for (int i = 0; i < words.length; i++) {
+        for (int j = 0; j < words[i].length(); j++) {
+            bits[i] |= 1 << (words[i].charAt(j) - 'a');
+        }
+    }
+    System.out.println(Arrays.toString(bits));
+    int res = 0;
+    for (int i = 0; i < words.length; i++) {
+        for (int j = i + 1; j < words.length; j++) {
+            if ((bits[i] & bits[j]) == 0) {
+                res = Math.max(res, words[i].length() * words[j].length());
+            }
+        }
+    }
+    return res;
+}
+```
