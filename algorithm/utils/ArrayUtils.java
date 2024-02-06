@@ -6,7 +6,7 @@ import java.util.Arrays;
 /**
  * 数组工具类
  */
-public class ArrayUtils{
+public class ArrayUtils {
 
     /**
      * 可变参数构造泛型一维数组
@@ -73,6 +73,12 @@ public class ArrayUtils{
      */
     public static void print2D(char[][] array) {
         for (char[] subArray : array) {
+            System.out.println(Arrays.toString(subArray));
+        }
+    }
+
+    public static void print2D(boolean[][] array) {
+        for (boolean[] subArray : array) {
             System.out.println(Arrays.toString(subArray));
         }
     }

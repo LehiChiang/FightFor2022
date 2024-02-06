@@ -488,6 +488,178 @@ public int missingNumber(int[] nums) {
 
 
 
+### 11. x的平方根
+
+给定一个非负整数 `x` ，计算并返回 `x` 的平方根，即实现 `int sqrt(int x)` 函数。
+
+正数的平方根有两个，只输出其中的正数平方根。
+
+如果平方根不是整数，输出只保留整数的部分，小数部分将被舍去。
+
+**示例 1:**
+
+```
+输入: x = 4
+输出: 2
+```
+
+**示例 2:**
+
+```
+输入: x = 8
+输出: 2
+解释: 8 的平方根是 2.82842...，由于小数部分将被舍去，所以返回 2
+```
+
+**代码：**
+
+```java
+public int mySqrt(int x) {
+    if (x == 0 || x == 1)
+        return x;
+    int left = 0, right = x;
+    int res = 0;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if ((long) mid * mid <= x) {
+            left = mid + 1;
+            res = mid;
+        }
+        else
+            right = mid;
+    }
+    return res;
+}
+```
+
+
+
+### 12. 山脉数组的峰顶索引
+
+符合下列属性的数组 `arr` 称为 **山峰数组**（**山脉数组）** ：
+
+- `arr.length >= 3`
+- 存在`i（0 < i < arr.length - 1）`使得：
+  - `arr[0] < arr[1] < ... arr[i-1] < arr[i] `
+  - `arr[i] > arr[i+1] > ... > arr[arr.length - 1]`
+
+给定由整数组成的山峰数组 `arr` ，返回任何满足 `arr[0] < arr[1] < ... arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1]` 的下标 `i` ，即山峰顶部。
+
+ 
+
+**示例 1：**
+
+```
+输入：arr = [0,1,0]
+输出：1
+```
+
+**示例 2：**
+
+```
+输入：arr = [1,3,5,4,2]
+输出：2
+```
+
+**示例 3：**
+
+```
+输入：arr = [0,10,5,2]
+输出：1
+```
+
+**示例 4：**
+
+```
+输入：arr = [3,4,5,1]
+输出：2
+```
+
+**示例 5：**
+
+```
+输入：arr = [24,69,100,99,79,78,67,36,26,19]
+输出：2
+```
+
+代码：
+
+```java
+public int peakIndexInMountainArray(int[] arr) {
+    int left = 0, right = arr.length;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (arr[mid] > arr[mid + 1]) {
+            right = mid;
+        } else if (arr[mid] < arr[mid + 1]) {
+            left = mid + 1;
+        }
+    }
+    return left;
+}
+```
+
+
+
+### 13. 吃香蕉的最小速度
+
+狒狒喜欢吃香蕉。这里有 `N` 堆香蕉，第 `i` 堆中有 `piles[i]` 根香蕉。警卫已经离开了，将在 `H` 小时后回来。
+
+狒狒可以决定她吃香蕉的速度 `K` （单位：根/小时）。每个小时，她将会选择一堆香蕉，从中吃掉 `K` 根。如果这堆香蕉少于 `K` 根，她将吃掉这堆的所有香蕉，然后这一小时内不会再吃更多的香蕉，下一个小时才会开始吃另一堆的香蕉。 
+
+狒狒喜欢慢慢吃，但仍然想在警卫回来前吃掉所有的香蕉。
+
+返回她可以在 `H` 小时内吃掉所有香蕉的最小速度 `K`（`K` 为整数）。
+
+**示例 1：**
+
+```
+输入: piles = [3,6,7,11], H = 8
+输出: 4
+```
+
+**示例 2：**
+
+```
+输入: piles = [30,11,23,4,20], H = 5
+输出: 30
+```
+
+**示例 3：**
+
+```
+输入: piles = [30,11,23,4,20], H = 6
+输出: 23
+```
+
+**代码：**
+
+```java
+public int minEatingSpeed(int[] piles, int h) {
+    int left = 1, right = 1_000_000_000;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        int hours = getHours(piles, mid);
+        if (hours == h)
+            right = mid;
+        else if (hours > h)
+            left = mid + 1;
+        else right = mid;
+    }
+    return left;
+}
+
+private int getHours(int[] piles, int speed) {
+    int hours = 0;
+    for (int pile : piles) {
+        hours += pile / speed;
+        if (pile % speed != 0)
+            hours++;
+    }
+    return hours;
+}
+```
+
 
 
 ## 【2】前缀和
@@ -1117,6 +1289,52 @@ public int minSubArrayLen(int target, int[] nums) {
 ```
 
 
+
+### 4. 值和下标之差都在给定的范围内
+
+给你一个整数数组 `nums` 和两个整数 `k` 和 `t` 。请你判断是否存在 **两个不同下标** `i` 和 `j`，使得 `abs(nums[i] - nums[j]) <= t` ，同时又满足 `abs(i - j) <= k` 。
+
+如果存在则返回 `true`，不存在返回 `false`。
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3,1], k = 3, t = 0
+输出：true
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,0,1,1], k = 1, t = 2
+输出：true
+```
+
+**示例 3：**
+
+```
+输入：nums = [1,5,9,1,5,9], k = 2, t = 3
+输出：false
+```
+
+**代码：**
+
+```java
+public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+    TreeSet<Integer> set = new TreeSet<>();
+    for (int i = 0; i < nums.length; i++) {
+        Integer diff = set.ceiling(nums[i] - t);
+        if (diff != null && diff <= nums[i] + t) {
+            return true;
+        }
+        set.add(nums[i]);
+        if (i >= k) {
+            set.remove(nums[i - k]);
+        }
+    }
+    return false;
+}
+```
 
 
 
@@ -2006,6 +2224,376 @@ public void rotate(int[][] matrix) {
 
 
 
+## 【8】位运算
+
+### 1. 判定字符是否唯一
+
+实现一个算法，确定一个字符串 `s` 的所有字符是否全都不同。
+
+**示例 1：**
+
+```
+输入: s = "leetcode"
+输出: false 
+```
+
+**示例 2：**
+
+```
+输入: s = "abc"
+输出: true
+```
+
+**限制：**
+
+- `0 <= len(s) <= 100 `
+- `s[i]`仅包含小写字母
+
+```java
+class IsUniqueSolution {
+    public static boolean isUnique(String astr) {
+        int bitmap = 0;
+        for (int i = 0; i < astr.length(); i++) {
+            int index = astr.charAt(i) - 'a';
+            int bit = 1 << index;
+            if ((bitmap & bit) != 0)
+                return false;
+            bitmap = bitmap | bit;
+        }
+        return true;
+    }
+}
+```
+
+
+
+### 2. 只出现一次的数字I
+
+一个整型数组 `nums` 里除两个数字之外，其他数字都出现了两次。请写程序找出这两个只出现一次的数字。
+
+```
+示例 1：
+输入：nums = [4,1,4,6]
+输出：[1,6] 或 [6,1]
+示例 2：
+输入：nums = [1,2,10,4,1,4,3,3]
+输出：[2,10] 或 [10,2]
+```
+
+如果是在一个数组找只出现一次的数，就可以将所有的数进行`^`（异或）运算。在数组中寻找两个只出现一次的数，需要对数组进行分类，相同的数进行分类一定在同一个内别里。`&`运算可以用来区某一位数，列如区分奇偶数`num & 1`。难点是如何将只出现一次的两个数分开，**如果两个数不相同那么他们的二进制数至少有一位0和1不相同， 可以用一个标记数来标记那一位将两个数分开，取那个数能取的最小值，然后将`nums`数组用标记数分开进行`^`运算。**
+
+　　　**num1: 101110   110  1111**
+
+　　　**num2:** **111110   001  1001**
+
+**num1^num2: 010000  111  0110** 
+
+**可行的mask:  010000   001  0010**
+
+**代码**：
+
+```java
+public int[] singleNumbers(int[] nums) {
+    int xorAll = 0;
+    int resA = 0, resB = 0;
+    for (int num : nums) {
+        xorAll ^= num;
+    }
+    int mask = 1;
+    while ((mask & xorAll) == 0)
+        mask <<= 1;
+    for (int num : nums) {
+        if ((num & mask) == 0)
+            resA ^= num;
+        else
+            resB ^= num;
+    }
+    return new int[]{resA, resB};
+}
+```
+
+
+
+### 3. 只出现一次的数字II
+
+在一个数组 `nums` 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
+
+```
+示例 1： 
+输入：nums = [3,4,3,3]
+输出：4
+
+
+示例 2： 
+输入：nums = [9,1,7,9,7,9,7]
+输出：1 
+```
+
+因此，统计所有数字的各二进制位中 1 的出现次数，并对 3 求余，结果则为只出现一次的数字。
+
+<img src="https://pic.leetcode-cn.com/28f2379be5beccb877c8f1586d8673a256594e0fc45422b03773b8d4c8418825-Picture1.png" alt="Picture1.png" style="zoom:50%;" />
+
+**代码**：
+
+```java
+public int singleNumber(int[] nums) {
+    int res = 0;
+    int[] digits = new int[32];
+    for (int num : nums) {
+        int mask = 1;
+        for (int i = 31; i >= 0; --i) {
+            int bit = num & mask;
+            if (bit != 0)
+                digits[i] += 1;
+            mask <<= 1;
+        }
+    }
+    for (int i = 0; i < 32; i++) {
+        res <<= 1;
+        res += digits[i] % 3 == 0 ? 0 : 1;
+    }
+    return res;
+}
+```
+
+
+
+### 4. 不用加减乘除实现加法
+
+用**与运算实现进位**，**异或运算实现加法**。直到算到进位为0即可。**无进位和** 与 **异或运算** 规律相同，**进位** 和 **与运算** 规律相同（并需左移一位）
+
+```java
+class Solution {
+    public int add(int a, int b) {
+        int carry = 0;
+        while (b != 0) {
+            carry = (a & b) << 1;
+            a ^= b;
+            b = carry;
+        
+        }
+        return a;
+    }
+}
+```
+
+
+
+### 5. 格雷码
+
+https://zhuanlan.zhihu.com/p/29254973
+
+属于位运算把，常规二进制转化为格雷码编码的公式为：`n ^ (n >> 1)`
+
+```java
+class Solution {
+    private List<Integer> res;
+    public List<Integer> grayCode(int n) {
+        res = new ArrayList<>();
+        for (int i = 0; i < Math.pow(2, n); i++) {
+            res.add(getGrayCode(i));
+        }
+        return res;
+    }
+
+    private Integer getGrayCode(int n) {
+        return n ^ (n >> 1);
+    }
+}
+```
+
+
+
+### 6. 二进制中1的个数
+
+给你一个整数 `n` ，对于 `0 <= i <= n` 中的每个 `i` ，计算其二进制表示中 **`1` 的个数** ，返回一个长度为 `n + 1` 的数组 `ans` 作为答案。
+
+**示例 1：**
+
+```
+输入：n = 2
+输出：[0,1,1]
+解释：
+0 --> 0
+1 --> 1
+2 --> 10
+```
+
+**示例 2：**
+
+```
+输入：n = 5
+输出：[0,1,1,2,1,2]
+解释：
+0 --> 0
+1 --> 1
+2 --> 10
+3 --> 11
+4 --> 100
+5 --> 101
+```
+
+定义正整数 `x` 的「最低设置位」为 `x`的二进制表示中的最低的`1`所在位。例如，`10` 的二进制表示是 
+$$
+1010_{(2)}
+$$
+ ，其最低设置位为 `2`，对应的二进制表示是 
+$$
+10_{(2)}
+$$
+令 
+$$
+y=x~\&~(x-1)
+$$
+，则 `y` 为将 `x` 的最低设置位从 `1`变成 `0`之后的数，显然 
+$$
+0 \le y<x，\textit{bits}[x]=\textit{bits}[y]+1
+$$
+因此对任意正整数 `x`，都有
+$$
+\textit{bits}[x]=\textit{bits}[x~\&~(x-1)]+1
+$$
+遍历从 `1` 到 `n` 的每个正整数 `i`，计算 `bits` 的值。最终得到的数组 `bits` 即为答案。
+
+**代码：**
+
+```java
+public int[] countBits(int n) {
+    int[] res = new int[n + 1];
+    for (int i = 1; i <= n; i++) {
+        res[i] = res[i & (i - 1)] + 1;
+    }
+    return res;
+}
+```
+
+
+
+### 7. 单词长度的最大乘积
+
+给定一个字符串数组 `words`，请计算当两个字符串 `words[i]` 和 `words[j]` 不包含相同字符时，它们长度的乘积的最大值。假设字符串中只包含英语的小写字母。如果没有不包含相同字符的一对字符串，返回 `0`。 
+
+```
+示例 1: 
+输入: words = ["abcw","baz","foo","bar","fxyz","abcdef"]
+输出: 16 
+解释: 这两个单词为 "abcw", "fxyz"。它们不包含相同字符，且长度的乘积最大。 
+
+示例 2: 
+输入: words = ["a","ab","abc","d","cd","bcd","abcd"]
+输出: 4 
+解释: 这两个单词为 "ab", "cd"。 
+
+示例 3: 
+输入: words = ["a","aa","aaa","aaaa"]
+输出: 0 
+解释: 不存在这样的两个单词。
+```
+
+**代码：**
+
+```java
+public int maxProduct(String[] words) {
+    int[] bits = new int[words.length];
+    for (int i = 0; i < words.length; i++) {
+        for (int j = 0; j < words[i].length(); j++) {
+            bits[i] |= 1 << (words[i].charAt(j) - 'a');
+        }
+    }
+    System.out.println(Arrays.toString(bits));
+    int res = 0;
+    for (int i = 0; i < words.length; i++) {
+        for (int j = i + 1; j < words.length; j++) {
+            if ((bits[i] & bits[j]) == 0) {
+                res = Math.max(res, words[i].length() * words[j].length());
+            }
+        }
+    }
+    return res;
+}
+```
+
+
+
+### 8. 最大的异或值
+
+给定一个整数数组 `nums` ，返回 `nums[i] XOR nums[j]` 的最大运算结果，其中 `0 ≤ i ≤ j < n` 。
+
+**示例 1：**
+
+```
+输入：nums = [3,10,5,25,2,8]
+输出：28
+解释：最大运算结果是 5 XOR 25 = 28.
+```
+
+**示例 2：**
+
+```
+输入：nums = [0]
+输出：0
+```
+
+**示例 3：**
+
+```
+输入：nums = [2,4]
+输出：6
+```
+
+**示例 4：**
+
+```
+输入：nums = [8,10,2]
+输出：10
+```
+
+**示例 5：**
+
+```
+输入：nums = [14,70,53,83,49,91,36,80,92,51,66,70]
+输出：127
+```
+
+异或运算的性质
+
+解决这个问题，我们首先需要利用异或运算的一个性质：**如果 a ^ b = c 成立，那么a ^ c = b 与 b ^ c = a 均成立。**
+
+这道题找最大值的思路是这样的：因为两两异或可以得到一个值，在所有的两两异或得到的值中，一定有一个最大值，我们推测这个最大值应该是什么样的？即根据“最大值”的存在性解题（一定存在）。于是有如下思考：
+
+1、二进制下，我们希望一个数尽可能大，即希望越高位上越能够出现“1”，这样这个数就是所求的最大数，这是贪心算法的思想。
+
+2、于是，我们可以从最高位开始，到最低位，首先假设高位是 “1”，把这 n 个数全部遍历一遍，看看这一位是不是真的可以是“1”，否则这一位就得是“0”，判断的依据是上面“异或运算的性质”，即下面的第 3 点；
+
+3、如果 a ^ b = max 成立 ，max 表示当前得到的“最大值”，那么一定有 max ^ b = a 成立。我们可以先假设当前数位上的值为 “1”，再把当前得到的数与这个 n 个数的 前缀（因为是从高位到低位看，所以称为“前缀”）进行异或运算，放在一个哈希表中，再依次把所有 前缀 与这个假设的“最大值”进行异或以后得到的结果放到哈希表里查询一下，如果查得到，就说明这个数位上可以是“1”，否则就只能是 0（看起来很晕，可以看代码理解）。
+
+一种极端的情况是，这 n 个数在某一个数位上全部是 0 ，那么任意两个数异或以后都只能是 0，那么假设当前数位是 1 这件事情就不成立。
+
+4、如何得到前缀，可以用掩码（mask），掩码可以进行如下构造，将掩码与原数依次进行 “与” 运算，就能得到前缀。
+
+```java
+    public int findMaximumXOR(int[] nums) {
+        int mask = 0, res = 0;
+        for (int i = 30; i >= 0; i--) {
+            mask = mask | (1 << i);
+            Set<Integer> set = new HashSet<>();
+            for (int num : nums) {
+                set.add(num & mask);
+            }
+            int targetMax = res | (1 << i);
+            for (int prefix : set) {
+                if (set.contains(targetMax ^ prefix)) {
+                    res = targetMax;
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+```
+
+
+
 ## 【8】其他
 
 ### 1. 快速选择
@@ -2687,7 +3275,7 @@ class Difference {
 
 
 
-### 和最小的K个数对
+### 11. 和最小的K个数对
 
 ```
 输入: nums1 = [1,7,11], nums2 = [2,4,6], k = 3
@@ -2718,49 +3306,6 @@ class Difference {
         return res;
     }
 ```
-
-
-
-### 最大的异或值
-
-异或运算的性质
-
-解决这个问题，我们首先需要利用异或运算的一个性质：**如果 a ^ b = c 成立，那么a ^ c = b 与 b ^ c = a 均成立。**
-
-这道题找最大值的思路是这样的：因为两两异或可以得到一个值，在所有的两两异或得到的值中，一定有一个最大值，我们推测这个最大值应该是什么样的？即根据“最大值”的存在性解题（一定存在）。于是有如下思考：
-
-1、二进制下，我们希望一个数尽可能大，即希望越高位上越能够出现“1”，这样这个数就是所求的最大数，这是贪心算法的思想。
-
-2、于是，我们可以从最高位开始，到最低位，首先假设高位是 “1”，把这 n 个数全部遍历一遍，看看这一位是不是真的可以是“1”，否则这一位就得是“0”，判断的依据是上面“异或运算的性质”，即下面的第 3 点；
-
-3、如果 a ^ b = max 成立 ，max 表示当前得到的“最大值”，那么一定有 max ^ b = a 成立。我们可以先假设当前数位上的值为 “1”，再把当前得到的数与这个 n 个数的 前缀（因为是从高位到低位看，所以称为“前缀”）进行异或运算，放在一个哈希表中，再依次把所有 前缀 与这个假设的“最大值”进行异或以后得到的结果放到哈希表里查询一下，如果查得到，就说明这个数位上可以是“1”，否则就只能是 0（看起来很晕，可以看代码理解）。
-
-一种极端的情况是，这 n 个数在某一个数位上全部是 0 ，那么任意两个数异或以后都只能是 0，那么假设当前数位是 1 这件事情就不成立。
-
-4、如何得到前缀，可以用掩码（mask），掩码可以进行如下构造，将掩码与原数依次进行 “与” 运算，就能得到前缀。
-
-```java
-    public int findMaximumXOR(int[] nums) {
-        int mask = 0, res = 0;
-        for (int i = 30; i >= 0; i--) {
-            mask = mask | (1 << i);
-            Set<Integer> set = new HashSet<>();
-            for (int num : nums) {
-                set.add(num & mask);
-            }
-            int targetMax = res | (1 << i);
-            for (int prefix : set) {
-                if (set.contains(targetMax ^ prefix)) {
-                    res = targetMax;
-                    break;
-                }
-            }
-        }
-        return res;
-    }
-```
-
-
 
 
 
@@ -3411,7 +3956,7 @@ class Solution {
 
 
 
-### 排序链表
+### 8. 排序链表
 
 归并排序版本
 
@@ -3610,7 +4155,7 @@ class Solution {
 **示例 1：**
 
 ![img](https://assets.leetcode.com/uploads/2019/01/19/example_1_before_65p.jpg)
- 
+
 
 ```
 输入：head = [3,4,1], insertVal = 2
@@ -3724,6 +4269,66 @@ class Solution {
         }
         return last;
     }
+}
+```
+
+
+
+### 13. 合并K个有序链表
+
+给定一个链表数组，每个链表都已经按升序排列。
+
+请将所有链表合并到一个升序链表中，返回合并后的链表。
+
+**示例 1：**
+
+```
+输入：lists = [[1,4,5],[1,3,4],[2,6]]
+输出：[1,1,2,3,4,4,5,6]
+解释：链表数组如下：
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+将它们合并到一个有序链表中得到。
+1->1->2->3->4->4->5->6
+```
+
+**示例 2：**
+
+```
+输入：lists = []
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：lists = [[]]
+输出：[]
+```
+
+**代码：**
+
+```java
+public ListNode mergeKLists(ListNode[] lists) {
+    PriorityQueue<ListNode> queue = new PriorityQueue<>((o1, o2) -> o1.val - o2.val);
+    for (ListNode node : lists) {
+        if (node != null)
+            queue.offer(node);
+    }
+    ListNode dummyNode = new ListNode(-1);
+    ListNode pointer = dummyNode;
+    while (!queue.isEmpty()) {
+        ListNode minNode = queue.poll();
+        pointer.next = minNode;
+        minNode = minNode.next;
+        pointer = pointer.next;
+        if (minNode != null)
+            queue.offer(minNode);
+    }
+    return dummyNode.next;
 }
 ```
 
@@ -4606,7 +5211,7 @@ class Solution {
 
 
 
-### 最少回文分割
+### 18. 最少回文分割
 
 给定一个字符串 `s`，请将 `s` 分割成一些子串，使每个子串都是回文串。
 
@@ -4680,7 +5285,7 @@ class Solution {
 
 
 
-### 分割所有的回文字符串
+### 19. 分割所有的回文字符串
 
 给定一个字符串 `s` ，请将 `s` 分割成一些子串，使每个子串都是 **回文串** ，返回 s 所有可能的分割方案。
 
@@ -5863,7 +6468,7 @@ class MyHashMap {
 
 
 
-### 二叉搜索树迭代器
+### 7. 二叉搜索树迭代器
 
 迭代法的中序遍历
 
@@ -5892,7 +6497,7 @@ class MyHashMap {
 
 
 
-### Trie树
+### 8. Trie树
 
 ```java
 class Trie {
@@ -6075,7 +6680,7 @@ class RandomizedSet {
 
 
 
-### 日程安排
+### 11. 日程安排
 
 安排不同时间段的任务，又开始时间和结束时间。时间不冲突的往集合添加，时间重叠的不添加到集合里面。
 
@@ -6100,7 +6705,7 @@ class RandomizedSet {
 
 
 
-### 按权重生成随机数
+### 12. 按权重生成随机数
 
 给定一个正整数数组 `w` ，其中 `w[i]` 代表下标 `i` 的权重（下标从 `0` 开始），请写一个函数 `pickIndex` ，它可以随机地获取下标 `i`，选取下标 `i` 的概率与 `w[i]` 成正比。
 
@@ -6469,46 +7074,6 @@ class Solution {
             }
         }
         return maxlength;
-    }
-}
-```
-
-
-
-### 括号生成
-
-数字 `n` 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 **有效的** 括号组合。
-
-这个括号的思路和上一题的正逆向结合法很相似，就是计数左右括号的数量，来生成括号。默认`left = 0, right = 0;`
-
-计算左括号右括号的数量，先左括号匹配，左括号数量够了，再追加右括号。
-
-```java
-class Solution {
-    private List<String> res;
-    public List<String> generateParenthesis(int n) {
-        res = new ArrayList<>();
-        dfs(n, new StringBuilder(), 0, 0);
-        return res;
-    }
-
-    private void dfs(int n, StringBuilder path, int leftNum, int rightNum) {
-        // 1. 条件满足的判断，左右括号计数等于n
-        if (n * 2 == leftNum + rightNum) {
-            res.add(path.toString());
-        }
-        // 2. 开始回溯生成（
-        if (leftNum < n) {
-            path.append('(');
-            dfs(n, path, leftNum + 1, rightNum);
-            path.deleteCharAt(path.length() - 1);
-        }
-        // 3. 开始回溯生成符合数量的右括号），条件是右括号要小于左括号的时候才生成
-        if (rightNum < leftNum) {
-            path.append(')');
-            dfs(n, path, leftNum, rightNum + 1);
-            path.deleteCharAt(path.length() - 1);
-        }
     }
 }
 ```
@@ -6930,6 +7495,53 @@ private void dfs(TreeNode root, List<List<Integer>> res, int target, Deque<Integ
 
 
 
+### 8. 路径总和（输出总数）
+
+给定一个二叉树的根节点 `root` ，和一个整数 `targetSum` ，求该二叉树里节点值之和等于 `targetSum` 的 **路径** 的数目。
+
+**路径** 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/04/09/pathsum3-1-tree.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [10,5,-3,3,2,null,11,3,-2,null,1], targetSum = 8
+输出：3
+解释：和等于 8 的路径有 3 条，如图所示。
+```
+
+**示例 2：**
+
+```
+输入：root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+输出：3
+```
+
+**代码：**
+
+```java
+public int pathSum(TreeNode root, int targetSum) {
+    if (root == null)
+        return 0;
+    int res = dfs(root, targetSum);
+    res += pathSum(root.left, targetSum);
+    res += pathSum(root.right, targetSum);
+    return res;
+}
+
+private int dfs(TreeNode root, int targetSum) {
+    int res = 0;
+    if (root == null)
+        return 0;
+    if (targetSum == root.val)
+        res++;
+    return res + dfs(root.left, targetSum - root.val) + dfs(root.right, targetSum - root.val);
+}
+```
+
+
+
 ### 删除二叉搜索树中的节点
 
 除某节点，可以用左子树的最大值或者右子树的最小值替换，这里选右子树最小值替换要删除的节点
@@ -7290,7 +7902,7 @@ BFS版本的好理解
 
 
 
-### 二叉树剪枝
+### 19. 二叉树剪枝
 
 ```java
     public TreeNode pruneTree(TreeNode root) {
@@ -7315,7 +7927,7 @@ BFS版本的好理解
 
 
 
-### 求根节点到叶节点数字之和
+### 20. 求根节点到叶节点数字之和
 
 递归法
 
@@ -7367,7 +7979,7 @@ BFS版本的好理解
 
 
 
-### 二叉树的最大路径和
+### 21. 二叉树的最大路径和
 
 思想：计算左右子树给根节点的最大贡献值，如果左子树或右子树给根节点的贡献值为负数，那么就将左右子树的贡献值设置为0。
 
@@ -7381,7 +7993,7 @@ BFS版本的好理解
     }
 
     // 计算左右子树的贡献值
-    private int myDFS(TreeNode root) {
+    private int dfs(TreeNode root) {
         if (root == null)
             return 0;
         int leftSum = Math.max(dfs(root.left), 0);
@@ -7393,7 +8005,29 @@ BFS版本的好理解
 
 
 
-### 展平二叉搜索树
+### 22. 展平二叉搜索树
+
+给你一棵二叉搜索树，请 **按中序遍历** 将其重新排列为一棵递增顺序搜索树，使树中最左边的节点成为树的根节点，并且每个节点没有左子节点，只有一个右子节点。
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/11/17/ex1.jpg" alt="img" style="zoom: 50%;" />
+
+```
+输入：root = [5,3,6,2,4,null,8,1,null,null,null,7,9]
+输出：[1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2020/11/17/ex2.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [5,1,7]
+输出：[1,null,5,null,7]
+```
+
+**代码：**
 
 先建立一个哑节点，然后中序遍历的过程中，将该节点插入到哑节点中。
 
@@ -7423,9 +8057,25 @@ class Solution {
 
 
 
-### 二叉树的两数之和
+### 23. 二叉树的两数之和
 
  得借助`O(n)`的空间复杂度`set`或`list`。然后`DFS`或者`BFS`搜索，判断当前节点值是否在辅助空间里，在就返回，不在就将该节点插入到辅助空间里。
+
+```java
+public boolean findTarget(TreeNode root, int k) {
+    Set<Integer> set = new HashSet<>();
+    return find(root, k, set);
+}
+
+private boolean find(TreeNode root, int k, Set<Integer> set) {
+    if (root == null)
+        return false;
+    if (set.contains(k - root.val))
+        return true;
+    set.add(root.val);
+    return find(root.left, k, set) || find(root.right, k, set);
+}
+```
 
 
 
@@ -8000,187 +8650,7 @@ bfs
 
 
 
-# 八. 背包问题
-
-### 01背包
-
-```java
-/**
- * 0-1's Knapsack Problem
- */
-public class knapsack_0_1 {
-
-    /**
-     * 0，1背包问题的动态规划解法
-     * @param N
-     * @param W
-     * @param wgt
-     * @param val
-     * @return
-     */
-    public int solutionForDP(int N, int W, int[] wgt, int[] val) {
-        int[][] dp = new int[N + 1][W + 1];
-        for (int i = 1; i <= N; i++) {
-            for (int w = 1; w <= W; w++) {
-                if (w - wgt[i - 1] < 0) {
-                    dp[i][w] = dp[i - 1][w];
-                } else {
-                    dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - wgt[i - 1]] + val[i - 1]);
-                }
-            }
-        }
-        return dp[N][W];
-    }
-
-    public static void main(String[] args) {
-        knapsack_0_1 solution = new knapsack_0_1();
-        System.out.println(solution.solutionForDP(3, 4, new int[]{2, 1, 3}, new int[]{4, 2, 3}));
-    }
-}
-
-```
-
-
-
-### 完全背包
-
-```c++
-#include<iostream>
-using namespace std;
-const int N = 1010;
-int f[N][N];
-int v[N],w[N];
-int main()
-{
-    int n,m;
-    cin>>n>>m;
-    for(int i = 1 ; i <= n ;i ++)
-    {
-        cin>>v[i]>>w[i];
-    }
-
-    for(int i = 1 ; i<=n ;i++)
-    for(int j = 0 ; j<=m ;j++)
-    {
-        for(int k = 0 ; k*v[i]<=j ; k++)
-            f[i][j] = max(f[i][j],f[i-1][j-k*v[i]]+k*w[i]);
-    }
-
-    cout<<f[n][m]<<endl;
-}
-
-```
-
-
-
-### 一和零
-
-给你一个二进制字符串数组 strs 和两个整数 m 和 n 。
-
-请你找出并返回 strs 的最大子集的长度，该子集中 最多 有 m 个 0 和 n 个 1 。
-
-如果 x 的所有元素也是 y 的元素，集合 x 是集合 y 的 子集 。
-
-示例 1：
-
-```
-输入：strs = ["10", "0001", "111001", "1", "0"], m = 5, n = 3
-输出：4
-解释：最多有 5 个 0 和 3 个 1 的最大子集是 {"10","0001","1","0"} ，因此答案是 4 。
-其他满足题意但较小的子集包括 {"0001","1"} 和 {"10","1","0"} 。{"111001"} 不满足题意，因为它含 4 个 1 ，大于 n 的值 3 。
-```
-
-
-
-```java
-class Solution {
-    public int findMaxForm(String[] strs, int m, int n) {
-        int[][][] dp = new int[strs.length + 1][m + 1][n + 1];
-        for (int i = 1; i <= strs.length; i++) {
-            int[] zerosAndOnes = getZerosAndOnes(strs[i - 1]);
-            int zeros = zerosAndOnes[0], ones = zerosAndOnes[1];
-            for (int j = 0; j <= m; j++) {
-                for (int k = 0; k <= n; k++) {
-                    dp[i][j][k] = dp[i - 1][j][k];
-                    if (j >= zeros && k >= ones)
-                        dp[i][j][k] = Math.max(dp[i][j][k], dp[i - 1][j - zeros][k - ones] + 1);
-                }
-            }
-        }
-        return dp[strs.length][m][n];
-    }
-
-    private int[] getZerosAndOnes(String bin) {
-        int[] res = new int[2];
-        for (int i = 0; i < bin.length(); i++) {
-            res[bin.charAt(i) - '0']++;
-        }
-        return res;
-    }
-} 
-```
-
-空间压缩版本
-
-```java
-class Solution {
-    public int findMaxForm(String[] strs, int m, int n) {
-        int[][] dp = new int[m + 1][n + 1];
-        for (int i = 1; i <= strs.length; i++) {
-            int[] zerosAndOnes = getZerosAndOnes(strs[i - 1]);
-            int zeros = zerosAndOnes[0], ones = zerosAndOnes[1];
-            for (int j = m; j >= zeros; j--) {
-                for (int k = n; k >= ones; k--) {
-                    dp[j][k] = Math.max(dp[j][k], dp[j - zeros][k - ones] + 1);
-                }
-            }
-        }
-        return dp[m][n];
-    }
-
-    private int[] getZerosAndOnes(String bin) {
-        int[] res = new int[2];
-        for (int i = 0; i < bin.length(); i++) {
-            res[bin.charAt(i) - '0']++;
-        }
-        return res;
-    }
-}
-```
-
-
-
-### 分割等和子集
-
-`dp[i][j]`的意义是判断能否从`0-i`个数字中选出和为`j`的组合。所以`dp`的选择就是选还是不选。
-
-```java
-    public boolean canPartition(int[] nums) {
-        int sum = 0;
-        for (int num : nums)
-            sum += num;
-        if (sum % 2 != 0)
-            return false;
-        sum /= 2;
-        boolean[][] dp = new boolean[nums.length + 1][sum + 1];
-        // 当 j 等于 0 时，即背包容量为空，只要不选择物品就可以，所以 f(i, 0) 为 true。
-        for (int i = 1; i <= nums.length; i++)
-            dp[i][0] = true;
-        for (int i = 1; i <= nums.length; i++) {
-            for (int j = 1; j <= sum; j++) {
-                if (j - nums[i - 1] < 0)
-                    dp[i][j] = dp[i - 1][j];
-                else
-                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i - 1]];
-            }
-        }
-        return dp[nums.length][sum];
-    }
-```
-
-
-
-# 九. 数学
+# 八. 数学
 
 ### 快速幂
 
@@ -8732,7 +9202,7 @@ public class CountPrime {
 
 
 
-# 十. 动态规划
+# 九. 动态规划
 
 ### 1. 最大连续子数组和
 
@@ -9116,7 +9586,7 @@ public int nthUglyNumber(int n) {
 
 
 
-### 使用最小花费爬楼梯
+### 9. 使用最小花费爬楼梯
 
 给你一个整数数组 cost ，其中 cost[i] 是从楼梯第 i 个台阶向上爬需要支付的费用。一旦你支付此费用，即可选择向上爬一个或者两个台阶。你可以选择从下标为 0 或下标为 1 的台阶开始爬楼梯。请你计算并返回达到楼梯顶部的最低花费。
 
@@ -9142,7 +9612,83 @@ public int nthUglyNumber(int n) {
 
 
 
-### 最长的斐波那契子序列的长度
+### 10. 粉刷房子
+
+假如有一排房子，共 `n` 个，每个房子可以被粉刷成红色、蓝色或者绿色这三种颜色中的一种，你需要粉刷所有的房子并且使其相邻的两个房子颜色不能相同。
+
+当然，因为市场上不同颜色油漆的价格不同，所以房子粉刷成不同颜色的花费成本也是不同的。每个房子粉刷成不同颜色的花费是以一个 `n x 3` 的正整数矩阵 `costs` 来表示的。
+
+例如，`costs[0][0]` 表示第 0 号房子粉刷成红色的成本花费；`costs[1][2]` 表示第 1 号房子粉刷成绿色的花费，以此类推。
+
+请计算出粉刷完所有房子最少的花费成本。
+
+ 
+
+**示例 1：**
+
+```
+输入: costs = [[17,2,17],[16,16,5],[14,3,19]]
+输出: 10
+解释: 将 0 号房子粉刷成蓝色，1 号房子粉刷成绿色，2 号房子粉刷成蓝色。
+     最少花费: 2 + 5 + 3 = 10。
+```
+
+**示例 2：**
+
+```
+输入: costs = [[7,6,2]]
+输出: 2
+```
+
+**代码：**
+
+```java
+public int minCost(int[][] costs) {
+    int red = costs[0][0], blue = costs[0][1], green = costs[0][2];
+    int newRed, newBlue, newGreen;
+    for (int i = 1; i < costs.length; i++) {
+        newRed = Math.min(blue, green) + costs[i][0];
+        newBlue = Math.min(red, green) + costs[i][1];
+        newGreen = Math.min(red, blue) + costs[i][2];
+        red = newRed;
+        blue = newBlue;
+        green = newGreen;
+    }
+    return Math.min(Math.min(red, blue), green);
+}
+```
+
+
+
+### 11. 最长的斐波那契子序列的长度
+
+如果序列 `X_1, X_2, ..., X_n` 满足下列条件，就说它是 *斐波那契式* 的：
+
+- `n >= 3`
+- 对于所有 `i + 2 <= n`，都有 `X_i + X_{i+1} = X_{i+2}`
+
+给定一个**严格递增**的正整数数组形成序列 `arr` ，找到 `arr` 中最长的斐波那契式的子序列的长度。如果一个不存在，返回 0 。
+
+*（回想一下，子序列是从原序列 `arr` 中派生出来的，它从 `arr` 中删掉任意数量的元素（也可以不删），而不改变其余元素的顺序。例如， `[3, 5, 8]` 是 `[3, 4, 5, 6, 7, 8]` 的一个子序列）*
+
+**示例 1：**
+
+```
+输入: arr = [1,2,3,4,
+5,6,7,8]
+输出: 5
+解释: 最长的斐波那契式子序列为 [1,2,3,5,8] 。
+```
+
+**示例 2：**
+
+```
+输入: arr = [1,3,7,11,12,14,18]
+输出: 3
+解释: 最长的斐波那契式子序列有 [1,11,12]、[3,11,14] 以及 [7,11,18] 。
+```
+
+**代码：**
 
 将斐波那契式的子序列中的两个连续项 `A[i], A[j]` 视为单个结点 `(i, j)`，整个子序列是这些连续结点之间的路径。
 
@@ -9177,7 +9723,45 @@ public int nthUglyNumber(int n) {
 
 
 
-### 交叉字符串
+### 12. 交叉字符串
+
+给定三个字符串 `s1`、`s2`、`s3`，请判断 `s3` 能不能由 `s1` 和 `s2` **交织（交错）** 组成。
+
+两个字符串 `s` 和 `t` **交织** 的定义与过程如下，其中每个字符串都会被分割成若干 **非空** 子字符串：
+
+- `s = s1 + s2 + ... + sn`
+- `t = t1 + t2 + ... + tm`
+- `|n - m| <= 1`
+- **交织** 是 `s1 + t1 + s2 + t2 + s3 + t3 + ...` 或者 `t1 + s1 + t2 + s2 + t3 + s3 + ...`
+
+**提示：**`a + b` 意味着字符串 `a` 和 `b` 连接。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/09/02/interleave.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"
+输出：true
+```
+
+**示例 2：**
+
+```
+输入：s1 = "aabcc", s2 = "dbbca", s3 = "aadbbbaccc"
+输出：false
+```
+
+**示例 3：**
+
+```
+输入：s1 = "", s2 = "", s3 = ""
+输出：true
+```
+
+**代码：**
 
 ```java
     public boolean isInterleave(String s1, String s2, String s3) {
@@ -9203,7 +9787,7 @@ public int nthUglyNumber(int n) {
 
 
 
-### 不同的子序列
+### 13. 不同的子序列
 
 **示例 1：**
 
@@ -9248,7 +9832,37 @@ rabbbit
 
 
 
-### 目标和
+### 14. 目标和
+
+给定一个正整数数组 `nums` 和一个整数 `target` 。
+
+向数组中的每个整数前添加 `'+'` 或 `'-'` ，然后串联起所有整数，可以构造一个 **表达式** ：
+
+- 例如，`nums = [2, 1]` ，可以在 `2` 之前添加 `'+'` ，在 `1` 之前添加 `'-'` ，然后串联起来得到表达式 `"+2-1"` 。
+
+返回可以通过上述方法构造的、运算结果等于 `target` 的不同 **表达式** 的数目。
+
+**示例 1：**
+
+```
+输入：nums = [1,1,1,1,1], target = 3
+输出：5
+解释：一共有 5 种方法让最终目标和为 3 。
+-1 + 1 + 1 + 1 + 1 = 3
++1 - 1 + 1 + 1 + 1 = 3
++1 + 1 - 1 + 1 + 1 = 3
++1 + 1 + 1 - 1 + 1 = 3
++1 + 1 + 1 + 1 - 1 = 3
+```
+
+**示例 2：**
+
+```
+输入：nums = [1], target = 1
+输出：1
+```
+
+**代码：**
 
 递归
 
@@ -9296,7 +9910,216 @@ class Solution {
 
 
 
-### 最少的硬币数目
+### 15. 01背包
+
+```java
+/**
+ * 0-1's Knapsack Problem
+ */
+public class knapsack_0_1 {
+
+    /**
+     * 0，1背包问题的动态规划解法
+     * @param N
+     * @param W
+     * @param wgt
+     * @param val
+     * @return
+     */
+    public int solutionForDP(int N, int W, int[] wgt, int[] val) {
+        int[][] dp = new int[N + 1][W + 1];
+        for (int i = 1; i <= N; i++) {
+            for (int w = 1; w <= W; w++) {
+                if (w - wgt[i - 1] < 0) {
+                    dp[i][w] = dp[i - 1][w];
+                } else {
+                    dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - wgt[i - 1]] + val[i - 1]);
+                }
+            }
+        }
+        return dp[N][W];
+    }
+
+    public static void main(String[] args) {
+        knapsack_0_1 solution = new knapsack_0_1();
+        System.out.println(solution.solutionForDP(3, 4, new int[]{2, 1, 3}, new int[]{4, 2, 3}));
+    }
+}
+
+```
+
+
+
+### 一和零
+
+给你一个二进制字符串数组 strs 和两个整数 m 和 n 。
+
+请你找出并返回 strs 的最大子集的长度，该子集中 最多 有 m 个 0 和 n 个 1 。
+
+如果 x 的所有元素也是 y 的元素，集合 x 是集合 y 的 子集 。
+
+示例 1：
+
+```
+输入：strs = ["10", "0001", "111001", "1", "0"], m = 5, n = 3
+输出：4
+解释：最多有 5 个 0 和 3 个 1 的最大子集是 {"10","0001","1","0"} ，因此答案是 4 。
+其他满足题意但较小的子集包括 {"0001","1"} 和 {"10","1","0"} 。{"111001"} 不满足题意，因为它含 4 个 1 ，大于 n 的值 3 。
+```
+
+
+
+```java
+class Solution {
+    public int findMaxForm(String[] strs, int m, int n) {
+        int[][][] dp = new int[strs.length + 1][m + 1][n + 1];
+        for (int i = 1; i <= strs.length; i++) {
+            int[] zerosAndOnes = getZerosAndOnes(strs[i - 1]);
+            int zeros = zerosAndOnes[0], ones = zerosAndOnes[1];
+            for (int j = 0; j <= m; j++) {
+                for (int k = 0; k <= n; k++) {
+                    dp[i][j][k] = dp[i - 1][j][k];
+                    if (j >= zeros && k >= ones)
+                        dp[i][j][k] = Math.max(dp[i][j][k], dp[i - 1][j - zeros][k - ones] + 1);
+                }
+            }
+        }
+        return dp[strs.length][m][n];
+    }
+
+    private int[] getZerosAndOnes(String bin) {
+        int[] res = new int[2];
+        for (int i = 0; i < bin.length(); i++) {
+            res[bin.charAt(i) - '0']++;
+        }
+        return res;
+    }
+} 
+```
+
+空间压缩版本
+
+```java
+class Solution {
+    public int findMaxForm(String[] strs, int m, int n) {
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= strs.length; i++) {
+            int[] zerosAndOnes = getZerosAndOnes(strs[i - 1]);
+            int zeros = zerosAndOnes[0], ones = zerosAndOnes[1];
+            for (int j = m; j >= zeros; j--) {
+                for (int k = n; k >= ones; k--) {
+                    dp[j][k] = Math.max(dp[j][k], dp[j - zeros][k - ones] + 1);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    private int[] getZerosAndOnes(String bin) {
+        int[] res = new int[2];
+        for (int i = 0; i < bin.length(); i++) {
+            res[bin.charAt(i) - '0']++;
+        }
+        return res;
+    }
+}
+```
+
+
+
+### 17. 分割等和子集
+
+给定一个非空的正整数数组 `nums` ，请判断能否将这些数字分成元素和相等的两部分。
+
+**示例 1：**
+
+```
+输入：nums = [1,5,11,5]
+输出：true
+解释：nums 可以分割成 [1, 5, 5] 和 [11] 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,3,5]
+输出：false
+解释：nums 不可以分为和相等的两部分
+```
+
+**代码：**
+
+`dp[i][j]`的意义是判断能否从`0-i`个数字中选出和为`j`的组合。所以`dp`的选择就是选还是不选。
+
+```java
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        for (int num : nums)
+            sum += num;
+        if (sum % 2 != 0)
+            return false;
+        sum /= 2;
+        boolean[][] dp = new boolean[nums.length + 1][sum + 1];
+        // 当 j 等于 0 时，即背包容量为空，只要不选择物品就可以，所以 f(i, 0) 为 true。
+        for (int i = 1; i <= nums.length; i++)
+            dp[i][0] = true;
+        for (int i = 1; i <= nums.length; i++) {
+            for (int j = 1; j <= sum; j++) {
+                if (j - nums[i - 1] < 0)
+                    dp[i][j] = dp[i - 1][j];
+                else
+                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i - 1]];
+            }
+        }
+        return dp[nums.length][sum];
+    }
+```
+
+
+
+### 18. 最少的硬币数目
+
+给定不同面额的硬币 `coins` 和一个总金额 `amount`。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 `-1`。
+
+你可以认为每种硬币的数量是无限的。
+
+**示例 1：**
+
+```
+输入：coins = [1, 2, 5], amount = 11
+输出：3 
+解释：11 = 5 + 5 + 1
+```
+
+**示例 2：**
+
+```
+输入：coins = [2], amount = 3
+输出：-1
+```
+
+**示例 3：**
+
+```
+输入：coins = [1], amount = 0
+输出：0
+```
+
+**示例 4：**
+
+```
+输入：coins = [1], amount = 1
+输出：1
+```
+
+**示例 5：**
+
+```
+输入：coins = [1], amount = 2
+输出：2
+```
+
+**代码：**
 
 ```java
     public int coinChange(int[] coins, int amount) {
@@ -9314,7 +10137,7 @@ class Solution {
 
 
 
-### 将字符串翻转到单调递增
+### 19. 将字符串翻转到单调递增
 
 如果一个由 `'0'` 和 `'1'` 组成的字符串，是以一些 `'0'`（可能没有 `'0'`）后面跟着一些 `'1'`（也可能没有 `'1'`）的形式组成的，那么该字符串是 **单调递增** 的。
 
@@ -9467,7 +10290,7 @@ dp[i][1] = min(dp[i-1][1], dp[i-1][0]) + (s.charAt(i)=='1'?0:1)；
 
 
 
-# 十一. 回溯
+# 十. 回溯
 
 ### 1. 组合
 
@@ -9746,17 +10569,97 @@ public int combinationSum4(int[] nums, int target) {
 
 
 
-### 全排列
+### 6. 子集
+
+给你一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的子集（幂集）。
+
+解集 **不能** 包含重复的子集。你可以按 **任意顺序** 返回解集。
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3]
+输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+```
+
+**示例 2：**
+
+```
+输入：nums = [0]
+输出：[[],[0]]
+```
+
+**代码：**
+
+```java
+    private void dfs(int[] nums, int index, List<Integer> path) {
+        if (!list.contains(path)) {
+            list.add(new ArrayList<>(path));
+        }
+        for (int i = index; i < nums.length; i++) {
+            path.add(nums[i]);
+            dfs(nums, i + 1, path);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    public List<List<Integer>> subsets(int[] nums) {
+        list = new ArrayList<>();
+        list.add(new ArrayList<>());
+        dfs(nums, 0, new LinkedList<>());
+        return list;
+    }
+```
+
+
+
+### 7. 全排列
 
 分两种情况：
 
 - 数组不重复元素的全排列
+
+```java
+    private List<List<Integer>> res;
+
+    private List<List<Integer>> permute(int[] nums) {
+        res = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        dfs(nums, 0, path);
+        return res;
+    }
+
+    private void dfs(int[] nums, int index, List<Integer> path) {
+        if (path.size() == nums.length) {
+            res.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = index; i < nums.length; i++) {
+            if (path.contains(nums[i]))
+                continue;
+            path.add(nums[i]);
+            dfs(nums, 0, path);
+            path.remove(path.size() - 1);
+        }
+    }
+```
+
 - 数组中有重复元素的全排列（涉及重复元素的，都需要**排序**解决去重，比较`nums[i] == nums[i - 1]`），此外由于重复元素的全排列问题，不能单单判断数字是否在path中决定是否添加，要使用下标判断，因为下标是唯一的。
 
 ```java
-private List<List<Integer>> res;
-private boolean[] visited;
-private void dfs(int[] nums, LinkedList<Integer> path) {
+    private List<List<Integer>> res;
+    private boolean[] visited;
+
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        res = new ArrayList<>();
+        visited = new boolean[nums.length];
+        Arrays.sort(nums);
+        dfs(nums, new LinkedList<Integer>());
+        return res;
+    }
+
+
+    private void dfs(int[] nums, LinkedList<Integer> path) {
     if (path.size() == nums.length) {
         res.add(new ArrayList<>(path));
         return;
@@ -9772,6 +10675,62 @@ private void dfs(int[] nums, LinkedList<Integer> path) {
        dfs(nums, path);
        path.removeLast();
        visited[i] = false;
+    }
+}
+```
+
+
+
+### 8. 括号生成
+
+正整数 `n` 代表生成括号的对数，请设计一个函数，用于能够生成所有可能的并且 **有效的** 括号组合。
+
+**示例 1：**
+
+```
+输入：n = 3
+输出：["((()))","(()())","(())()","()(())","()()()"]
+```
+
+**示例 2：**
+
+```
+输入：n = 1
+输出：["()"]
+```
+
+数字 `n` 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 **有效的** 括号组合。
+
+这个括号的思路和上一题的正逆向结合法很相似，就是计数左右括号的数量，来生成括号。默认`left = 0, right = 0;`
+
+计算左括号右括号的数量，先左括号匹配，左括号数量够了，再追加右括号。
+
+```java
+class Solution {
+    private List<String> res;
+    public List<String> generateParenthesis(int n) {
+        res = new ArrayList<>();
+        dfs(n, new StringBuilder(), 0, 0);
+        return res;
+    }
+
+    private void dfs(int n, StringBuilder path, int leftNum, int rightNum) {
+        // 1. 条件满足的判断，左右括号计数等于n
+        if (n * 2 == leftNum + rightNum) {
+            res.add(path.toString());
+        }
+        // 2. 开始回溯生成（
+        if (leftNum < n) {
+            path.append('(');
+            dfs(n, path, leftNum + 1, rightNum);
+            path.deleteCharAt(path.length() - 1);
+        }
+        // 3. 开始回溯生成符合数量的右括号），条件是右括号要小于左括号的时候才生成
+        if (rightNum < leftNum) {
+            path.append(')');
+            dfs(n, path, leftNum, rightNum + 1);
+            path.deleteCharAt(path.length() - 1);
+        }
     }
 }
 ```
@@ -9828,7 +10787,7 @@ class Solution {
 
 
 
-### 1. N皇后
+### 10. N皇后
 
 列表回溯法
 
@@ -9956,7 +10915,7 @@ class Solution {
 
 
 
-### *复原IP地址
+### 12. 复原IP地址
 
 **输入：**s = "25525511135"
 
@@ -9976,7 +10935,7 @@ class Solution {
 
     private void dfs(String s, int segStart, int segId) {
         if (segId == 4) {
-            if (segStart == s.length()) {
+            if (segStart == s.length()) { // 如果已经是第4段了，并且遍历长度也到了末尾，那么说明这是一种情况
                 StringBuilder stringBuilder = new StringBuilder();
                 for (int i = 0; i < 3; i++) {
                     stringBuilder.append(segments[i]).append(".");
@@ -9987,7 +10946,7 @@ class Solution {
         }
         if (segStart == s.length())
             return;
-        if (s.charAt(segStart) == '0') {
+        if (s.charAt(segStart) == '0') { // 如果遇到了0，那么这一段也只能是0
             segments[segId] = 0;
             dfs(s, segStart + 1, segId + 1);
         }
@@ -10054,7 +11013,7 @@ class Solution {
 
 
 
-# 十二. 排序算法
+# 十一. 排序算法
 
 ## 【1】基础算法
 
@@ -10401,291 +11360,3 @@ public boolean isStraight(int[] nums) {
 
 
 
-# 十三. 位运算
-
-### 1. 判定字符是否唯一
-
-实现一个算法，确定一个字符串 `s` 的所有字符是否全都不同。
-
-**示例 1：**
-
-```
-输入: s = "leetcode"
-输出: false 
-```
-
-**示例 2：**
-
-```
-输入: s = "abc"
-输出: true
-```
-
-**限制：**
-
-- `0 <= len(s) <= 100 `
-- `s[i]`仅包含小写字母
-
-```java
-class IsUniqueSolution {
-    public static boolean isUnique(String astr) {
-        int bitmap = 0;
-        for (int i = 0; i < astr.length(); i++) {
-            int index = astr.charAt(i) - 'a';
-            int bit = 1 << index;
-            if ((bitmap & bit) != 0)
-                return false;
-            bitmap = bitmap | bit;
-        }
-        return true;
-    }
-}
-```
-
-
-
-### 2. 只出现一次的数字I
-
-一个整型数组 `nums` 里除两个数字之外，其他数字都出现了两次。请写程序找出这两个只出现一次的数字。
-
-```
-示例 1：
-输入：nums = [4,1,4,6]
-输出：[1,6] 或 [6,1]
-示例 2：
-输入：nums = [1,2,10,4,1,4,3,3]
-输出：[2,10] 或 [10,2]
-```
-
-如果是在一个数组找只出现一次的数，就可以将所有的数进行`^`（异或）运算。在数组中寻找两个只出现一次的数，需要对数组进行分类，相同的数进行分类一定在同一个内别里。`&`运算可以用来区某一位数，列如区分奇偶数`num & 1`。难点是如何将只出现一次的两个数分开，**如果两个数不相同那么他们的二进制数至少有一位0和1不相同， 可以用一个标记数来标记那一位将两个数分开，取那个数能取的最小值，然后将`nums`数组用标记数分开进行`^`运算。**
-
-　　　**num1: 101110   110  1111**
-
-　　　**num2:** **111110   001  1001**
-
-**num1^num2: 010000  111  0110** 
-
-**可行的mask:  010000   001  0010**
-
-**代码**：
-
-```java
-public int[] singleNumbers(int[] nums) {
-    int xorAll = 0;
-    int resA = 0, resB = 0;
-    for (int num : nums) {
-        xorAll ^= num;
-    }
-    int mask = 1;
-    while ((mask & xorAll) == 0)
-        mask <<= 1;
-    for (int num : nums) {
-        if ((num & mask) == 0)
-            resA ^= num;
-        else
-            resB ^= num;
-    }
-    return new int[]{resA, resB};
-}
-```
-
-
-
-### 3. 只出现一次的数字II
-
-在一个数组 `nums` 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
-
-```
-示例 1： 
-输入：nums = [3,4,3,3]
-输出：4
-
-
-示例 2： 
-输入：nums = [9,1,7,9,7,9,7]
-输出：1 
-```
-
-因此，统计所有数字的各二进制位中 1 的出现次数，并对 3 求余，结果则为只出现一次的数字。
-
-<img src="https://pic.leetcode-cn.com/28f2379be5beccb877c8f1586d8673a256594e0fc45422b03773b8d4c8418825-Picture1.png" alt="Picture1.png" style="zoom:50%;" />
-
-**代码**：
-
-```java
-public int singleNumber(int[] nums) {
-    int res = 0;
-    int[] digits = new int[32];
-    for (int num : nums) {
-        int mask = 1;
-        for (int i = 31; i >= 0; --i) {
-            int bit = num & mask;
-            if (bit != 0)
-                digits[i] += 1;
-            mask <<= 1;
-        }
-    }
-    for (int i = 0; i < 32; i++) {
-        res <<= 1;
-        res += digits[i] % 3 == 0 ? 0 : 1;
-    }
-    return res;
-}
-```
-
-
-
-### 4. 不用加减乘除实现加法
-
-用**与运算实现进位**，**异或运算实现加法**。直到算到进位为0即可。**无进位和** 与 **异或运算** 规律相同，**进位** 和 **与运算** 规律相同（并需左移一位）
-
-```java
-class Solution {
-    public int add(int a, int b) {
-        int carry = 0;
-        while (b != 0) {
-            carry = (a & b) << 1;
-            a ^= b;
-            b = carry;
-        
-        }
-        return a;
-    }
-}
-```
-
-
-
-### 5. 格雷码
-
-https://zhuanlan.zhihu.com/p/29254973
-
-属于位运算把，常规二进制转化为格雷码编码的公式为：`n ^ (n >> 1)`
-
-```java
-class Solution {
-    private List<Integer> res;
-    public List<Integer> grayCode(int n) {
-        res = new ArrayList<>();
-        for (int i = 0; i < Math.pow(2, n); i++) {
-            res.add(getGrayCode(i));
-        }
-        return res;
-    }
-
-    private Integer getGrayCode(int n) {
-        return n ^ (n >> 1);
-    }
-}
-```
-
-
-
-### 6. 二进制中1的个数
-
-给你一个整数 `n` ，对于 `0 <= i <= n` 中的每个 `i` ，计算其二进制表示中 **`1` 的个数** ，返回一个长度为 `n + 1` 的数组 `ans` 作为答案。
-
-**示例 1：**
-
-```
-输入：n = 2
-输出：[0,1,1]
-解释：
-0 --> 0
-1 --> 1
-2 --> 10
-```
-
-**示例 2：**
-
-```
-输入：n = 5
-输出：[0,1,1,2,1,2]
-解释：
-0 --> 0
-1 --> 1
-2 --> 10
-3 --> 11
-4 --> 100
-5 --> 101
-```
-
-定义正整数 `x` 的「最低设置位」为 `x`的二进制表示中的最低的`1`所在位。例如，`10` 的二进制表示是 
-$$
-1010_{(2)}
-$$
- ，其最低设置位为 `2`，对应的二进制表示是 
-$$
-10_{(2)}
-$$
-令 
-$$
-y=x~\&~(x-1)
-$$
-，则 `y` 为将 `x` 的最低设置位从 `1`变成 `0`之后的数，显然 
-$$
-0 \le y<x，\textit{bits}[x]=\textit{bits}[y]+1
-$$
-因此对任意正整数 `x`，都有
-$$
-\textit{bits}[x]=\textit{bits}[x~\&~(x-1)]+1
-$$
-遍历从 `1` 到 `n` 的每个正整数 `i`，计算 `bits` 的值。最终得到的数组 `bits` 即为答案。
-
-**代码：**
-
-```java
-public int[] countBits(int n) {
-    int[] res = new int[n + 1];
-    for (int i = 1; i <= n; i++) {
-        res[i] = res[i & (i - 1)] + 1;
-    }
-    return res;
-}
-```
-
-
-
-### 7. 单词长度的最大乘积
-
-给定一个字符串数组 `words`，请计算当两个字符串 `words[i]` 和 `words[j]` 不包含相同字符时，它们长度的乘积的最大值。假设字符串中只包含英语的小写字母。如果没有不包含相同字符的一对字符串，返回 `0`。 
-
-```
-示例 1: 
-输入: words = ["abcw","baz","foo","bar","fxyz","abcdef"]
-输出: 16 
-解释: 这两个单词为 "abcw", "fxyz"。它们不包含相同字符，且长度的乘积最大。 
-
-示例 2: 
-输入: words = ["a","ab","abc","d","cd","bcd","abcd"]
-输出: 4 
-解释: 这两个单词为 "ab", "cd"。 
-
-示例 3: 
-输入: words = ["a","aa","aaa","aaaa"]
-输出: 0 
-解释: 不存在这样的两个单词。
-```
-
-**代码：**
-
-```java
-public int maxProduct(String[] words) {
-    int[] bits = new int[words.length];
-    for (int i = 0; i < words.length; i++) {
-        for (int j = 0; j < words[i].length(); j++) {
-            bits[i] |= 1 << (words[i].charAt(j) - 'a');
-        }
-    }
-    System.out.println(Arrays.toString(bits));
-    int res = 0;
-    for (int i = 0; i < words.length; i++) {
-        for (int j = i + 1; j < words.length; j++) {
-            if ((bits[i] & bits[j]) == 0) {
-                res = Math.max(res, words[i].length() * words[j].length());
-            }
-        }
-    }
-    return res;
-}
-```
