@@ -5,6 +5,13 @@ import java.util.Map;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class lenLongestFibSubseqOffer2Solution {
+
+    
+    public static void main(String[] args) {
+        lenLongestFibSubseqOffer2Solution solution = new lenLongestFibSubseqOffer2Solution();
+        System.out.println(solution.lenLongestFibSubseq(new int[]{1, 2, 3, 4, 5, 6, 7, 8}));
+    }
+
     public int lenLongestFibSubseq(int[] arr) {
         Map<Integer, Integer> index = new HashMap<>();
         for (int i = 0; i < arr.length; i++)
@@ -24,11 +31,6 @@ class lenLongestFibSubseqOffer2Solution {
             }
         }
         return ans;
-    }
-
-    public static void main(String[] args) {
-        lenLongestFibSubseqOffer2Solution solution = new lenLongestFibSubseqOffer2Solution();
-        System.out.println(solution.lenLongestFibSubseq(new int[]{1,2,3,4,5,6,7,8}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

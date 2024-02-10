@@ -1,8 +1,7 @@
 package leetcode.editor.cn;
 
-import com.sun.source.tree.IfTree;
-
-import java.util.*;
+import java.util.Map;
+import java.util.TreeMap;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class MyCalendarOffer2 {
@@ -13,17 +12,6 @@ class MyCalendarOffer2 {
         map = new TreeMap<>();
     }
 
-    public boolean book(int start, int end) {
-        Map.Entry<Integer, Integer> leftSchedule = map.floorEntry(start);
-        Map.Entry<Integer, Integer> rightSchedule = map.ceilingEntry(start);
-        if ((leftSchedule == null || start >= leftSchedule.getValue()) &&
-                (rightSchedule == null || end <= rightSchedule.getKey())) {
-            map.put(start, end);
-            return true;
-        }
-        return false;
-    }
-
     public static void main(String[] args) {
         MyCalendarOffer2 calendar = new MyCalendarOffer2();
         System.out.println(calendar.book(37, 50));
@@ -31,6 +19,17 @@ class MyCalendarOffer2 {
         System.out.println(calendar.book(4, 17));
         System.out.println(calendar.book(35, 48));
         System.out.println(calendar.book(8, 25));
+    }
+
+    public boolean book(int start, int end) {
+        Map.Entry<Integer, Integer> l = map.floorEntry(start);
+        Map.Entry<Integer, Integer> r = map.ceilingEntry(start);
+        if ((l == null || l.getValue() <= start) &&
+                (r == null || r.getKey() >= end)) {
+            map.put(start, end);
+            return true;
+        }
+        return false;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

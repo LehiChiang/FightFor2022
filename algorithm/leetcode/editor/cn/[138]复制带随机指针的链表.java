@@ -91,19 +91,19 @@ class copyRandomListSolution {
         if (head == null)
             return head;
         // 将复制的节点放置在源节点的后面 A -> A' -> B -> B'
-        for (RandomNode randomNode = head; randomNode != null; randomNode = randomNode.next.next) {
-            RandomNode newRandomNode = new RandomNode(randomNode.val);
-            newRandomNode.next = randomNode.next;
-            randomNode.next = newRandomNode;
+        for (RandomNode cur = head; cur != null; cur = cur.next.next) {
+            RandomNode node = new RandomNode(cur.val);
+            node.next = cur.next;
+            cur.next = node;
         }
         // 把random域串起来
-        for (RandomNode randomNode = head; randomNode != null; randomNode = randomNode.next.next)
-            randomNode.next.random = (randomNode.random != null) ? randomNode.random.next : null;
+        for (RandomNode cur = head; cur != null; cur = cur.next.next)
+            cur.next.random = (cur.random != null) ? cur.random.next : null;
         // 把源节点，复制节点分开成两个链表
         RandomNode newhead = head.next;
-        for (RandomNode randomNode = head; randomNode != null; randomNode = randomNode.next) {
-            RandomNode newRandomNode = randomNode.next;
-            randomNode.next = randomNode.next.next;
+        for (RandomNode cur = head; cur != null; cur = cur.next) {
+            RandomNode newRandomNode = cur.next;
+            cur.next = cur.next.next;
             newRandomNode.next = (newRandomNode.next != null) ? newRandomNode.next.next : null;
         }
         return newhead;

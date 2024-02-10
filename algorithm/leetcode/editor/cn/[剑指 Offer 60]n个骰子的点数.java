@@ -1,4 +1,6 @@
-package leetcode.editor.cn;//把n个骰子扔在地上，所有骰子朝上一面的点数之和为s。输入n，打印出s的所有可能的值出现的概率。
+package leetcode.editor.cn;
+
+//把n个骰子扔在地上，所有骰子朝上一面的点数之和为s。输入n，打印出s的所有可能的值出现的概率。
 //
 // 
 //
@@ -30,18 +32,18 @@ import java.util.Arrays;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class dicesProbabilitySolution {
-    public double[] dicesProbability(int n) {
-        double[] dp = new double[5*n+1];
-        double combine = Math.pow(6, n);
-        for (int i = n; i <= 6*n; i++) {
-            dp[i - n] = 2;
-        }
-        return dp;
-    }
-
     public static void main(String[] args) {
         dicesProbabilitySolution solution = new dicesProbabilitySolution();
         System.out.println(Arrays.toString(solution.dicesProbability(2)));
+    }
+
+    public double[] dicesProbability(int n) {
+        double[] dp = new double[5 * n + 1];
+        double combine = Math.pow(6, n);
+        for (int i = n; i <= 6 * n; i++) {
+            dp[i - n] = 2;
+        }
+        return dp;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

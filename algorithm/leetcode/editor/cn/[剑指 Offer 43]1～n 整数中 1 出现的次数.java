@@ -1,4 +1,6 @@
-package leetcode.editor.cn;//输入一个整数 n ，求1～n这n个整数的十进制表示中1出现的次数。
+package leetcode.editor.cn;
+
+
 //
 // 例如，输入12，1～12这些整数中包含1 的数字有1、10、11和12，1一共出现了5次。 
 //
@@ -31,6 +33,11 @@ package leetcode.editor.cn;//输入一个整数 n ，求1～n这n个整数的十
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class countDigitOneOfferSolution {
+    public static void main(String[] args) {
+        countDigitOneOfferSolution solution = new countDigitOneOfferSolution();
+        System.out.println(solution.countDigitOne(6));
+    }
+
     public int countDigitOne(int n) {
         int low = 0, digit = 1, res = 0;
         int cur = n % 10, high = n / 10;
@@ -44,11 +51,6 @@ class countDigitOneOfferSolution {
             digit *= 10;
         }
         return res;
-    }
-
-    public static void main(String[] args) {
-        countDigitOneOfferSolution solution = new countDigitOneOfferSolution();
-        System.out.println(solution.countDigitOne(6));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

@@ -1,4 +1,6 @@
-package leetcode.editor.cn;//给定两个 01 字符串 a 和 b ，请计算它们的和，并以二进制字符串的形式输出。
+package leetcode.editor.cn;
+
+//给定两个 01 字符串 a 和 b ，请计算它们的和，并以二进制字符串的形式输出。
 //
 // 输入为 非空 字符串且只包含数字 1 和 0。 
 //
@@ -34,6 +36,11 @@ package leetcode.editor.cn;//给定两个 01 字符串 a 和 b ，请计算它�
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class addBinarySolution {
+    public static void main(String[] args) {
+        addBinarySolution solution = new addBinarySolution();
+        System.out.println(solution.addBinary("1010", "1011"));
+    }
+
     public String addBinary(String a, String b) {
         int numA = Integer.parseInt(a, 2), numB = Integer.parseInt(b, 2);
         int carry = 0;
@@ -51,7 +58,7 @@ class addBinarySolution {
         StringBuilder sb = new StringBuilder();
         int carry = 0;
         int n = Math.max(a.length(), b.length());
-        for (int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++) {
             carry += a.length() <= i ? 0 : a.charAt(a.length() - 1 - i) - '0';
             carry += b.length() <= i ? 0 : b.charAt(b.length() - 1 - i) - '0';
             sb.append(carry % 2);
@@ -60,11 +67,6 @@ class addBinarySolution {
         if (carry == 1)
             sb.append(1);
         return sb.reverse().toString();
-    }
-
-    public static void main(String[] args) {
-        addBinarySolution solution = new addBinarySolution();
-        System.out.println(solution.addBinary("1010", "1011"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

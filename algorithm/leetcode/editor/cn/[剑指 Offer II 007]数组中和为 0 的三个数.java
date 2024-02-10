@@ -1,4 +1,6 @@
-package leetcode.editor.cn;//给定一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a ，b ，c ，使得 a + b + c = 0 ？请找出所有和为 0 且
+package leetcode.editor.cn;
+
+//给定一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a ，b ，c ，使得 a + b + c = 0 ？请找出所有和为 0 且
 //不重复 的三元组。 
 //
 // 
@@ -45,6 +47,11 @@ import java.util.List;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class threeSumOffer2Solution {
+    public static void main(String[] args) {
+        threeSumOffer2Solution solution = new threeSumOffer2Solution();
+        System.out.println(solution.threeSum(new int[]{-1, -1, -1, -1, -1, 2}));
+    }
+
     public List<List<Integer>> threeSum(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         Arrays.sort(nums);
@@ -71,11 +78,6 @@ class threeSumOffer2Solution {
             }
         }
         return res;
-    }
-
-    public static void main(String[] args) {
-        threeSumOffer2Solution solution = new threeSumOffer2Solution();
-        System.out.println(solution.threeSum(new int[]{-1, -1, -1, -1, -1, 2}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

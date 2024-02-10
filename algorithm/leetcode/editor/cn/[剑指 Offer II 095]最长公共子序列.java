@@ -2,6 +2,11 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class longestCommonSubsequenceOffer2Solution {
+    public static void main(String[] args) {
+        longestCommonSubsequenceOffer2Solution solution = new longestCommonSubsequenceOffer2Solution();
+        System.out.println(solution.longestCommonSubsequence("jianglihao", "lihao jiang"));
+    }
+
     public int longestCommonSubsequence(String text1, String text2) {
         int m = text1.length(), n = text2.length();
         int[][] dp = new int[m + 1][n + 1];
@@ -15,11 +20,6 @@ class longestCommonSubsequenceOffer2Solution {
             }
         }
         return dp[m][n];
-    }
-
-    public static void main(String[] args) {
-        longestCommonSubsequenceOffer2Solution solution = new longestCommonSubsequenceOffer2Solution();
-        System.out.println(solution.longestCommonSubsequence("ace", "xyz"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

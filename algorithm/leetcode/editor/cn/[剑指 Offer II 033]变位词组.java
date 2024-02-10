@@ -7,6 +7,11 @@ import java.util.Map;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class groupAnagramsOffer2Solution {
+    public static void main(String[] args) {
+        groupAnagramsOffer2Solution solution = new groupAnagramsOffer2Solution();
+        System.out.println(solution.groupAnagrams(new String[]{"aaa", "aa", "a", "aaa"}));
+    }
+
     public List<List<String>> groupAnagrams(String[] strs) {
         List<List<String>> res = new ArrayList<>();
         Map<Integer, List<String>> map = new HashMap<>();
@@ -22,11 +27,6 @@ class groupAnagramsOffer2Solution {
         for (Map.Entry<Integer, List<String>> entry : map.entrySet())
             res.add(entry.getValue());
         return res;
-    }
-
-    public static void main(String[] args) {
-        groupAnagramsOffer2Solution solution = new groupAnagramsOffer2Solution();
-        System.out.println(solution.groupAnagrams(new String[]{""}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

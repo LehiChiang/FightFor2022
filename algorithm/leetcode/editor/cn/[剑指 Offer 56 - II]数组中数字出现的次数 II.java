@@ -1,17 +1,19 @@
-package leetcode.editor.cn;//在一个数组 nums 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
+package leetcode.editor.cn;
+
+//在一个数组 nums 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
 //
 // 
 //
-// 示例 1： 
+// 示例 1：
 //
 // 输入：nums = [3,4,3,3]
 //输出：4
-// 
 //
-// 示例 2： 
+//
+// 示例 2：
 //
 // 输入：nums = [9,1,7,9,7,9,7]
-//输出：1 
+//输出：1
 //
 // 
 //
@@ -26,10 +28,13 @@ package leetcode.editor.cn;//在一个数组 nums 中除一个数字只出现一
 // Related Topics 位运算 数组 👍 263 👎 0
 
 
-import java.util.Arrays;
-
 //leetcode submit region begin(Prohibit modification and deletion)
 class singleNumber3Solution {
+    public static void main(String[] args) {
+        singleNumber3Solution solution = new singleNumber3Solution();
+        System.out.println(solution.singleNumber(new int[]{9, 1, 7, 9, 7, 9, 7}));
+    }
+
     public int singleNumber(int[] nums) {
         int res = 0;
         int[] digits = new int[32];
@@ -47,11 +52,6 @@ class singleNumber3Solution {
             res += digits[i] % 3 == 0 ? 0 : 1;
         }
         return res;
-    }
-
-    public static void main(String[] args) {
-        singleNumber3Solution solution = new singleNumber3Solution();
-        System.out.println(solution.singleNumber(new int[]{9,1,7,9,7,9,7}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

@@ -2,6 +2,7 @@ package leetcode.editor.cn;//leetcode submit region begin(Prohibit modification 
 
 import datastructure.ListNode;
 
+
 /**
  * Definition for singly-linked list.
  * public class ListNode {
@@ -13,11 +14,16 @@ import datastructure.ListNode;
  * }
  */
 class reorderListOffer2Solution {
+    public static void main(String[] args) {
+        reorderListOffer2Solution solution = new reorderListOffer2Solution();
+        solution.reorderList(ListNode.buildLinkedList(1, 2, 3, 4, 5, 6));
+    }
+
     public void reorderList(ListNode head) {
         ListNode slow = head, fast = head;
         int leftCount = 0;
         // 链表分段
-        while (fast != null && fast.next !=null) {
+        while (fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
         }
@@ -50,11 +56,6 @@ class reorderListOffer2Solution {
         head.next = null;
         return node;
 
-    }
-
-    public static void main(String[] args) {
-        reorderListOffer2Solution solution = new reorderListOffer2Solution();
-        solution.reorderList(ListNode.buildLinkedList(1, 2, 3, 4, 5, 6));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

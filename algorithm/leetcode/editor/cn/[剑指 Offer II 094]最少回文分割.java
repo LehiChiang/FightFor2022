@@ -2,6 +2,12 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class minCutOffer2Solution {
+
+    public static void main(String[] args) {
+        minCutOffer2Solution solution = new minCutOffer2Solution();
+        System.out.println(solution.minCut("aab"));
+    }
+
     public int minCut(String s) {
         boolean[][] dp_state = new boolean[s.length()][s.length()];
         for (int i = 0; i < s.length(); i++) {
@@ -23,11 +29,6 @@ class minCutOffer2Solution {
             }
         }
         return dp[s.length()] - 1;
-    }
-
-    public static void main(String[] args) {
-        minCutOffer2Solution solution = new minCutOffer2Solution();
-        System.out.println(solution.minCut("aab"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

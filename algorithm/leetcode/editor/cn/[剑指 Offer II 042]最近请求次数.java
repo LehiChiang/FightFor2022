@@ -3,20 +3,15 @@ package leetcode.editor.cn;
 import java.util.Deque;
 import java.util.LinkedList;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class RecentCounterOffer2 {
 
-    private Deque<Integer> queue;
     private final int THRESHOLD = 3000;
+    private Deque<Integer> queue;
+
     public RecentCounterOffer2() {
         queue = new LinkedList<>();
-    }
-    
-    public int ping(int t) {
-        queue.offerLast(t);
-        while (t - THRESHOLD > queue.peekFirst())
-            queue.pollFirst();
-        return queue.size();
     }
 
     public static void main(String[] args) {
@@ -25,6 +20,13 @@ class RecentCounterOffer2 {
         System.out.println(solution.ping(100));
         System.out.println(solution.ping(3001));
         System.out.println(solution.ping(3002));
+    }
+
+    public int ping(int t) {
+        queue.offerLast(t);
+        while (t - THRESHOLD > queue.peekFirst())
+            queue.pollFirst();
+        return queue.size();
     }
 }
 

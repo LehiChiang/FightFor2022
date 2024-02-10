@@ -42,9 +42,15 @@ import java.util.Set;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class lengthOfLongestSubstringOfferSolution {
+    public static void main(String[] args) {
+        lengthOfLongestSubstringOfferSolution solution = new lengthOfLongestSubstringOfferSolution();
+        System.out.println(solution.lengthOfLongestSubstring("613442357"));
+    }
+
     public int lengthOfLongestSubstring(String s) {
         Set<Character> set = new HashSet<>();
         int res = 0;
+
         for (int start = 0, end = -1; start < s.length(); start++) {
             if (end + 1 >= s.length())
                 break;
@@ -57,11 +63,6 @@ class lengthOfLongestSubstringOfferSolution {
             res = Math.max(res, end - start + 1);
         }
         return res;
-    }
-
-    public static void main(String[] args) {
-        lengthOfLongestSubstringOfferSolution solution = new lengthOfLongestSubstringOfferSolution();
-        System.out.println(solution.lengthOfLongestSubstring("613442357"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

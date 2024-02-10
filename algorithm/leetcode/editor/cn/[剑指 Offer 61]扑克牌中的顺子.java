@@ -1,4 +1,7 @@
-package leetcode.editor.cn;//从若干副扑克牌中随机抽 5 张牌，判断是不是一个顺子，即这5张牌是不是连续的。2～10为数字本身，A为1，J为11，Q为12，K为13，而大、小王为 0 ，
+package leetcode.editor.cn;
+
+//从若干副扑克牌中随机抽 5 张牌，判断是不是一个顺子，即这5张牌是不是连续的。
+// 2～10为数字本身，A为1，J为11，Q为12，K为13，而大、小王为 0 ，
 //可以看成任意数字。A 不能视为 14。 
 //
 // 
@@ -27,29 +30,23 @@ package leetcode.editor.cn;//从若干副扑克牌中随机抽 5 张牌，判断
 // Related Topics 数组 排序 👍 187 👎 0
 
 
+import java.util.Arrays;
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class isStraightSolution {
-    public boolean isStraight(int[] nums) {
-        int[] poker = new int[14];
-        for (int num : nums) {
-            poker[num]++;
-        }
-        int zeros = poker[0];
-        int dis = 0, lastNum = 0;
-        for (int i = 1; i < poker.length; i++) {
-            if (poker[i] > 1) return false;
-            else if (poker[i] == 1) {
-                if (lastNum != 0)
-                    dis = Math.max(dis, i - lastNum);
-                lastNum = i;
-            }
-        }
-        return dis - 1 <= zeros;
-    }
-
     public static void main(String[] args) {
         isStraightSolution solution = new isStraightSolution();
-        System.out.println(solution.isStraight(new int[]{2,4,5,7,9}));
+        System.out.println(solution.isStraight(new int[]{0, 4, 5, 7, 6}));
+    }
+
+    public boolean isStraight(int[] nums) {
+        int unknown = 0;
+        Arrays.sort(nums); // 数组排序
+        for (int i = 0; i < 4; i++) {
+            if (nums[i] == 0) unknown++; // 统计未知朝代数量
+            else if (nums[i] == nums[i + 1]) return false; // 若有重复，提前返回 false
+        }
+        return nums[4] - nums[unknown] < 5; // 最大编号朝代 - 最小编号朝代 < 5 则连续
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

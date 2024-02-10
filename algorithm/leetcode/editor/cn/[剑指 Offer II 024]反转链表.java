@@ -2,17 +2,23 @@ package leetcode.editor.cn;//leetcode submit region begin(Prohibit modification 
 
 import datastructure.ListNode;
 
+
 /**
  * Definition for singly-linked list.
  * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * int val;
+ * ListNode next;
+ * ListNode() {}
+ * ListNode(int val) { this.val = val; }
+ * ListNode(int val, ListNode next) { this.val = val; this.next = next; }
  * }
  */
 class reverseListOffer2Solution {
+    public static void main(String[] args) {
+        reverseListOffer2Solution solution = new reverseListOffer2Solution();
+        System.out.println(solution.reverseList(ListNode.buildLinkedList(1, 2, 3, 4, 5)));
+    }
+
     public ListNode reverseList(ListNode head) {
         if (head == null)
             return head;
@@ -37,11 +43,6 @@ class reverseListOffer2Solution {
             newNode.next = node;
         }
         return newNode.next;
-    }
-
-    public static void main(String[] args) {
-        reverseListOffer2Solution solution = new reverseListOffer2Solution();
-        System.out.println(solution.reverseList(ListNode.buildLinkedList(1,2,3,4,5)));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

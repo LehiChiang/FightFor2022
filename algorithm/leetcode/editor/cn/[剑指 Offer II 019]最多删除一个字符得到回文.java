@@ -1,7 +1,13 @@
 package leetcode.editor.cn;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class validPalindromeOffer2Solution {
+    public static void main(String[] args) {
+        validPalindromeOffer2Solution solution = new validPalindromeOffer2Solution();
+        System.out.println(solution.validPalindrome("deeee"));
+    }
+
     public boolean validPalindrome(String s) {
         int i = 0, j = s.length() - 1;
         while (i < j) {
@@ -24,11 +30,6 @@ class validPalindromeOffer2Solution {
             j--;
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        validPalindromeOffer2Solution solution = new validPalindromeOffer2Solution();
-        System.out.println(solution.validPalindrome("deeee"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

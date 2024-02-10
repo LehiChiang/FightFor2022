@@ -5,8 +5,14 @@ import java.util.List;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class generateParenthesisOffer2Solution {
-
+    
     private List<String> res;
+
+    public static void main(String[] args) {
+        generateParenthesisOffer2Solution solution = new generateParenthesisOffer2Solution();
+        System.out.println(solution.generateParenthesis(3));
+    }
+
     public List<String> generateParenthesis(int n) {
         res = new ArrayList<>();
         dfs(n, 0, 0, new StringBuilder());
@@ -28,11 +34,6 @@ class generateParenthesisOffer2Solution {
             dfs(n, leftNum, rightNum + 1, path);
             path.deleteCharAt(path.length() - 1);
         }
-    }
-
-    public static void main(String[] args) {
-        generateParenthesisOffer2Solution solution = new generateParenthesisOffer2Solution();
-        System.out.println(solution.generateParenthesis(3));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

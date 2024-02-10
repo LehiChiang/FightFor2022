@@ -3,11 +3,18 @@ package leetcode.editor.cn;
 import java.util.HashMap;
 import java.util.Map;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class minWindowOffer2Solution {
 
     private Map<Character, Integer> tState;
     private Map<Character, Integer> winState;
+
+    public static void main(String[] args) {
+        minWindowOffer2Solution solution = new minWindowOffer2Solution();
+        System.out.println(solution.minWindow("a", "aa"));
+    }
+
     public String minWindow(String s, String t) {
         tState = new HashMap<>();
         winState = new HashMap<>();
@@ -41,11 +48,6 @@ class minWindowOffer2Solution {
                 return false;
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        minWindowOffer2Solution solution = new minWindowOffer2Solution();
-        System.out.println(solution.minWindow("a", "aa"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

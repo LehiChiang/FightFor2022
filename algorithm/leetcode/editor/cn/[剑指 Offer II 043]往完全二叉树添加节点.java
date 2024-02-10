@@ -5,10 +5,12 @@ import datastructure.TreeNode;
 import java.util.Deque;
 import java.util.LinkedList;
 
+
 class CBTInserterOffer2 {
 
     private Deque<TreeNode> queue;
     private TreeNode root;
+
     public CBTInserterOffer2(TreeNode root) {
         this.root = root;
         queue = new LinkedList<>();
@@ -24,7 +26,14 @@ class CBTInserterOffer2 {
             } else break;
         }
     }
-    
+
+    public static void main(String[] args) {
+        CBTInserterOffer2 solution = new CBTInserterOffer2(TreeNode.deserialize("1,2,3,4,5,6,null"));
+        System.out.println(solution.insert(7));
+        System.out.println(solution.insert(8));
+        System.out.println(solution.get_root());
+    }
+
     public int insert(int v) {
         TreeNode newNode = new TreeNode(v);
         if (queue.peekFirst().left == null) {
@@ -37,16 +46,9 @@ class CBTInserterOffer2 {
             return queue.pollFirst().val;
         }
     }
-    
+
     public TreeNode get_root() {
         return this.root;
-    }
-
-    public static void main(String[] args) {
-        CBTInserterOffer2 solution = new CBTInserterOffer2(TreeNode.deserialize("1,2,3,4,5,6,null"));
-        System.out.println(solution.insert(7));
-        System.out.println(solution.insert(8));
-        System.out.println(solution.get_root());
     }
 }
 

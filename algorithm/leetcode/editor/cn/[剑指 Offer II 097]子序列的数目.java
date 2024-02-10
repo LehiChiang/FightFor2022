@@ -2,6 +2,12 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class numDistinctOffer2Solution {
+
+    public static void main(String[] args) {
+        numDistinctOffer2Solution solution = new numDistinctOffer2Solution();
+        System.out.println(solution.numDistinct("babgbag", "bag"));
+    }
+
     public int numDistinct(String s, String t) {
         int m = s.length(), n = t.length();
         int[][] dp = new int[n + 1][m + 1];
@@ -17,11 +23,6 @@ class numDistinctOffer2Solution {
             }
         }
         return dp[n][m];
-    }
-
-    public static void main(String[] args) {
-        numDistinctOffer2Solution solution = new numDistinctOffer2Solution();
-        System.out.println(solution.numDistinct("babgbag", "bag"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

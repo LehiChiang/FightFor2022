@@ -4,6 +4,12 @@ import java.util.*;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class kSmallestPairsSolution {
+
+    public static void main(String[] args) {
+        kSmallestPairsSolution solution = new kSmallestPairsSolution();
+        System.out.println(solution.kSmallestPairs(new int[]{1, 7, 11}, new int[]{2, 4, 6}, 3));
+    }
+
     public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
         List<List<Integer>> res = new ArrayList<>();
         Queue<int[]> queue = new PriorityQueue<>(Comparator.comparingInt(indexPair -> nums1[indexPair[0]] + nums2[indexPair[1]]));
@@ -21,12 +27,6 @@ class kSmallestPairsSolution {
             }
         }
         return res;
-    }
-
-
-    public static void main(String[] args) {
-        kSmallestPairsSolution solution = new kSmallestPairsSolution();
-        System.out.println(solution.kSmallestPairs(new int[]{1,7,11}, new int[]{2,4,6}, 3));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

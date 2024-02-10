@@ -1,4 +1,7 @@
-package leetcode.editor.cn;//给定一个非负整数 n ，请计算 0 到 n 之间的每个数字的二进制表示中 1 的个数，并输出一个数组。
+package leetcode.editor.cn;
+
+
+//给定一个非负整数 n ，请计算 0 到 n 之间的每个数字的二进制表示中 1 的个数，并输出一个数组。
 //
 // 
 //
@@ -55,17 +58,17 @@ import java.util.Arrays;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class countBitsOffer2Solution {
-    public int[] countBits(int n) {
-        int[] res = new int[n + 1];
-        for (int i = 1; i <=n; i++) {
-            res[i] = res[i & (i - 1)] + 1;
-        }
-        return res;
-    }
-
     public static void main(String[] args) {
         countBitsOffer2Solution solution = new countBitsOffer2Solution();
         System.out.println(Arrays.toString(solution.countBits(5)));
+    }
+
+    public int[] countBits(int n) {
+        int[] res = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            res[i] = res[i & (i - 1)] + 1;
+        }
+        return res;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

@@ -1,7 +1,13 @@
 package leetcode.editor.cn;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class singleNonDuplicateSolution {
+    public static void main(String[] args) {
+        singleNonDuplicateSolution solution = new singleNonDuplicateSolution();
+        System.out.println(solution.singleNonDuplicate(new int[]{1}));
+    }
+
     public int singleNonDuplicate(int[] nums) {
         int left = 0, right = nums.length - 1;
         while (left < right) {
@@ -15,11 +21,6 @@ class singleNonDuplicateSolution {
             }
         }
         return nums[left];
-    }
-
-    public static void main(String[] args) {
-        singleNonDuplicateSolution solution = new singleNonDuplicateSolution();
-        System.out.println(solution.singleNonDuplicate(new int[]{1}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

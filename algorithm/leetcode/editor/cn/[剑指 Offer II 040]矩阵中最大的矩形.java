@@ -1,14 +1,16 @@
 package leetcode.editor.cn;
 
-import utils.ArrayUtils;
-
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Map;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class maximalRectangleOffer2Solution {
+    public static void main(String[] args) {
+        maximalRectangleOffer2Solution solution = new maximalRectangleOffer2Solution();
+        System.out.println(solution.maximalRectangle(new String[]{}));
+    }
+
     public int maximalRectangle(String[] matrix) {
         if (matrix.length == 0)
             return 0;
@@ -51,11 +53,6 @@ class maximalRectangleOffer2Solution {
             }
         }
         return res;
-    }
-
-    public static void main(String[] args) {
-        maximalRectangleOffer2Solution solution = new maximalRectangleOffer2Solution();
-        System.out.println(solution.maximalRectangle(new String[]{}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

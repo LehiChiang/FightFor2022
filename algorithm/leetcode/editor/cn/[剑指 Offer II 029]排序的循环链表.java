@@ -1,11 +1,11 @@
 package leetcode.editor.cn;//leetcode submit region begin(Prohibit modification and deletion)
 
-
 class Node {
     public int val;
     public Node next;
 
-    public Node() {}
+    public Node() {
+    }
 
     public Node(int _val) {
         val = _val;
@@ -18,6 +18,11 @@ class Node {
 };
 
 class insertOffer2Solution {
+    public static void main(String[] args) {
+        insertOffer2Solution solution = new insertOffer2Solution();
+        solution.insert(solution.insert(null, 1), 2);
+    }
+
     public Node insert(Node head, int insertVal) {
         if (head == null) {
             Node node = new Node(insertVal);
@@ -44,11 +49,6 @@ class insertOffer2Solution {
         insertedNode.next = node.next;
         node.next = insertedNode;
         return head;
-    }
-
-    public static void main(String[] args) {
-        insertOffer2Solution solution = new insertOffer2Solution();
-        solution.insert(solution.insert(null, 1), 2);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

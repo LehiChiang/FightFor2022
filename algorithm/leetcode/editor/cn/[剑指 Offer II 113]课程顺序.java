@@ -4,6 +4,11 @@ import java.util.*;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class findOrderOffer2Solution {
+    public static void main(String[] args) {
+        findOrderOffer2Solution solution = new findOrderOffer2Solution();
+        System.out.println(Arrays.toString(solution.findOrder(2, new int[][]{})));
+    }
+
     public int[] findOrder(int numCourses, int[][] prerequisites) {
         Map<Integer, List<Integer>> graph = new HashMap();
         for (int i = 0; i < numCourses; ++i)
@@ -29,11 +34,6 @@ class findOrderOffer2Solution {
             }
         }
         return count == numCourses ? res : new int[]{};
-    }
-
-    public static void main(String[] args) {
-        findOrderOffer2Solution solution = new findOrderOffer2Solution();
-        System.out.println(Arrays.toString(solution.findOrder(2, new int[][]{})));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

@@ -5,17 +5,23 @@ import datastructure.ListNode;
 import java.util.Deque;
 import java.util.LinkedList;
 
+
 /**
  * Definition for singly-linked list.
  * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * int val;
+ * ListNode next;
+ * ListNode() {}
+ * ListNode(int val) { this.val = val; }
+ * ListNode(int val, ListNode next) { this.val = val; this.next = next; }
  * }
  */
 class addTwoNumbersOffer2Solution {
+    public static void main(String[] args) {
+        addTwoNumbersOffer2Solution solution = new addTwoNumbersOffer2Solution();
+        System.out.println(solution.addTwoNumbers(ListNode.buildLinkedList(7, 2, 4, 3), ListNode.buildLinkedList(5, 6, 4)));
+    }
+
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         Deque<Integer> stack1 = new LinkedList<>();
         Deque<Integer> stack2 = new LinkedList<>();
@@ -43,11 +49,6 @@ class addTwoNumbersOffer2Solution {
             ans.next = carryNode;
         }
         return ans.next;
-    }
-
-    public static void main(String[] args) {
-        addTwoNumbersOffer2Solution solution = new addTwoNumbersOffer2Solution();
-        System.out.println(solution.addTwoNumbers(ListNode.buildLinkedList(7,2,4,3), ListNode.buildLinkedList(5,6,4)));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

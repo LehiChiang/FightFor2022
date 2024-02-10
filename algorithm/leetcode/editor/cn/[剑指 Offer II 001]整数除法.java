@@ -1,4 +1,6 @@
-package leetcode.editor.cn;//给定两个整数 a 和 b ，求它们的除法的商 a/b ，要求不得使用乘号 '*'、除号 '/' 以及求余符号 '%' 。
+package leetcode.editor.cn;
+
+//给定两个整数 a 和 b ，求它们的除法的商 a/b ，要求不得使用乘号 '*'、除号 '/' 以及求余符号 '%' 。
 //
 // 
 //
@@ -57,6 +59,11 @@ package leetcode.editor.cn;//给定两个整数 a 和 b ，求它们的除法的
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class divideOffer2Solution {
+    public static void main(String[] args) {
+        divideOffer2Solution solution = new divideOffer2Solution();
+        System.out.println(solution.divide(-2147483648, 2));
+    }
+
     public int divide(int a, int b) {
         if (b == 1) return a;
         if (b == -1 && a == Integer.MIN_VALUE) {
@@ -83,11 +90,6 @@ class divideOffer2Solution {
             count = count + count;
         }
         return count + getDivide(dividend - num, divisor);
-    }
-
-    public static void main(String[] args) {
-        divideOffer2Solution solution = new divideOffer2Solution();
-        System.out.println(solution.divide(-2147483648, 2));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

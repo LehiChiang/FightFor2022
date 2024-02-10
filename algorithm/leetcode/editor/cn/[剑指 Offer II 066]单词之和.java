@@ -3,8 +3,34 @@ package leetcode.editor.cn;
 import java.util.HashMap;
 import java.util.Map;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class MapSumOffer2 {
+
+    private Trie trie;
+    private Map<String, Integer> map;
+    public MapSumOffer2() {
+        trie = new Trie();
+        map = new HashMap<>();
+    }
+
+    public static void main(String[] args) {
+        MapSumOffer2 mapSum = new MapSumOffer2();
+        mapSum.insert("apple", 3);
+        System.out.println(mapSum.sum("apple"));
+        mapSum.insert("app", 2);
+        System.out.println(mapSum.sum("ap"));
+    }
+
+    public void insert(String key, int val) {
+        int delta = val - map.getOrDefault(key, 0);
+        map.put(key, val);
+        trie.insert(key, delta);
+    }
+
+    public int sum(String prefix) {
+        return trie.getSum(prefix);
+    }
 
     class Trie {
         Trie[] children;
@@ -36,31 +62,6 @@ class MapSumOffer2 {
             }
             return node.sum;
         }
-    }
-
-    private Trie trie;
-    private Map<String, Integer> map;
-    public MapSumOffer2() {
-        trie = new Trie();
-        map = new HashMap<>();
-    }
-    
-    public void insert(String key, int val) {
-        int delta = val - map.getOrDefault(key, 0);
-        map.put(key, val);
-        trie.insert(key, delta);
-    }
-    
-    public int sum(String prefix) {
-        return trie.getSum(prefix);
-    }
-
-    public static void main(String[] args) {
-        MapSumOffer2 mapSum = new MapSumOffer2();
-        mapSum.insert("apple", 3);
-        System.out.println(mapSum.sum("apple"));
-        mapSum.insert("app", 2);
-        System.out.println(mapSum.sum("ap"));
     }
 }
 

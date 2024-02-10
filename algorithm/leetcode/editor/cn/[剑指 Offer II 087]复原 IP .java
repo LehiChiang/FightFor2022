@@ -1,14 +1,20 @@
 package leetcode.editor.cn;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class restoreIpAddressesOffer2Solution {
 
     private List<String> res;
     private int[] segments;
+
+    public static void main(String[] args) {
+        restoreIpAddressesOffer2Solution solution = new restoreIpAddressesOffer2Solution();
+        System.out.println(solution.restoreIpAddresses("100100"));
+    }
+
     public List<String> restoreIpAddresses(String s) {
         res = new ArrayList<>();
         if (s.length() < 4 || s.length() > 12)
@@ -45,11 +51,6 @@ class restoreIpAddressesOffer2Solution {
                 break;
             }
         }
-    }
-
-    public static void main(String[] args) {
-        restoreIpAddressesOffer2Solution solution = new restoreIpAddressesOffer2Solution();
-        System.out.println(solution.restoreIpAddresses("25525511135"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

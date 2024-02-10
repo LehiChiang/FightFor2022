@@ -1,9 +1,13 @@
 package leetcode.editor.cn;
 
-import javax.xml.stream.events.Characters;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class isPalindromeOffer2Solution {
+    public static void main(String[] args) {
+        isPalindromeOffer2Solution solution = new isPalindromeOffer2Solution();
+        System.out.println(solution.isPalindrome(".,"));
+    }
+
     public boolean isPalindrome(String s) {
         int left = 0, right = s.length() - 1;
         while (left < right) {
@@ -21,11 +25,6 @@ class isPalindromeOffer2Solution {
             }
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        isPalindromeOffer2Solution solution = new isPalindromeOffer2Solution();
-        System.out.println(solution.isPalindrome(".,"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

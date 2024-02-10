@@ -5,7 +5,14 @@ import java.util.List;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class combineOffer2Solution {
+
     private List<List<Integer>> list;
+
+    public static void main(String[] args) {
+        combineOffer2Solution solution = new combineOffer2Solution();
+        System.out.println(solution.combine(4, 2));
+    }
+
     public List<List<Integer>> combine(int n, int k) {
         list = new ArrayList<>();
         dfs(n, k, 1, new ArrayList<>());
@@ -22,11 +29,6 @@ class combineOffer2Solution {
             dfs(n, k, i + 1, path);
             path.remove(path.size() - 1);
         }
-    }
-
-    public static void main(String[] args) {
-        combineOffer2Solution solution = new combineOffer2Solution();
-        System.out.println(solution.combine(4, 2));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

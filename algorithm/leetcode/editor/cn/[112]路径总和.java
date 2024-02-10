@@ -19,11 +19,16 @@ package leetcode.editor.cn;
 // Related Topics 树 深度优先搜索 二叉树 👍 677 👎 0
 
 
-import com.sun.source.tree.Tree;
 import datastructure.TreeNode;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class hasPathSumSolution {
+    public static void main(String[] args) {
+        hasPathSumSolution solution = new hasPathSumSolution();
+        System.out.println(solution.hasPathSum(TreeNode.deserialize("1,2,3"), 5));
+        System.out.println(solution.hasPathSum(TreeNode.deserialize("5,4,8,11,null,13,4,7,2,null,null,null,1"), 22));
+    }
+
     public boolean hasPathSum(TreeNode root, int targetSum) {
         return dfs(root, targetSum);
     }
@@ -36,10 +41,12 @@ class hasPathSumSolution {
         return dfs(root.left, targetSum - root.val) || dfs(root.right, targetSum - root.val);
     }
 
-    public static void main(String[] args) {
-        hasPathSumSolution solution = new hasPathSumSolution();
-        System.out.println(solution.hasPathSum(TreeNode.deserialize("1,2,3"), 5));
-        System.out.println(solution.hasPathSum(TreeNode.deserialize("5,4,8,11,null,13,4,7,2,null,null,null,1"), 22));
+    public boolean dfs2(TreeNode root, int targetSum) {
+        if (root == null)
+            return false;
+        if (root.left == null && root.right == null && targetSum == root.val)
+            return true;
+        return dfs(root.left, targetSum - root.val) || dfs(root.right, targetSum - root.val);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

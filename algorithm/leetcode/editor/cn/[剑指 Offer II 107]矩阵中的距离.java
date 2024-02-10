@@ -8,6 +8,15 @@ import java.util.Queue;
 //leetcode submit region begin(Prohibit modification and deletion)
 class updateMatrixOffer2Solution {
 
+    public static void main(String[] args) {
+        updateMatrixOffer2Solution solution = new updateMatrixOffer2Solution();
+        ArrayUtils.print2D(solution.updateMatrix(new int[][]{
+                {0, 0, 0},
+                {0, 1, 0},
+                {1, 1, 1}
+        }));
+    }
+
     public int[][] updateMatrix(int[][] mat) {
         Queue<int[]> queue = new LinkedList<>();
         for (int i = 0; i < mat.length; i++) {
@@ -18,8 +27,8 @@ class updateMatrixOffer2Solution {
                     mat[i][j] = -1;
             }
         }
-        int[] dx = new int[] {-1, 1, 0, 0};
-        int[] dy = new int[] {0, 0, -1, 1};
+        int[] dx = new int[]{-1, 1, 0, 0};
+        int[] dy = new int[]{0, 0, -1, 1};
         while (!queue.isEmpty()) {
             int[] point = queue.poll();
             int x = point[0], y = point[1];
@@ -33,15 +42,6 @@ class updateMatrixOffer2Solution {
             }
         }
         return mat;
-    }
-
-    public static void main(String[] args) {
-        updateMatrixOffer2Solution solution = new updateMatrixOffer2Solution();
-        ArrayUtils.print2D(solution.updateMatrix(new int[][]{
-                {0, 0, 0},
-                {0, 1, 0},
-                {1, 1, 1}
-        }));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

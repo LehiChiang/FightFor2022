@@ -25,15 +25,24 @@ package leetcode.editor.cn;
 // Related Topics 深度优先搜索 广度优先搜索 图 拓扑排序 👍 1057 👎 0
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class canFinishCourseSolution {
 
+    boolean isValid = true;
     private List<List<Integer>> edges;
     private int[] visited;
     private int[] indeg;
-    boolean isValid = true;
+
+    public static void main(String[] args) {
+        canFinishCourseSolution solution = new canFinishCourseSolution();
+        System.out.println(solution.canFinish(3, new int[][]{{1, 0}, {2, 0}, {0, 1}}));
+    }
+
     public boolean canFinish(int numCourses, int[][] prerequisites) {
         return bfdCanFinish(numCourses, prerequisites);
     }
@@ -60,6 +69,7 @@ class canFinishCourseSolution {
         int res = 0;
         while (!queue.isEmpty()) {
             res++;
+
             int node = queue.poll();
             for (int v : edges.get(node)) {
                 indeg[v]--;
@@ -69,7 +79,6 @@ class canFinishCourseSolution {
         }
         return res == numCourses;
     }
-
 
     private boolean dfsCanFisnish(int numCourses, int[][] prerequisites) {
         // 图的邻接表存储
@@ -92,7 +101,6 @@ class canFinishCourseSolution {
         return isValid;
     }
 
-
     private void dfs(int i) {
         // 正在访问节点（包括其子节点）
         visited[i] = 1;
@@ -108,11 +116,6 @@ class canFinishCourseSolution {
             }
         }
         visited[i] = 2;
-    }
-
-    public static void main(String[] args) {
-        canFinishCourseSolution solution = new canFinishCourseSolution();
-        System.out.println(solution.canFinish(3, new int[][]{{1,0}, {2,0}, {0,1}}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

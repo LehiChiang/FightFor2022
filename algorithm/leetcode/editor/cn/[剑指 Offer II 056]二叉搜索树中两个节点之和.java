@@ -7,10 +7,6 @@ import java.util.Set;
 
 class findTargetOffer2Solution {
     public boolean findTarget(TreeNode root, int k) {
-        return DFSHashSet(root, k);
-    }
-
-    private boolean DFSHashSet(TreeNode root, int k) {
         Set<Integer> set = new HashSet<>();
         return find(root, k, set);
     }

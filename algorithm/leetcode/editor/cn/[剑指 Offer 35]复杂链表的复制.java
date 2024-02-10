@@ -60,31 +60,65 @@ import java.util.HashMap;
 import java.util.Map;
 
 class copyRandomList2Solution {
+    public static void main(String[] args) {
+        copyRandomList2Solution solution = new copyRandomList2Solution();
+    }
+
     public RandomNode copyRandomList(RandomNode head) {
         return getNodeByBuildNode(head);
     }
 
+//    private RandomNode getNodeByBuildNode(RandomNode head) {
+//        if (head == null)
+//            return head;
+//        // 新节点插入到旧节点后面
+//        for (RandomNode tmp = head; tmp != null; tmp = tmp.next.next) {
+//            RandomNode randomNode = new RandomNode(tmp.val);
+//            randomNode.next = tmp.next;
+//            tmp.next = randomNode;
+//        }
+//        // 建立random指针关系
+//        for (RandomNode tmp = head; tmp != null; tmp = tmp.next.next) {
+//            tmp.next.random = (tmp.random != null) ? tmp.random.next : null;
+//        }
+//        // 分离新旧节点
+//        RandomNode newRandomNode = head.next;
+//        for (RandomNode tmp = head; tmp != null; tmp = tmp.next) {
+//            RandomNode newN = tmp.next;
+//            tmp.next = newN.next;
+//            newN.next = tmp.next.next != null ? tmp.next.next.next : null;
+//        }
+//        return newRandomNode;
+//    }
+
     private RandomNode getNodeByBuildNode(RandomNode head) {
         if (head == null)
             return head;
-        // 新节点插入到旧节点后面
-        for (RandomNode tmp = head; tmp != null; tmp = tmp.next.next) {
-            RandomNode randomNode = new RandomNode(tmp.val);
-            randomNode.next = tmp.next;
-            tmp.next = randomNode;
+        RandomNode cur = head;
+        // 追加节点
+        while (cur != null) {
+            RandomNode node = new RandomNode(cur.val);
+            node.next = cur.next;
+            cur.next = node;
+            cur = node.next;
         }
-        // 建立random指针关系
-        for (RandomNode tmp = head; tmp != null; tmp = tmp.next.next) {
-            tmp.next.random = (tmp.random != null) ? tmp.random.next : null;
+        // 连接随机关系
+        cur = head;
+        while (cur.next.next != null) {
+            cur.next.random = cur.random == null ? null : cur.random.next;
+            cur = cur.next.next;
         }
-        // 分离新旧节点
-        RandomNode newRandomNode = head.next;
-        for (RandomNode tmp = head; tmp != null; tmp = tmp.next) {
-            RandomNode newN = tmp.next;
-            tmp.next = newN.next;
-            newN.next = tmp.next.next != null ? tmp.next.next.next : null;
+        // 拆分链表
+        cur = head;
+        RandomNode res = cur.next;
+        RandomNode pre = cur.next;
+        while (cur.next.next != null) {
+            cur.next = pre.next;
+            pre.next = pre.next.next;
+            pre = pre.next;
+            cur = cur.next;
         }
-        return newRandomNode;
+        return res;
     }
 
     private RandomNode getNodeByHashMap(RandomNode head) {
@@ -96,10 +130,6 @@ class copyRandomList2Solution {
             map.get(tmp).random = map.get(tmp.random);
         }
         return map.get(head);
-    }
-
-    public static void main(String[] args) {
-        copyRandomList2Solution solution = new copyRandomList2Solution();
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

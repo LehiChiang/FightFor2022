@@ -1,10 +1,13 @@
 package leetcode.editor.cn;
 
-import java.util.HashMap;
-import java.util.Map;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class checkInclusionOffer2Solution {
+    public static void main(String[] args) {
+        checkInclusionOffer2Solution solution = new checkInclusionOffer2Solution();
+        System.out.println(solution.checkInclusion("ab", "eidbaooo"));
+    }
+
     public boolean checkInclusion(String s1, String s2) {
         int m = s1.length(), n = s2.length();
         int[] win = new int[26];
@@ -21,11 +24,6 @@ class checkInclusionOffer2Solution {
                 return true;
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-        checkInclusionOffer2Solution solution = new checkInclusionOffer2Solution();
-        System.out.println(solution.checkInclusion("ab", "eidboaoo"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

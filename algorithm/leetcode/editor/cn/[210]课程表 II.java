@@ -51,6 +51,17 @@ import java.util.*;
 //leetcode submit region begin(Prohibit modification and deletion)
 class findOrderSolution {
 
+    private int[] res;
+    private int[] visited;
+    private boolean isValid;
+    private int index;
+    private Map<Integer, List<Integer>> graph;
+
+    public static void main(String[] args) {
+        findOrderSolution solution = new findOrderSolution();
+        System.out.println(Arrays.toString(solution.findOrder(4, new int[][]{{1, 0}, {2, 0}, {3, 1}, {3, 2}})));
+    }
+
     // Broad  Search
     public int[] findOrderBFS(int numCourses, int[][] prerequisites) {
         int[] res = new int[numCourses];
@@ -70,70 +81,68 @@ class findOrderSolution {
 
         int count = 0;
         while (!queue.isEmpty()) {
-            int course = queue.poll();
-            res[count++] = course;
-            for (int adjCourse : graph.get(course)) {
-                inDegree[adjCourse]--;
-                if (inDegree[adjCourse] == 0)
-                    queue.offer(adjCourse);
+            int node = queue.poll();
+            res[count++] = node;
+            for (int adjNode : graph.get(node)) {
+                inDegree[adjNode]--;
+                if (inDegree[adjNode] == 0) {
+                    queue.offer(adjNode);
+                }
             }
         }
+//        while (!queue.isEmpty()) {
+//            int course = queue.poll();
+//            res[count++] = course;
+//            for (int adjCourse : graph.get(course)) {
+//                inDegree[adjCourse]--;
+//                if (inDegree[adjCourse] == 0)
+//                    queue.offer(adjCourse);
+//            }
+//        }
         if (count != numCourses)
             return new int[]{};
         return res;
     }
 
+//    public int[] findOrderDFS(int numCourses, int[][] prerequisites) {
+//        res = new int[numCourses];
+//        visited = new int[numCourses];
+//        isValid = true;
+//        index = numCourses - 1;
+//        graph = new HashMap<>();
+//        for (int i = 0; i < numCourses; i++) {
+//            graph.put(i, new ArrayList());
+//        }
+//        for (int[] pair : prerequisites) {
+//            graph.get(pair[1]).add(pair[0]);
+//        }
+//        for (int i = 0; i < numCourses && isValid; i++) {
+//            if (visited[i] == 0)
+//                dfs(i);
+//        }
+//        if (!isValid)
+//            return new int[]{};
+//        return res;
+//    }
 
-    private int[] res;
-    private int[] visited;
-    private boolean isValid;
-    private int index;
-    private Map<Integer, List<Integer>> graph;
+//    private void dfs(int u) {
+//        visited[u] = 1;
+//        for (int v : graph.get(u)) {
+//            if (visited[v] == 0) {
+//                dfs(v);
+//                if (!isValid)
+//                    return;
+//            } else if (visited[v] == 1) {
+//                isValid = false;
+//                return;
+//            }
+//        }
+//        visited[u] = 2;
+//        res[index--] = u;
+//    }
 
     public int[] findOrder(int numCourses, int[][] prerequisites) {
         return findOrderBFS(numCourses, prerequisites);
-    }
-
-    public int[] findOrderDFS(int numCourses, int[][] prerequisites) {
-        res = new int[numCourses];
-        visited = new int[numCourses];
-        isValid = true;
-        index = numCourses - 1;
-        graph = new HashMap<>();
-        for (int i = 0; i < numCourses; i++) {
-            graph.put(i, new ArrayList());
-        }
-        for (int[] pair : prerequisites) {
-            graph.get(pair[1]).add(pair[0]);
-        }
-        for (int i = 0; i < numCourses && isValid; i++) {
-            if (visited[i] == 0)
-                dfs(i);
-        }
-        if (!isValid)
-            return new int[]{};
-        return res;
-    }
-
-    private void dfs(int u) {
-        visited[u] = 1;
-        for (int v : graph.get(u)) {
-            if (visited[v] == 0) {
-                dfs(v);
-                if (!isValid)
-                    return;
-            } else if (visited[v] == 1) {
-                isValid = false;
-                return;
-            }
-        }
-        visited[u] = 2;
-        res[index--] = u;
-    }
-
-    public static void main(String[] args) {
-        findOrderSolution solution = new findOrderSolution();
-        System.out.println(Arrays.toString(solution.findOrder(2, new int[][]{})));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

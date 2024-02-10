@@ -1,7 +1,13 @@
 package leetcode.editor.cn;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class countSubstringsOffer2Solution {
+    public static void main(String[] args) {
+        countSubstringsOffer2Solution solution = new countSubstringsOffer2Solution();
+        System.out.println(solution.countSubstrings("abc"));
+    }
+
     public int countSubstrings(String s) {
         int res = 0;
         for (int i = 0; i < s.length(); i++) {
@@ -33,12 +39,6 @@ class countSubstringsOffer2Solution {
             }
         }
         return res;
-    }
-
-
-    public static void main(String[] args) {
-        countSubstringsOffer2Solution solution = new countSubstringsOffer2Solution();
-        System.out.println(solution.countSubstrings("abc"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

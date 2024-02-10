@@ -1,7 +1,7 @@
-package leetcode.editor.cn;//输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
-//
-// 
-//
+package leetcode.editor.cn;
+
+
+//输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
 // 示例 1: 
 //
 // 输入: [10,2]
@@ -11,15 +11,12 @@ package leetcode.editor.cn;//输入一个非负整数数组，把数组里所有
 //
 // 输入: [3,30,34,5,9]
 //输出: "3033459" 
-//
-// 
-//
+
 // 提示: 
 //
 // 
 // 0 < nums.length <= 100 
-// 
-//
+
 // 说明: 
 //
 // 
@@ -30,7 +27,6 @@ package leetcode.editor.cn;//输入一个非负整数数组，把数组里所有
 
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +34,12 @@ import java.util.stream.Collectors;
 class minNumberSolution {
 
     private List<String> list;
+
+    public static void main(String[] args) {
+        minNumberSolution solution = new minNumberSolution();
+        System.out.println(solution.minNumber(new int[]{0, 3, 2, 1}));
+    }
+
     public String minNumber(int[] nums) {
         list = new ArrayList<>();
         for (int num : nums) {
@@ -62,16 +64,11 @@ class minNumberSolution {
         while (i < j) {
             while (i < j && (list.get(j) + pivot).compareTo(pivot + list.get(j)) >= 0) j--;
             list.set(i, list.get(j));
-            while (i < j && (list.get(i) + pivot).compareTo(pivot+ list.get(i)) <= 0) i++;
+            while (i < j && (list.get(i) + pivot).compareTo(pivot + list.get(i)) <= 0) i++;
             list.set(j, list.get(i));
         }
         list.set(j, pivot);
         return j;
-    }
-
-    public static void main(String[] args) {
-        minNumberSolution solution = new minNumberSolution();
-        System.out.println(solution.minNumber(new int[]{0,3,2,1}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

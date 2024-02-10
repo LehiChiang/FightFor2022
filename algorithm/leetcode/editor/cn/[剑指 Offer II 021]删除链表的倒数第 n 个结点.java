@@ -2,17 +2,23 @@ package leetcode.editor.cn;//leetcode submit region begin(Prohibit modification 
 
 import datastructure.ListNode;
 
+
 /**
  * Definition for singly-linked list.
  * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * int val;
+ * ListNode next;
+ * ListNode() {}
+ * ListNode(int val) { this.val = val; }
+ * ListNode(int val, ListNode next) { this.val = val; this.next = next; }
  * }
  */
 class removeNthFromEndOffer2Solution {
+    public static void main(String[] args) {
+        removeNthFromEndOffer2Solution solution = new removeNthFromEndOffer2Solution();
+        System.out.println(solution.removeNthFromEnd(ListNode.buildLinkedList(1, 2, 3, 4, 5), 2));
+    }
+
     public ListNode removeNthFromEnd(ListNode head, int n) {
         if (head == null || n < 1) return head;
         ListNode node = head;
@@ -29,11 +35,6 @@ class removeNthFromEndOffer2Solution {
             pre.next = pre.next.next;
             return head;
         }
-    }
-
-    public static void main(String[] args) {
-        removeNthFromEndOffer2Solution solution = new removeNthFromEndOffer2Solution();
-        System.out.println(solution.removeNthFromEnd(ListNode.buildLinkedList(1,2,3,4,5), 2));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

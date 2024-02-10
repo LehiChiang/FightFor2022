@@ -1,7 +1,14 @@
 package leetcode.editor.cn;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class robOffer2Solution {
+    public static void main(String[] args) {
+        robOffer2Solution solution = new robOffer2Solution();
+        System.out.println(solution.rob(new int[]{2, 1, 1, 2}));
+        System.out.println(solution.rob(new int[]{2, 7, 9, 3, 1}));
+    }
+
     public int rob(int[] nums) {
         int len = nums.length;
         if (len == 1)
@@ -15,12 +22,6 @@ class robOffer2Solution {
             dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);
         }
         return dp[len - 1];
-    }
-
-    public static void main(String[] args) {
-        robOffer2Solution solution = new robOffer2Solution();
-        System.out.println(solution.rob(new int[]{2,1,1,2}));
-        System.out.println(solution.rob(new int[]{2,7,9,3,1}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

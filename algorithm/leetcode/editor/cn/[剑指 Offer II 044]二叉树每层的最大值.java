@@ -8,6 +8,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 class largestValuesOffer2Solution {
+    public static void main(String[] args) {
+        largestValuesOffer2Solution solution = new largestValuesOffer2Solution();
+        System.out.println(solution.largestValues(TreeNode.deserialize("1,null,2")));
+    }
+
     public List<Integer> largestValues(TreeNode root) {
         List<Integer> list = new ArrayList<>();
         if (root == null)
@@ -27,11 +32,6 @@ class largestValuesOffer2Solution {
             list.add(max);
         }
         return list;
-    }
-
-    public static void main(String[] args) {
-        largestValuesOffer2Solution solution = new largestValuesOffer2Solution();
-        System.out.println(solution.largestValues(TreeNode.deserialize("1,null,2")));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

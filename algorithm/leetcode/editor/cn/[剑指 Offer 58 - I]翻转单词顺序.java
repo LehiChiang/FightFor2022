@@ -1,7 +1,13 @@
 package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
+
 class reverseWordsOfferSolution {
+    public static void main(String[] args) {
+        reverseWordsOfferSolution solution = new reverseWordsOfferSolution();
+        System.out.println(solution.reverseWords("hello my    name is lehi"));
+    }
+
     public String reverseWords(String s) {
         s = s.trim();
         int end = s.length() - 1, start = end;
@@ -13,11 +19,6 @@ class reverseWordsOfferSolution {
             end = start;
         }
         return stringBuilder.toString().trim();
-    }
-
-    public static void main(String[] args) {
-        reverseWordsOfferSolution solution = new reverseWordsOfferSolution();
-        System.out.println(solution.reverseWords("hello my    name is lehi"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

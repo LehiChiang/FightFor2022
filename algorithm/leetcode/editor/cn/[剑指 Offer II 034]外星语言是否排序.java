@@ -3,8 +3,14 @@ package leetcode.editor.cn;
 import java.util.HashMap;
 import java.util.Map;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class isAlienSortedOffer2Solution {
+    public static void main(String[] args) {
+        isAlienSortedOffer2Solution solution = new isAlienSortedOffer2Solution();
+        System.out.println(solution.isAlienSorted(new String[]{"apple", "app"}, "abcdefghijklmnopqrstuvwxyz"));
+    }
+
     public boolean isAlienSorted(String[] words, String order) {
         Map<Character, Integer> map = new HashMap<>();
         for (int i = 0; i < order.length(); i++)
@@ -25,11 +31,6 @@ class isAlienSortedOffer2Solution {
                 return false;
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        isAlienSortedOffer2Solution solution = new isAlienSortedOffer2Solution();
-        System.out.println(solution.isAlienSorted(new String[]{"apple", "app"}, "abcdefghijklmnopqrstuvwxyz"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

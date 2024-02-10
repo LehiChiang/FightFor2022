@@ -8,6 +8,12 @@ import java.util.List;
 class combinationSumOffer2Solution {
 
     private List<List<Integer>> res;
+
+    public static void main(String[] args) {
+        combinationSumOffer2Solution solution = new combinationSumOffer2Solution();
+        System.out.println(solution.combinationSum(new int[]{2, 3, 6, 7}, 7));
+    }
+
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
         res = new ArrayList<>();
         dfs(candidates, target, 0, new LinkedList<>());
@@ -26,11 +32,6 @@ class combinationSumOffer2Solution {
             dfs(candidates, target - candidates[i], i, path);
             path.removeLast();
         }
-    }
-
-    public static void main(String[] args) {
-        combinationSumOffer2Solution solution = new combinationSumOffer2Solution();
-        System.out.println(solution.combinationSum(new int[]{2,3,6,7}, 7));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

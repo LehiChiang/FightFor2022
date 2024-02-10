@@ -9,6 +9,13 @@ class partitionOffer2Solution {
 
     private List<List<String>> res;
     private boolean[][] dp;
+
+
+    public static void main(String[] args) {
+        partitionOffer2Solution solution = new partitionOffer2Solution();
+        System.out.println(Arrays.deepToString(solution.partition("google")));
+    }
+
     public String[][] partition(String s) {
         res = new ArrayList<>();
         char[] charArray = s.toCharArray();
@@ -42,11 +49,6 @@ class partitionOffer2Solution {
                 path.remove(path.size() - 1);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        partitionOffer2Solution solution = new partitionOffer2Solution();
-        System.out.println(Arrays.deepToString(solution.partition("aaa")));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

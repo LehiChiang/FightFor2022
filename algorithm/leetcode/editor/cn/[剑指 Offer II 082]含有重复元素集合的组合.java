@@ -9,6 +9,12 @@ import java.util.List;
 class combinationSum2Offer2Solution {
 
     private List<List<Integer>> res;
+
+    public static void main(String[] args) {
+        combinationSum2Offer2Solution solution = new combinationSum2Offer2Solution();
+        System.out.println(solution.combinationSum2(new int[]{10, 1, 2, 7, 6, 1, 5}, 8));
+    }
+
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         res = new ArrayList<>();
         Arrays.sort(candidates);
@@ -30,11 +36,6 @@ class combinationSum2Offer2Solution {
             dfs(candidates, target - candidates[i], i + 1, path);
             path.removeLast();
         }
-    }
-
-    public static void main(String[] args) {
-        combinationSum2Offer2Solution solution = new combinationSum2Offer2Solution();
-        System.out.println(solution.combinationSum2(new int[]{10,1,2,7,6,1,5}, 8));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

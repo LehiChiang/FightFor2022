@@ -1,27 +1,30 @@
 package leetcode.editor.cn;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class replaceWordsOffer2Solution {
 
-    class Trie {
-        Trie[] children;
-        boolean isEnd;
-        public Trie() {
-            children = new Trie[26];
-            isEnd = false;
-        }
-    }
-
     private Trie trie;
+
+    public static void main(String[] args) {
+        replaceWordsOffer2Solution solution = new replaceWordsOffer2Solution();
+        System.out.println(
+                solution.replaceWords(
+                        new ArrayList<>() {{
+                            add("a");
+                            add("aa");
+                            add("aaa");
+                            add("aaaa");
+                        }},
+                        "a aa a aaaa aaa aaa aaa aaaaaa bbb baba ababa"));
+    }
 
     public String replaceWords(List<String> dictionary, String sentence) {
         trie = new Trie();
         String[] words = sentence.split(" ");
+        // 构建字典前缀树
         for (String prefix : dictionary) {
             insert(trie, prefix);
         }
@@ -70,12 +73,14 @@ class replaceWordsOffer2Solution {
         node.isEnd = true;
     }
 
-    public static void main(String[] args) {
-        replaceWordsOffer2Solution solution = new replaceWordsOffer2Solution();
-        System.out.println(
-                solution.replaceWords(
-                        new ArrayList<>(){{add("a");add("aa");add("aaa");add("aaaa");}},
-                        "a aa a aaaa aaa aaa aaa aaaaaa bbb baba ababa"));
+    class Trie {
+        Trie[] children;
+        boolean isEnd;
+
+        public Trie() {
+            children = new Trie[26];
+            isEnd = false;
+        }
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

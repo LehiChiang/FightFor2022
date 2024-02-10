@@ -1,4 +1,7 @@
-package leetcode.editor.cn;//给定一个整数数组和一个整数 k ，请找到该数组中和为 k 的连续子数组的个数。
+package leetcode.editor.cn;
+
+
+//给定一个整数数组和一个整数 k ，请找到该数组中和为 k 的连续子数组的个数。
 //
 // 
 //
@@ -40,6 +43,11 @@ import java.util.Map;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class subarraySumOffer2Solution {
+    public static void main(String[] args) {
+        subarraySumOffer2Solution solution = new subarraySumOffer2Solution();
+        System.out.println(solution.subarraySum(new int[]{1, 1, 1}, 2));
+    }
+
     public int subarraySum(int[] nums, int k) {
         if (nums.length == 0)
             return 0;
@@ -54,11 +62,6 @@ class subarraySumOffer2Solution {
             map.put(preSum, map.getOrDefault(preSum, 0) + 1);
         }
         return res;
-    }
-
-    public static void main(String[] args) {
-        subarraySumOffer2Solution solution = new subarraySumOffer2Solution();
-        System.out.println(solution.subarraySum(new int[]{1,1,1}, 2));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

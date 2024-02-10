@@ -1,4 +1,6 @@
-package leetcode.editor.cn;//给定一个已按照 升序排列 的整数数组 numbers ，请你从数组中找出两个数满足相加之和等于目标数 target 。
+package leetcode.editor.cn;
+
+//给定一个已按照 升序排列 的整数数组 numbers ，请你从数组中找出两个数满足相加之和等于目标数 target 。
 //
 // 函数应该以长度为 2 的整数数组的形式返回这两个数的下标值。numbers 的下标 从 0 开始计数 ，所以答案数组应当满足 0 <= answer[0]
 // < answer[1] < numbers.length 。 
@@ -52,6 +54,11 @@ import java.util.Arrays;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class twoSumOffer2Solution {
+    public static void main(String[] args) {
+        twoSumOffer2Solution solution = new twoSumOffer2Solution();
+        System.out.println(Arrays.toString(solution.twoSum(new int[]{-1, 0}, -1)));
+    }
+
     public int[] twoSum(int[] numbers, int target) {
         int left = 0, right = numbers.length - 1;
         while (left < right) {
@@ -63,11 +70,6 @@ class twoSumOffer2Solution {
                 break;
         }
         return new int[]{left, right};
-    }
-
-    public static void main(String[] args) {
-        twoSumOffer2Solution solution = new twoSumOffer2Solution();
-        System.out.println(Arrays.toString(solution.twoSum(new int[]{-1, 0}, -1)));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

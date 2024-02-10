@@ -2,6 +2,12 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class minEatingSpeedOffer2Solution {
+
+    public static void main(String[] args) {
+        minEatingSpeedOffer2Solution solution = new minEatingSpeedOffer2Solution();
+        System.out.println(solution.minEatingSpeed(new int[]{3, 6, 7, 11}, 8));
+    }
+
     public int minEatingSpeed(int[] piles, int h) {
         int left = 1, right = 1_000_000_000;
         while (left < right) {
@@ -24,11 +30,6 @@ class minEatingSpeedOffer2Solution {
                 hours++;
         }
         return hours;
-    }
-
-    public static void main(String[] args) {
-        minEatingSpeedOffer2Solution solution = new minEatingSpeedOffer2Solution();
-        System.out.println(solution.minEatingSpeed(new int[]{3,6,7,11}, 8));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

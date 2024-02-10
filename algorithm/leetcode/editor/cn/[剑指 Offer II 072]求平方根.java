@@ -3,6 +3,12 @@ package leetcode.editor.cn;
 //leetcode submit region begin(Prohibit modification and deletion)
 class mySqrtOffer2Solution {
 
+
+    public static void main(String[] args) {
+        mySqrtOffer2Solution solution = new mySqrtOffer2Solution();
+        System.out.println(solution.mySqrt(2147395599));
+    }
+
     public int mySqrt(int x) {
         if (x == 0 || x == 1)
             return x;
@@ -13,16 +19,10 @@ class mySqrtOffer2Solution {
             if ((long) mid * mid <= x) {
                 left = mid + 1;
                 res = mid;
-            }
-            else
+            } else
                 right = mid;
         }
         return res;
-    }
-
-    public static void main(String[] args) {
-        mySqrtOffer2Solution solution = new mySqrtOffer2Solution();
-        System.out.println(solution.mySqrt(2147395599));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

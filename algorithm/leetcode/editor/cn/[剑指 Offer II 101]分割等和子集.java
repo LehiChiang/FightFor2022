@@ -2,6 +2,18 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class canPartitionOffer2Solution {
+
+    public static void main(String[] args) {
+        canPartitionOffer2Solution solution = new canPartitionOffer2Solution();
+        System.out.println(solution.canPartition(new int[]{2, 2, 1, 1}));
+    }
+
+    /**
+     * 背包变种
+     *
+     * @param nums
+     * @return
+     */
     public boolean canPartition(int[] nums) {
         int sum = 0;
         for (int num : nums)
@@ -21,11 +33,6 @@ class canPartitionOffer2Solution {
             }
         }
         return dp[nums.length][sum];
-    }
-
-    public static void main(String[] args) {
-        canPartitionOffer2Solution solution = new canPartitionOffer2Solution();
-        System.out.println(solution.canPartition(new int[]{2, 2, 1, 1}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

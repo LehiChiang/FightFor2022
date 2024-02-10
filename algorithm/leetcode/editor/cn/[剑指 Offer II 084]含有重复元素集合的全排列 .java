@@ -10,6 +10,12 @@ class permuteUniqueOffer2Solution {
 
     private List<List<Integer>> res;
     private boolean[] visited;
+
+    public static void main(String[] args) {
+        permuteUniqueOffer2Solution solution = new permuteUniqueOffer2Solution();
+        System.out.println(solution.permuteUnique(new int[]{1, 1, 2}));
+    }
+
     public List<List<Integer>> permuteUnique(int[] nums) {
         res = new ArrayList<>();
         visited = new boolean[nums.length];
@@ -34,11 +40,6 @@ class permuteUniqueOffer2Solution {
             visited[i] = false;
             path.removeLast();
         }
-    }
-
-    public static void main(String[] args) {
-        permuteUniqueOffer2Solution solution = new permuteUniqueOffer2Solution();
-        System.out.println(solution.permuteUnique(new int[]{1,1,2}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

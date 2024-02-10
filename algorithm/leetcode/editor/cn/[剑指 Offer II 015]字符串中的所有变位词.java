@@ -3,8 +3,14 @@ package leetcode.editor.cn;
 import java.util.ArrayList;
 import java.util.List;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class findAnagramsOffer2Solution {
+    public static void main(String[] args) {
+        findAnagramsOffer2Solution solution = new findAnagramsOffer2Solution();
+        System.out.println(solution.findAnagrams("cbaebabacd", "abc"));
+    }
+
     public List<Integer> findAnagrams(String s, String p) {
         List<Integer> list = new ArrayList<>();
         int[] sWin = new int[26];
@@ -23,11 +29,6 @@ class findAnagramsOffer2Solution {
                 list.add(start);
         }
         return list;
-    }
-
-    public static void main(String[] args) {
-        findAnagramsOffer2Solution solution = new findAnagramsOffer2Solution();
-        System.out.println(solution.findAnagrams("cbaebabacd", "abc"));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

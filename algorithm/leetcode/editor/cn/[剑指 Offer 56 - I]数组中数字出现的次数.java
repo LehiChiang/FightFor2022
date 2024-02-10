@@ -13,27 +13,27 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class singleNumbersSolution {
+    public static void main(String[] args) {
+        singleNumbersSolution solution = new singleNumbersSolution();
+        int[] res = solution.singleNumbers(new int[]{1, 2, 10, 4, 1, 4, 3, 3});
+    }
+
     public int[] singleNumbers(int[] nums) {
         int xorAll = 0;
         int resA = 0, resB = 0;
-        for (int num : nums){
+        for (int num : nums) {
             xorAll ^= num;
         }
         int mask = 1;
         while ((mask & xorAll) == 0)
             mask <<= 1;
-        for (int num : nums){
+        for (int num : nums) {
             if ((num & mask) == 0)
                 resA ^= num;
             else
                 resB ^= num;
         }
         return new int[]{resA, resB};
-    }
-
-    public static void main(String[] args) {
-        singleNumbersSolution solution = new singleNumbersSolution();
-        int[] res = solution.singleNumbers(new int[]{1,2,10,4,1,4,3,3});
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

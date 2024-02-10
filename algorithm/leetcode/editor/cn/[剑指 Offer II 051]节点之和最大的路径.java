@@ -2,10 +2,15 @@ package leetcode.editor.cn;//leetcode submit region begin(Prohibit modification 
 
 import datastructure.TreeNode;
 
-
 class maxPathSumOffer2Solution {
 
     private int maxPathSum = Integer.MIN_VALUE;
+
+    public static void main(String[] args) {
+        maxPathSumOffer2Solution solution = new maxPathSumOffer2Solution();
+        System.out.println(solution.maxPathSum(TreeNode.deserialize("1,-2,3")));
+    }
+
     public int maxPathSum(TreeNode root) {
         dfs(root);
         return maxPathSum;
@@ -27,11 +32,6 @@ class maxPathSumOffer2Solution {
         int rightSum = Math.max(dfs(root.right), 0);
         maxPathSum = Math.max(leftSum + root.val + rightSum, maxPathSum);
         return root.val + Math.max(leftSum, rightSum);
-    }
-
-    public static void main(String[] args) {
-        maxPathSumOffer2Solution solution = new maxPathSumOffer2Solution();
-        System.out.println(solution.maxPathSum(TreeNode.deserialize("1,-2,3")));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

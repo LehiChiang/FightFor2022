@@ -5,15 +5,20 @@ import datastructure.ListNode;
 /**
  * Definition for singly-linked list.
  * class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode(int x) {
- *         val = x;
- *         next = null;
- *     }
+ * int val;
+ * ListNode next;
+ * ListNode(int x) {
+ * val = x;
+ * next = null;
+ * }
  * }
  */
 class detectCycleOffer2Solution {
+    public static void main(String[] args) {
+        detectCycleOffer2Solution solution = new detectCycleOffer2Solution();
+        System.out.println(solution.detectCycle(ListNode.buildLinkedList(3, 2, 0, -4)));
+    }
+
     public ListNode detectCycle(ListNode head) {
         boolean hasCycle = false;
         ListNode slow = head, fast = head;
@@ -32,11 +37,6 @@ class detectCycleOffer2Solution {
             fast = fast.next;
         }
         return slow;
-    }
-
-    public static void main(String[] args) {
-        detectCycleOffer2Solution solution = new detectCycleOffer2Solution();
-        System.out.println(solution.detectCycle(ListNode.buildLinkedList(3,2,0,-4)));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

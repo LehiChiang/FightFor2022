@@ -5,6 +5,12 @@ import java.util.*;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class topKFrequentSolution {
+
+    public static void main(String[] args) {
+        topKFrequentSolution solution = new topKFrequentSolution();
+        System.out.println(Arrays.toString(solution.topKFrequent(new int[]{1, 1, 1, 2, 2, 3}, 2)));
+    }
+
     public int[] topKFrequent(int[] nums, int k) {
         Map<Integer, Integer> map = new HashMap<>();
         for (int num : nums)
@@ -22,11 +28,6 @@ class topKFrequentSolution {
         for (int i = 0; i < k; i++)
             res[i] = queue.poll()[0];
         return res;
-    }
-
-    public static void main(String[] args) {
-        topKFrequentSolution solution = new topKFrequentSolution();
-        System.out.println(Arrays.toString(solution.topKFrequent(new int[]{1,1,1,2,2,3}, 2)));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

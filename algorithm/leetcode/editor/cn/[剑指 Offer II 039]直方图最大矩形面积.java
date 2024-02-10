@@ -4,8 +4,14 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class largestRectangleAreaOffer2Solution {
+    public static void main(String[] args) {
+        largestRectangleAreaOffer2Solution solution = new largestRectangleAreaOffer2Solution();
+        System.out.println(solution.largestRectangleArea(new int[]{2, 1, 5, 6, 2, 3}));
+    }
+
     public int largestRectangleArea(int[] heights) {
         int area = 0, n = heights.length;
         int[] leftMin = new int[n];
@@ -23,11 +29,6 @@ class largestRectangleAreaOffer2Solution {
         for (int i = 0; i < heights.length; i++)
             area = Math.max(area, heights[i] * (rightMin[i] - leftMin[i] - 1));
         return area;
-    }
-
-    public static void main(String[] args) {
-        largestRectangleAreaOffer2Solution solution = new largestRectangleAreaOffer2Solution();
-        System.out.println(solution.largestRectangleArea(new int[]{2,1,5,6,2,3}));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

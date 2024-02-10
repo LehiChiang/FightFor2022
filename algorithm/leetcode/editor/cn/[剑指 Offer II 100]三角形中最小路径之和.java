@@ -3,8 +3,33 @@ package leetcode.editor.cn;
 import java.util.ArrayList;
 import java.util.List;
 
+
 //leetcode submit region begin(Prohibit modification and deletion)
 class minimumTotalOffer2Solution {
+    public static void main(String[] args) {
+        minimumTotalOffer2Solution solution = new minimumTotalOffer2Solution();
+        List<List<Integer>> list = new ArrayList<>();
+        list.add(new ArrayList<>() {{
+            add(2);
+        }});
+        list.add(new ArrayList<>() {{
+            add(3);
+            add(4);
+        }});
+        list.add(new ArrayList<>() {{
+            add(6);
+            add(5);
+            add(7);
+        }});
+        list.add(new ArrayList<>() {{
+            add(4);
+            add(1);
+            add(8);
+            add(3);
+        }});
+        System.out.println(solution.minimumTotal(list));
+    }
+
     public int minimumTotal(List<List<Integer>> triangle) {
         int n = triangle.size();
         int[] dp = new int[n];
@@ -35,16 +60,6 @@ class minimumTotalOffer2Solution {
         for (int i = 1; i < n; i++)
             res = Math.min(res, dp[n - 1][i]);
         return res;
-    }
-
-    public static void main(String[] args) {
-        minimumTotalOffer2Solution solution = new minimumTotalOffer2Solution();
-        List<List<Integer>> list = new ArrayList<>();
-        list.add(new ArrayList<>(){{add(2);}});
-        list.add(new ArrayList<>(){{add(3);add(4);}});
-        list.add(new ArrayList<>(){{add(6);add(5);add(7);}});
-        list.add(new ArrayList<>(){{add(4);add(1);add(8);add(3);}});
-        System.out.println(solution.minimumTotal(list));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

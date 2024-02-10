@@ -2,6 +2,12 @@ package leetcode.editor.cn;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class uniquePathsOffer2Solution {
+
+    public static void main(String[] args) {
+        uniquePathsOffer2Solution solution = new uniquePathsOffer2Solution();
+        System.out.println(solution.uniquePaths(3, 7));
+    }
+
     public int uniquePaths(int m, int n) {
         int[][] dp = new int[m][n];
         for (int i = 0; i < m; i++)
@@ -14,11 +20,6 @@ class uniquePathsOffer2Solution {
             }
         }
         return dp[m - 1][n - 1];
-    }
-
-    public static void main(String[] args) {
-        uniquePathsOffer2Solution solution = new uniquePathsOffer2Solution();
-        System.out.println(solution.uniquePaths(3, 7));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

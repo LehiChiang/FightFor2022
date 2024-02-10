@@ -1,14 +1,15 @@
 package leetcode.editor.cn;
 
-import java.util.Arrays;
 import java.util.Random;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
 
+
     private int[] preSum;
     private int sum;
     private Random random;
+
     public Solution(int[] w) {
         preSum = new int[w.length];
         preSum[0] = w[0];
@@ -18,7 +19,12 @@ class Solution {
         sum = preSum[preSum.length - 1];
         random = new Random();
     }
-    
+
+    public static void main(String[] args) {
+        Solution solution = new Solution(new int[]{3, 1, 2, 4});
+        System.out.println(solution.getRandIndex(10));
+    }
+
     public int pickIndex() {
         int randNum = random.nextInt(sum) + 1;
         return getRandIndex(randNum);
@@ -35,11 +41,6 @@ class Solution {
             else right = mid;
         }
         return left;
-    }
-
-    public static void main(String[] args) {
-        Solution solution = new Solution(new int[]{3,1,2,4});
-        System.out.println(solution.getRandIndex(10));
     }
 }
 
