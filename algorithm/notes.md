@@ -2739,6 +2739,74 @@ class Solution {
     }
 ```
 
+**Go语言使用堆**
+
+```go
+package main
+
+import (
+    "fmt"
+    "container/heap"    
+)
+
+//heap提供了接口，需要自己实现如下方法
+type Heap []int
+
+//构造的是小顶堆，大顶堆只需要改一下下面的符号
+func (h *Heap) Less(i, j int) bool {
+    return (*h)[i] < (*h)[j]
+}
+
+func (h *Heap) Swap(i, j int) {
+    (*h)[i], (*h)[j] = (*h)[j], (*h)[i]
+}
+
+func (h *Heap) Len() int {
+    return len(*h)
+}
+
+func (h *Heap) Pop() interface{} {
+    x := (*h)[h.Len() - 1]
+    *h = (*h)[: h.Len() - 1]
+    return x
+}
+
+func (h *Heap) Push(x interface{}) {
+    *h = append(*h, x.(int))
+}
+
+func (h *Heap) Remove(idx int) interface{} {
+    h.Swap(idx, h.Len() - 1)
+    return h.Pop()
+}
+
+func main(){
+    
+    //创建一个heap
+    h := &Heap{}
+    heap.Init(h)
+    //向heap中插入元素
+    h.Push(5)
+    h.Push(2)
+
+    //输出heap中的元素，相当于一个数组，原始数组
+    fmt.Println(h)
+
+    //这里必须要reheapify，建立好堆了
+    heap.Init(h)
+
+    //小顶堆对应的元素在数组中的位置
+    fmt.Println(h)
+
+    //移除下标为5的元素，下标从0开始
+    h.Remove(5)
+
+    //按照堆的形式输出
+    for h.Len() > 0 {
+        fmt.Printf("%d ", heap.Pop(h))
+    }
+}
+```
 
 
 ### 【×】环形子数组的最大和
@@ -3619,7 +3687,7 @@ public class OutBDNode {
 
 
 
-### 单向链表的快速排序
+### 3. 单向链表的快速排序
 
 **算法思想**：对于一个链表，以head节点的值作为key，然后遍历之后的节点，可以得到一个小于key的链表和大于等于key的链表；由此递归可以对两个链表分别进行快速。这里用到了快速排序的思想即经过一趟排序能够将小于key的元素放在一边，将大于等于key的元素放在另一边。
 
@@ -3814,7 +3882,7 @@ public class DoubleLinkedListQuickSort {
 
 
 
-### 两两交换链表中的节点
+### 6. 两两交换链表中的节点
 
 给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
 
@@ -4065,7 +4133,7 @@ public ListNode sortRecurAndMerge(ListNode head) {
 
 
 
-### 删除排序链表中的重复元素 II
+### 9. 删除排序链表中的重复元素 II
 
 给定一个已排序的链表的头 `head` ， 删除原始链表中所有重复数字的节点，只留下不同的数字 。返回 已排序的链表 。
 
@@ -4101,7 +4169,7 @@ class Solution {
 
 
 
-### K个一组翻转链表
+### 10. K个一组翻转链表
 
 ```java
     public ListNode reverseKGroup(ListNode head, int k) {
@@ -5048,7 +5116,7 @@ private boolean isPalindrome(String s, int start, int end) {
 
 ### 15. 最长回文子串
 
-给一个字符串 `s`，找到 `s` 中最长的回文子串。如果字符串的反序与原始字符串相同，则该字符串称为回文字符串。
+给一个字符串 `s`，找到 `s` 中最长的回文子串。
 
 **示例 1：**
 
@@ -6095,7 +6163,7 @@ public int find(int p) {
 
 
 
-### LRU
+### 3. LRU
 
 - 这题虽然是让你写一种缓存算法，但其实是纯粹的数据结构考察，做题时先给面试官讲一遍`LRU`和`LinkedHashMap`的八股，再自己使用双向链表实现就好，考虑自己写输入输出
 - 初始化的时候就建好链表的`head`和`tail`，能显著减少代码的复杂度
@@ -6206,7 +6274,7 @@ class LRUCache {
 
 
 
-### LFU
+### 4. LFU
 
 **最不经常使用算法（LFU）：**这个缓存算法使用一个计数器来记录条目被访问的频率。通过使用LFU缓存算法，最低访问数的条目首先被移除。当存在平局（即两个或更多个键具有相同使用频率）时，应该去除 **最近最久未使用** 的键。
 
@@ -6381,6 +6449,72 @@ class MyHashSet {
  * obj.remove(key);
  * boolean param_3 = obj.contains(key);
  */
+```
+
+**Go语言版本**
+
+```go
+package main
+
+import (
+    "container/list"
+    "fmt"
+)
+
+type MyHashSetInterface interface {
+    add(key int64)
+    remove(key int64)
+    contains(key int64) bool
+    hash(key int64) int64
+}
+
+type MyHashSet struct {
+    BASE   int64       // hash取模
+    bucket []list.List // hash桶
+}
+
+func (h MyHashSet) add(key int64) {
+    if !h.contains(key) {
+       hashKey := h.hash(key)
+       h.bucket[hashKey].PushBack(key)
+    }
+}
+
+func (h MyHashSet) remove(key int64) {
+    hashKey := h.hash(key)
+    if h.contains(key) {
+       for e := h.bucket[hashKey].Front(); e != nil; e = e.Next() {
+          if e.Value.(int64) == key {
+             h.bucket[hashKey].Remove(e)
+          }
+       }
+    }
+}
+
+func (h MyHashSet) contains(key int64) bool {
+    hashKey := h.hash(key)
+    for e := h.bucket[hashKey].Front(); e != nil; e = e.Next() {
+       if e.Value.(int64) == key {
+          return true
+       }
+    }
+    return false
+}
+
+func (h MyHashSet) hash(key int64) int64 {
+    return key % h.BASE
+}
+
+func main() {
+    hashSet := MyHashSet{BASE: 13}
+    hashSet.bucket = make([]list.List, hashSet.BASE)
+    hashSet.add(3)
+    hashSet.add(7)
+    hashSet.add(9)
+    hashSet.remove(3)
+    fmt.Println(hashSet.contains(3))
+    fmt.Println(hashSet.contains(9))
+}
 ```
 
 
@@ -6748,7 +6882,7 @@ class RandomizedSet {
 
 
 
-### 区间内查询数字的频率
+### 13. 区间内查询数字的频率
 
 请你实现 `RangeFreqQuery` 类：
 
@@ -6826,7 +6960,7 @@ class RangeFreqQuery {
 
 # 五. 栈
 
-### 出栈顺序的判断
+### 1. 出栈顺序的判断
 
 思想：每次将入栈中的元素入栈，然后随即判断当前出栈列表中的第一个元素是不是入栈元素的栈顶元素，如果是就将出栈列表的元素下移动。
 
@@ -7542,7 +7676,7 @@ private int dfs(TreeNode root, int targetSum) {
 
 
 
-### 删除二叉搜索树中的节点
+### 9. 删除二叉搜索树中的节点
 
 除某节点，可以用左子树的最大值或者右子树的最小值替换，这里选右子树最小值替换要删除的节点
 
@@ -7571,7 +7705,7 @@ private TreeNode delete(TreeNode root, int key) {
 
 
 
-### 二叉搜索树的最近公共祖先
+### 10. 二叉搜索树的最近公共祖先
 
 既然是二叉搜索树的祖先，那么按照二叉搜索树的规则，如果`p,q`两个节点都小于根节点，那么在左子树寻找；如果`p,q`两个节点都大于根节点，那么就在右子树中寻找；如果一个比根节点的值小，一个比根结点的值大，那么肯定就说明这`p,q`两个节点分别在不同的子树中，**当前根节点**就是他们的最近公共祖先。
 
@@ -7590,7 +7724,7 @@ private TreeNode delete(TreeNode root, int key) {
 
 
 
-### 二叉树的最近公共祖先
+### 11. 二叉树的最近公共祖先
 
 左右子树分别寻找`p`, `q`两个节点，找到了就返回当前的节点，没找到就返回`null`；
 
@@ -7636,6 +7770,8 @@ class Solution {
 ```
 
 迭代法参考中序非递归遍历，中序遍历是升序的！否则返回`false`。
+
+
 
 ```java
 class Solution {
@@ -7903,6 +8039,12 @@ BFS版本的好理解
 
 
 ### 19. 二叉树剪枝
+
+给定一个二叉树 **根节点** `root` ，树的每个节点的值要么是 `0`，要么是 `1`。请剪除该二叉树中所有节点的值为 `0` 的子树。
+
+节点 `node` 的子树为 `node` 本身，以及所有 `node` 的后代。
+
+<img src="https://s3-lc-upload.s3.amazonaws.com/uploads/2018/04/06/1028_1.png" alt="img" style="zoom:40%;" />
 
 ```java
     public TreeNode pruneTree(TreeNode root) {
@@ -8513,7 +8655,7 @@ bfs邻接矩阵表示的
 
 
 
-### 判断二分图
+### 6. 判断二分图
 
 dfs
 
@@ -8556,6 +8698,7 @@ bfs
     private boolean[] visited;
     private boolean[] color;
     private List<Integer>[] graph;
+
     public boolean possibleBipartition(int n, int[][] dislikes) {
         graph = buildGraph(n, dislikes);
         visited = new boolean[n + 1];
