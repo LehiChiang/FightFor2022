@@ -1,4 +1,4 @@
-| 最新修改时间 | 2024年1月17日                      |
+| 最新修改时间 | 2024年2月27日                      |
 | ------------ | ---------------------------------- |
 | 修改内容     | 重新排版，优化笔记内容             |
 | 笔记说明     | 按照数据结构分类，内部按照算法细分 |
@@ -1338,6 +1338,94 @@ public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
 
 
 
+### 5. 子数组最大平均数
+
+给你一个由 `n` 个元素组成的整数数组 `nums` 和一个整数 `k` 。请你找出平均数最大且 **长度为 `k`** 的连续子数组，并输出该最大平均数。任何误差小于 `10-5` 的答案都将被视为正确答案。
+
+**示例 1：**
+
+```
+输入：nums = [1,12,-5,-6,50,3], k = 4
+输出：12.75
+解释：最大平均数 (12-5-6+50)/4 = 51/4 = 12.75
+```
+
+**示例 2：**
+
+```
+输入：nums = [5], k = 1
+输出：5.00000
+```
+
+滑动窗口解法：
+
+```java
+    public double findMaxAverage(int[] nums, int k) {
+        double sum = 0, maxAvg = -10000000;
+        int start = 0, end = 0;
+        while (end < nums.length) {
+            sum += nums[end];
+            if (end - start + 1 == k) {
+                maxAvg = Math.max(maxAvg, sum / k);
+                sum -= nums[start];
+                start++;
+            }
+            end++;
+        }
+        return maxAvg;
+    }
+```
+
+
+
+### 6. 无重复数字的最长子数组的和
+
+本题对应力扣的[1695. 删除子数组的最大得分](https://leetcode-cn.com/problems/maximum-erasure-value/)
+
+给一个数组，求出其中的最长连续子数组的和，且子数组不包含重复元素。
+
+**示例 1：**
+
+```
+输入：nums = [4,2,4,5,6]
+输出：17
+解释：最优子数组是 [2,4,5,6]
+```
+
+**示例 2：**
+
+```
+输入：nums = [5,2,1,2,5,2,1,2,5]
+输出：8
+解释：最优子数组是 [5,2,1] 或 [1,2,5]
+```
+
+滑动窗口解法：（和无重复字符的最长子串思想一样）
+
+```java
+    public int maximumUniqueSubarray(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        int sum = 0, maxScore = Integer.MIN_VALUE;
+        int start = 0, end = 0;
+        while (end < nums.length) {
+             if (end > 0) {
+                 set.remove(nums[start]);
+                 sum -= nums[start];
+                 start++;
+             }
+             while (end < nums.length && !set.contains(nums[end])) {
+                 set.add(nums[end]);
+                 sum += nums[end];
+                 end++;
+             }
+             maxScore = Math.max(maxScore, sum);
+        }
+        return maxScore;
+    }
+```
+
+
+
 ## 【4】区间问题
 
 ### 1. 合并区间
@@ -1798,6 +1886,47 @@ public int[][] continuedCombineSum(int target) {
 ```
 
 
+
+### 6. 删除有序数组中的重复项 II
+
+给你一个有序数组 `nums` ，请你**[ 原地](http://baike.baidu.com/item/原地算法)** 删除重复出现的元素，使得出现次数超过两次的元素**只出现两次** ，返回删除后数组的新长度。
+
+**示例 1：**
+
+```
+输入：nums = [1,1,1,2,2,3]
+输出：5, nums = [1,1,2,2,3]
+解释：函数应返回新长度 length = 5, 并且原数组的前五个元素被修改为 1, 1, 2, 2, 3。 不需要考虑数组中超出新长度后面的元素。
+```
+
+**示例 2：**
+
+```
+输入：nums = [0,0,1,1,1,1,2,3,3]
+输出：7, nums = [0,0,1,1,2,3,3]
+解释：函数应返回新长度 length = 7, 并且原数组的前七个元素被修改为 0, 0, 1, 1, 2, 3, 3。不需要考虑数组中超出新长度后面的元素。
+```
+
+**代码：**
+
+双指针一个快指针，一个慢指针。慢指针表示检查好的元素的位置，快指针表示检查的元素总个数。比较`nums[fast]`和`nums[slow-2]`是否相等。如果相等那么需要把`slow`位置的值设置成`fast`位置的值。`slow`和`fast`初始化时相等，等于`2`。
+
+```go
+func removeDuplicates(nums []int) int {
+	if len(nums) <= 2 {
+		return len(nums)
+	}
+	slow, fast := 2, 2
+	for fast < len(nums) {
+		if nums[fast] != nums[slow-2] {
+			nums[slow] = nums[fast]
+			slow++
+		}
+		fast++
+	}
+	return slow
+}
+```
 
 
 
@@ -3377,154 +3506,7 @@ class Difference {
 
 
 
-### 划分为k个相等的子集
-
-给定一个整数数组 `nums` 和一个正整数 `k`，找出是否有可能把这个数组分成 `k` 个非空子集，其总和都相等。
-
-**示例 1：**
-
-```
-输入： nums = [4, 3, 2, 3, 5, 2, 1], k = 4
-输出： True
-说明： 有可能将其分成 4 个子集（5），（1,4），（2,3），（2,3）等于总和。
-```
-
-**示例 2:**
-
-```
-输入: nums = [1,2,3,4], k = 3
-输出: false
-```
-
-```java
-    private boolean[] visited;
-    private int subsetSum;
-    public boolean canPartitionKSubsets(int[] nums, int k) {
-        int sum = 0;
-        for (int num : nums) {
-            sum += num;
-        }
-        // 既然要分成K个相等和的子集，那么nums所有元素的和应该能背K整除，不能整除的，肯定分不成相等和的子集。
-        if (sum % k != 0)
-            return false;
-        visited = new boolean[nums.length];
-        subsetSum = sum / k;
-        return backtracking(nums, k, 0, 0);
-    }
-
-    private boolean backtracking(int[] nums, int k, int curSubsetSum, int curIndex) {
-        // 当K为1时，说明前K-1个子集都已经凑成了。sum还能把K整除，所以剩下的这最后一个的K肯定能构成。
-        if (k == 1)
-            return true;
-        // 当前和等于子集和的时候，说明当前已经找到了一个子集，那么k--，其他变量重新开始进行搜索。
-        if (curSubsetSum == subsetSum)
-            return backtracking(nums,k - 1, 0, 0);
-        // 逐元素搜索，将符合条件的元素加到curSubsetSum中，进行递归。
-        for (int i = curIndex; i < nums.length; i++) {
-            if (!visited[i] && curSubsetSum + nums[i] <= subsetSum) {
-                visited[i] = true;
-                if (backtracking(nums, k, curSubsetSum + nums[i], i + 1))
-                    return true;
-                visited[i] = false;
-            }
-        }
-        return false;
-    }
-```
-
-
-
-### 子数组最大平均数
-
-给你一个由 `n` 个元素组成的整数数组 `nums` 和一个整数 `k` 。请你找出平均数最大且 **长度为 `k`** 的连续子数组，并输出该最大平均数。任何误差小于 `10-5` 的答案都将被视为正确答案。
-
-**示例 1：**
-
-```
-输入：nums = [1,12,-5,-6,50,3], k = 4
-输出：12.75
-解释：最大平均数 (12-5-6+50)/4 = 51/4 = 12.75
-```
-
-**示例 2：**
-
-```
-输入：nums = [5], k = 1
-输出：5.00000
-```
-
-滑动窗口解法：
-
-```java
-    public double findMaxAverage(int[] nums, int k) {
-        double sum = 0, maxAvg = -10000000;
-        int start = 0, end = 0;
-        while (end < nums.length) {
-            sum += nums[end];
-            if (end - start + 1 == k) {
-                maxAvg = Math.max(maxAvg, sum / k);
-                sum -= nums[start];
-                start++;
-            }
-            end++;
-        }
-        return maxAvg;
-    }
-```
-
-
-
-
-
-### 无重复数字的最长子数组的和
-
-本题对应力扣的[1695. 删除子数组的最大得分](https://leetcode-cn.com/problems/maximum-erasure-value/)
-
-给一个数组，求出其中的最长连续子数组的和，且子数组不包含重复元素。
-
-**示例 1：**
-
-```
-输入：nums = [4,2,4,5,6]
-输出：17
-解释：最优子数组是 [2,4,5,6]
-```
-
-**示例 2：**
-
-```
-输入：nums = [5,2,1,2,5,2,1,2,5]
-输出：8
-解释：最优子数组是 [5,2,1] 或 [1,2,5]
-```
-
-滑动窗口解法：（和无重复字符的最长子串思想一样）
-
-```java
-    public int maximumUniqueSubarray(int[] nums) {
-        Set<Integer> set = new HashSet<>();
-        int sum = 0, maxScore = Integer.MIN_VALUE;
-        int start = 0, end = 0;
-        while (end < nums.length) {
-             if (end > 0) {
-                 set.remove(nums[start]);
-                 sum -= nums[start];
-                 start++;
-             }
-             while (end < nums.length && !set.contains(nums[end])) {
-                 set.add(nums[end]);
-                 sum += nums[end];
-                 end++;
-             }
-             maxScore = Math.max(maxScore, sum);
-        }
-        return maxScore;
-    }
-```
-
-
-
-### 字典树排序
+### 12. 字典树排序
 
 给你一个整数 `n` ，按字典序返回范围 `[1, n]` 内所有整数。
 
@@ -3573,7 +3555,51 @@ class Difference {
 
 # 二. 链表
 
-### 1. 链表中返回中间节点
+### 反转链表
+
+```go
+func reverseList(head *ListNode) *ListNode {
+    var prev *ListNode
+    curr := head
+    for curr != nil {
+        next := curr.Next
+        curr.Next = prev
+        prev = curr
+        curr = next
+    }
+    return prev
+}
+```
+
+
+
+### 相交链表
+
+```go
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    if headA == nil || headB == nil {
+        return nil
+    }
+    pa, pb := headA, headB
+    for pa != pb {
+        if pa == nil {
+            pa = headB
+        } else {
+            pa = pa.Next
+        }
+        if pb == nil {
+            pb = headA
+        } else {
+            pb = pb.Next
+        }
+    }
+    return pa
+}
+```
+
+
+
+### 链表中返回中间节点
 
 ```Java
 public class OutBDNode {
@@ -3655,7 +3681,7 @@ public class OutBDNode {
 
 
 
-### 2. BST转换成排序的循环双向链表
+### BST转换成排序的循环双向链表
 
 `left`指向前驱节点，`right`指向后继节点
 
@@ -3687,7 +3713,116 @@ public class OutBDNode {
 
 
 
-### 3. 单向链表的快速排序
+### 排序链表
+
+归并排序版本
+
+```java
+public ListNode sortRecurAndMerge(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode slow = head, fast = head.next; // 错误一：应该是head.next
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        ListNode tmp = slow.next;
+        slow.next = null;
+        ListNode leftPart = sortRecurAndMerge(head);
+        ListNode rightPart = sortRecurAndMerge(tmp);
+        ListNode newList = new ListNode(-1);
+        ListNode pointer = newList;
+        while (leftPart != null && rightPart != null) {
+            if (leftPart.val < rightPart.val) {
+                pointer.next = leftPart;
+                leftPart = leftPart.next;
+            } else {
+                pointer.next = rightPart;
+                rightPart = rightPart.next;
+            }
+            pointer = pointer.next;
+        }
+        pointer.next = leftPart == null ? rightPart : leftPart;
+        return newList.next;
+    }
+
+    public ListNode sortList(ListNode head) {
+        return sortRecurAndMerge(head);
+    }
+```
+
+迭代版本
+
+```java
+/**
+     * 迭代原地排序排序
+     * @param head
+     * @return
+     */
+    public ListNode sortIterative(ListNode head) {
+        if (head == null)
+            return head;
+        int len = 0;
+        ListNode count = head;
+        while (count != null) {
+            len++;
+            count = count.next;
+        }
+        ListNode dummyNode = new ListNode(-1, head);
+        for (int subLen = 1; subLen < len; subLen = subLen * 2) {
+             ListNode pre = dummyNode, cur = dummyNode.next;
+             while (cur != null) {
+                 ListNode head1 = cur;
+                 for (int i = 1; i < subLen && cur.next != null; i++) {
+                     cur = cur.next;
+                 }
+                 ListNode head2 = cur.next;
+                 cur.next = null;
+                 cur = head2;
+                 for (int i = 1; i < subLen && cur != null && cur.next != null; i++) {
+                     cur = cur.next;
+                 }
+                 ListNode next = null;
+                 if (cur != null) {
+                     next = cur.next;
+                     cur.next = null;
+                 }
+                 ListNode sortedSubList = mergeTwoLists(head1, head2);
+                 pre.next = sortedSubList;
+                 while (pre.next != null) {
+                     pre = pre.next;
+                 }
+                 cur = next; // 错误二：不用将所有节点都连上，将cur指向剩余的借点。
+             }
+        }
+        return dummyNode.next;
+    }
+
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode newList = new ListNode(-1);
+        ListNode pointer = newList, leftPart = l1, rightPart = l2;
+        while (leftPart != null && rightPart != null) {
+            if (leftPart.val < rightPart.val) {
+                pointer.next = leftPart;
+                leftPart = leftPart.next;
+            } else {
+                pointer.next = rightPart;
+                rightPart = rightPart.next;
+            }
+            pointer = pointer.next;
+        }
+        pointer.next = leftPart == null ? rightPart : leftPart;
+        return newList.next;
+    }
+
+    public ListNode sortList(ListNode head) {
+        return sortIterative(head);
+    }
+```
+
+
+
+### 单向链表的快速排序
 
 **算法思想**：对于一个链表，以head节点的值作为key，然后遍历之后的节点，可以得到一个小于key的链表和大于等于key的链表；由此递归可以对两个链表分别进行快速。这里用到了快速排序的思想即经过一趟排序能够将小于key的元素放在一边，将大于等于key的元素放在另一边。
 
@@ -3818,7 +3953,7 @@ public class DoubleLinkedListQuickSort {
 
 
 
-### 5. 链表两数相加(高位头结点)
+### 链表两数相加(高位头结点)
 
 给你两个 **非空** 链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。
 
@@ -3882,7 +4017,7 @@ public class DoubleLinkedListQuickSort {
 
 
 
-### 6. 两两交换链表中的节点
+### 交换链表中的节点
 
 给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
 
@@ -3963,7 +4098,7 @@ class Solution {
 
 
 
-### 7. 复制带随机指针的链表
+### 复制带随机指针的链表
 
 先用一个循环把新旧链表对应的两个结点捆绑在一个`HashMap`二元组里，然后再用一个循环完成对新链表每个结点的`next`域和`random`域的赋值，学习到了！
 
@@ -4024,116 +4159,9 @@ class Solution {
 
 
 
-### 8. 排序链表
-
-归并排序版本
-
-```java
-public ListNode sortRecurAndMerge(ListNode head) {
-        if (head == null || head.next == null)
-            return head;
-        ListNode slow = head, fast = head.next; // 错误一：应该是head.next
-        while (fast != null && fast.next != null) {
-            slow = slow.next;
-            fast = fast.next.next;
-        }
-        ListNode tmp = slow.next;
-        slow.next = null;
-        ListNode leftPart = sortRecurAndMerge(head);
-        ListNode rightPart = sortRecurAndMerge(tmp);
-        ListNode newList = new ListNode(-1);
-        ListNode pointer = newList;
-        while (leftPart != null && rightPart != null) {
-            if (leftPart.val < rightPart.val) {
-                pointer.next = leftPart;
-                leftPart = leftPart.next;
-            } else {
-                pointer.next = rightPart;
-                rightPart = rightPart.next;
-            }
-            pointer = pointer.next;
-        }
-        pointer.next = leftPart == null ? rightPart : leftPart;
-        return newList.next;
-    }
-
-    public ListNode sortList(ListNode head) {
-        return sortRecurAndMerge(head);
-    }
-```
-
-迭代版本
-
-```java
-/**
-     * 迭代原地排序排序
-     * @param head
-     * @return
-     */
-    public ListNode sortIterative(ListNode head) {
-        if (head == null)
-            return head;
-        int len = 0;
-        ListNode count = head;
-        while (count != null) {
-            len++;
-            count = count.next;
-        }
-        ListNode dummyNode = new ListNode(-1, head);
-        for (int subLen = 1; subLen < len; subLen = subLen * 2) {
-             ListNode pre = dummyNode, cur = dummyNode.next;
-             while (cur != null) {
-                 ListNode head1 = cur;
-                 for (int i = 1; i < subLen && cur.next != null; i++) {
-                     cur = cur.next;
-                 }
-                 ListNode head2 = cur.next;
-                 cur.next = null;
-                 cur = head2;
-                 for (int i = 1; i < subLen && cur != null && cur.next != null; i++) {
-                     cur = cur.next;
-                 }
-                 ListNode next = null;
-                 if (cur != null) {
-                     next = cur.next;
-                     cur.next = null;
-                 }
-                 ListNode sortedSubList = mergeTwoLists(head1, head2);
-                 pre.next = sortedSubList;
-                 while (pre.next != null) {
-                     pre = pre.next;
-                 }
-                 cur = next; // 错误二：不用将所有节点都连上，将cur指向剩余的借点。
-             }
-        }
-        return dummyNode.next;
-    }
-
-    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
-        ListNode newList = new ListNode(-1);
-        ListNode pointer = newList, leftPart = l1, rightPart = l2;
-        while (leftPart != null && rightPart != null) {
-            if (leftPart.val < rightPart.val) {
-                pointer.next = leftPart;
-                leftPart = leftPart.next;
-            } else {
-                pointer.next = rightPart;
-                rightPart = rightPart.next;
-            }
-            pointer = pointer.next;
-        }
-        pointer.next = leftPart == null ? rightPart : leftPart;
-        return newList.next;
-    }
-
-    public ListNode sortList(ListNode head) {
-        return sortIterative(head);
-    }
-```
 
 
-
-### 9. 删除排序链表中的重复元素 II
+### 删除排序链表中的重复元素 II
 
 给定一个已排序的链表的头 `head` ， 删除原始链表中所有重复数字的节点，只留下不同的数字 。返回 已排序的链表 。
 
@@ -4169,7 +4197,23 @@ class Solution {
 
 
 
-### 10. K个一组翻转链表
+### K个一组翻转链表
+
+<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex1.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：head = [1,2,3,4,5], k = 2
+输出：[2,1,4,3,5]
+```
+
+<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex2.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：head = [1,2,3,4,5], k = 3
+输出：[3,2,1,4,5]
+```
+
+**代码：**
 
 ```java
     public ListNode reverseKGroup(ListNode head, int k) {
@@ -4210,7 +4254,7 @@ class Solution {
 
 
 
-### 11. 排序的循环链表中插入节点
+### 排序的循环链表中插入节点
 
 给定**循环单调非递减列表**中的一个点，写一个函数向这个列表中插入一个新元素 `insertVal` ，使这个列表仍然是循环升序的。
 
@@ -4282,7 +4326,7 @@ class Solution {
 
 
 
-### 12. 扁平化多级双向链表
+### 扁平化多级双向链表
 
 你会得到一个双链表，其中包含的节点有一个下一个指针、一个前一个指针和一个额外的 **子指针** 。这个子指针可能指向一个单独的双向链表，也包含这些特殊的节点。这些子列表可以有一个或多个自己的子列表，以此类推，以生成如下面的示例所示的 **多层数据结构** 。
 
@@ -4342,7 +4386,7 @@ class Solution {
 
 
 
-### 13. 合并K个有序链表
+### 合并K个有序链表
 
 给定一个链表数组，每个链表都已经按升序排列。
 
@@ -4404,7 +4448,7 @@ public ListNode mergeKLists(ListNode[] lists) {
 
 # 三. 字符串
 
-### 1. 翻转单词顺序
+### 翻转单词顺序
 
 ```
 输入: "the sky is blue"
@@ -4446,7 +4490,7 @@ public ListNode mergeKLists(ListNode[] lists) {
 
 
 
-### 2. 滑动窗口框架
+### 滑动窗口框架
 
 最长***模板
 
@@ -4480,7 +4524,7 @@ return bestRes;
 
 
 
-### 3. 无重复字符的最长子串
+### 无重复字符的最长子串
 
 给定一个字符串 `s` ，请你找出其中**不含有重复**字符的最长连续子字符串的长度。
 
@@ -4544,7 +4588,7 @@ return res;
 
 
 
-### 4. 最小覆盖子串
+### 最小覆盖子串
 
 给你一个字符串 `s` 、一个字符串 `t` 。返回 `s` 中涵盖 `t` 所有字符的最小子串。如果 `s` 中不存在涵盖 `t` 所有字符的子串，则返回空字符串 `""` 。
 
@@ -4976,7 +5020,7 @@ p = "a*c?b"
 
 
 
-### 11. 字符串的排列
+### 字符串的排列
 
 给定两个字符串 `s1` 和 `s2`，写一个函数来判断 `s2` 是否包含 `s1` 的某个变位词。换句话说，第一个字符串的排列之一是第二个字符串的 **子串** 。
 
@@ -4999,7 +5043,7 @@ p = "a*c?b"
 
 
 
-### 12. 字符串中的变位词
+### 字符串中的变位词
 
 ```java
     public boolean checkInclusion(String s1, String s2) {
@@ -5025,7 +5069,36 @@ p = "a*c?b"
 
 
 
-### 13. 字符串中的所有变位词
+### 字符串中的所有变位词
+
+给定两个字符串 `s` 和 `p`，找到 `s` 中所有 `p` 的 **异位词** 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+
+**异位词** 指由相同字母重排列形成的字符串（包括相同的字符串）。
+
+ 
+
+**示例 1:**
+
+```
+输入: s = "cbaebabacd", p = "abc"
+输出: [0,6]
+解释:
+起始索引等于 0 的子串是 "cba", 它是 "abc" 的异位词。
+起始索引等于 6 的子串是 "bac", 它是 "abc" 的异位词。
+```
+
+ **示例 2:**
+
+```
+输入: s = "abab", p = "ab"
+输出: [0,1,2]
+解释:
+起始索引等于 0 的子串是 "ab", 它是 "ab" 的异位词。
+起始索引等于 1 的子串是 "ba", 它是 "ab" 的异位词。
+起始索引等于 2 的子串是 "ab", 它是 "ab" 的异位词。
+```
+
+ **代码：**
 
 ```java
     public List<Integer> findAnagrams(String s, String p) {
@@ -5056,7 +5129,7 @@ p = "a*c?b"
 
 
 
-### 14. 最多删除一个字符得到回文
+### 最多删除一个字符得到回文
 
 给定一个非空字符串 `s`，请判断如果 **最多** 从字符串中删除一个字符能否得到一个回文字符串。
 
@@ -5114,7 +5187,7 @@ private boolean isPalindrome(String s, int start, int end) {
 
 
 
-### 15. 最长回文子串
+### 最长回文子串
 
 给一个字符串 `s`，找到 `s` 中最长的回文子串。
 
@@ -5165,7 +5238,7 @@ class Solution {
 
 
 
-### 16. 回文子串的个数
+### 回文子串的个数
 
 给定一个字符串 `s` ，请计算这个字符串中有多少个回文子字符串。
 
@@ -5232,7 +5305,7 @@ class Solution {
 
 
 
-### 17. 字母异位词分组
+### 字母异位词分组
 
 给定一个字符串数组 `strs` ，将 **变位词** 组合在一起。 可以按任意顺序返回结果列表。
 
@@ -5279,7 +5352,7 @@ class Solution {
 
 
 
-### 18. 最少回文分割
+### 最少回文分割
 
 给定一个字符串 `s`，请将 `s` 分割成一些子串，使每个子串都是回文串。
 
@@ -5353,7 +5426,7 @@ class Solution {
 
 
 
-### 19. 分割所有的回文字符串
+### 分割所有的回文字符串
 
 给定一个字符串 `s` ，请将 `s` 分割成一些子串，使每个子串都是 **回文串** ，返回 s 所有可能的分割方案。
 
@@ -6387,70 +6460,6 @@ class LFUCache {
 
 使用链地址法解决：
 
-```java
-class MyHashSet {
-    private static final int BASE = 769;
-    private LinkedList[] data;
-
-    /** Initialize your data structure here. */
-    public MyHashSet() {
-        data = new LinkedList[BASE];
-        for (int i = 0; i < BASE; ++i) {
-            data[i] = new LinkedList<Integer>();
-        }
-    }
-    
-    public void add(int key) {
-        int h = hash(key);
-        Iterator<Integer> iterator = data[h].iterator();
-        while (iterator.hasNext()) {
-            Integer element = iterator.next();
-            if (element == key) {
-                return;
-            }
-        }
-        data[h].offerLast(key);
-    }
-    
-    public void remove(int key) {
-        int h = hash(key);
-        Iterator<Integer> iterator = data[h].iterator();
-        while (iterator.hasNext()) {
-            Integer element = iterator.next();
-            if (element == key) {
-                data[h].remove(element);
-                return;
-            }
-        }
-    }
-    
-    /** Returns true if this set contains the specified element */
-    public boolean contains(int key) {
-        int h = hash(key);
-        Iterator<Integer> iterator = data[h].iterator();
-        while (iterator.hasNext()) {
-            Integer element = iterator.next();
-            if (element == key) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static int hash(int key) {
-        return key % BASE;
-    }
-}
-
-/**
- * Your MyHashSet object will be instantiated and called as such:
- * MyHashSet obj = new MyHashSet();
- * obj.add(key);
- * obj.remove(key);
- * boolean param_3 = obj.contains(key);
- */
-```
-
 **Go语言版本**
 
 ```go
@@ -6600,9 +6609,61 @@ class MyHashMap {
  */
 ```
 
+**Go语言版本**
+
+```go
+const base = 769
+
+type entry struct {
+    key, value int
+}
+
+type MyHashMap struct {
+    data []list.List
+}
+
+func Constructor() MyHashMap {
+    return MyHashMap{make([]list.List, base)}
+}
+
+func (m *MyHashMap) hash(key int) int {
+    return key % base
+}
+
+func (m *MyHashMap) Put(key, value int) {
+    h := m.hash(key)
+    for e := m.data[h].Front(); e != nil; e = e.Next() {
+        if et := e.Value.(entry); et.key == key {
+            e.Value = entry{key, value}
+            return
+        }
+    }
+    m.data[h].PushBack(entry{key, value})
+}
+
+func (m *MyHashMap) Get(key int) int {
+    h := m.hash(key)
+    for e := m.data[h].Front(); e != nil; e = e.Next() {
+        if et := e.Value.(entry); et.key == key {
+            return et.value
+        }
+    }
+    return -1
+}
+
+func (m *MyHashMap) Remove(key int) {
+    h := m.hash(key)
+    for e := m.data[h].Front(); e != nil; e = e.Next() {
+        if e.Value.(entry).key == key {
+            m.data[h].Remove(e)
+        }
+    }
+}
+```
 
 
-### 7. 二叉搜索树迭代器
+
+### 二叉搜索树迭代器
 
 迭代法的中序遍历
 
@@ -6631,7 +6692,7 @@ class MyHashMap {
 
 
 
-### 8. Trie树
+### Trie树
 
 ```java
 class Trie {
@@ -6688,7 +6749,7 @@ class Trie {
 
 
 
-### 9. 完全二叉树插入器
+### 完全二叉树插入器
 
 设计一个用完全二叉树初始化的数据结构 `CBTInserter`，它支持以下几种操作：
 
@@ -6763,7 +6824,7 @@ class CBTInserterOffer2 {
 
 
 
-### 10. O(1)时间插入，删除，随机访问一个元素
+### O(1)时间插入，删除，随机访问一个元素
 
 既然`O(1)`的时间复杂度，那么可以想到的数据结构有`Map`，和`List`
 
@@ -6773,79 +6834,160 @@ class CBTInserterOffer2 {
 
 综合考虑，两者都使用！元素添加到`List`中，然后删除的时候只删除最后一个元素（将最后一个元素和要删除的元素交换位置，Map中的索引也换）。`Map`提供对删除数字的索引，所以`Map`中存的是元素和索引之间的映射。
 
-```java
-class RandomizedSet {
-    private Map<Integer, Integer> map;
-    private List<Integer> list;
-    private Random random;
+```go
+type RandomizedSet struct {
+    nums    []int
+    indices map[int]int
+}
 
-    public RandomizedSet() {
-        map = new HashMap<>();
-        list = new LinkedList<>();
-        random = new Random();
+func Constructor() RandomizedSet {
+    return RandomizedSet{[]int{}, map[int]int{}}
+}
+
+func (rs *RandomizedSet) Insert(val int) bool {
+    if _, ok := rs.indices[val]; ok {
+        return false
     }
-    
-    public boolean insert(int val) {
-        if (map.containsKey(val))
-            return false;
-        list.add(val);
-        map.put(val, list.size() - 1);
-        return true;
+    rs.indices[val] = len(rs.nums)
+    rs.nums = append(rs.nums, val)
+    return true
+}
+
+func (rs *RandomizedSet) Remove(val int) bool {
+    id, ok := rs.indices[val]
+    if !ok {
+        return false
     }
-    
-    public boolean remove(int val) {
-        if (map.containsKey(val)) {
-            int index = map.get(val);
-            int lastNum = list.get(list.size() - 1);
-            list.set(index, lastNum);
-            map.put(lastNum, index);
-            map.remove(val);
-            list.remove(list.size() - 1);
-            return true;
-        }
-        return false;
-    }
-    
-    public int getRandom() {
-        return list.get(random.nextInt(list.size()));
-    }
+    last := len(rs.nums) - 1
+    rs.nums[id] = rs.nums[last]
+    rs.indices[rs.nums[id]] = id
+    rs.nums = rs.nums[:last]
+    delete(rs.indices, val)
+    return true
+}
+
+func (rs *RandomizedSet) GetRandom() int {
+    return rs.nums[rand.Intn(len(rs.nums))]
 }
 ```
 
 
 
-### 11. 日程安排
+### 日程安排
+
+请实现一个 `MyCalendar` 类来存放你的日程安排。如果要添加的时间内没有其他安排，则可以存储这个新的日程安排。
+
+`MyCalendar` 有一个 `book(int start, int end)`方法。它意味着在 start 到 end 时间内增加一个日程安排，注意，这里的时间是半开区间，即 `[start, end)`, 实数 `x` 的范围为，  `start <= x < end`。
+
+当两个日程安排有一些时间上的交叉时（例如两个日程安排都在同一时间内），就会产生重复预订。
+
+每次调用 `MyCalendar.book`方法时，如果可以将日程安排成功添加到日历中而不会导致重复预订，返回 `true`。否则，返回 `false` 并且不要将该日程安排添加到日历中。
+
+请按照以下步骤调用 `MyCalendar` 类: `MyCalendar cal = new MyCalendar();` `MyCalendar.book(start, end)`
+
+**示例:**
+
+```
+输入:
+["MyCalendar","book","book","book"]
+[[],[10,20],[15,25],[20,30]]
+输出: [null,true,false,true]
+解释: 
+MyCalendar myCalendar = new MyCalendar();
+MyCalendar.book(10, 20); // returns true 
+MyCalendar.book(15, 25); // returns false ，第二个日程安排不能添加到日历中，因为时间 15 已经被第一个日程安排预定了
+MyCalendar.book(20, 30); // returns true ，第三个日程安排可以添加到日历中，因为第一个日程安排并不包含时间 20 
+```
+
+ **代码：**
 
 安排不同时间段的任务，又开始时间和结束时间。时间不冲突的往集合添加，时间重叠的不添加到集合里面。
 
-```java
-    private TreeMap<Integer, Integer> map;
+```go
 
-    public MyCalendar() {
-        map = new TreeMap<>();
+type MyCalendar struct {
+    arr [][]int
+}
+
+
+func Constructor() MyCalendar {
+    return MyCalendar{
+        arr : [][]int{},
     }
+}
 
-    public boolean book(int start, int end) {
-        Map.Entry<Integer, Integer> leftSchedule = map.floorEntry(start);
-        Map.Entry<Integer, Integer> rightSchedule = map.ceilingEntry(start);
-        if ((leftSchedule == null || start >= leftSchedule.getValue()) &&
-                (rightSchedule == null || end <= rightSchedule.getKey())) {
-            map.put(start, end);
-            return true;
+
+func (this *MyCalendar) Book(start int, end int) bool {
+    for _, v := range this.arr {
+        if start < v[1] && end > v[0] {
+            return false
         }
-        return false;
     }
+
+    this.arr = append(this.arr, []int{start, end})
+    return true
+}
+
+
+/**
+ * Your MyCalendar object will be instantiated and called as such:
+ * obj := Constructor();
+ * param_1 := obj.Book(start,end);
+ */
 ```
 
 
 
-### 12. 按权重生成随机数
+### 按权重生成随机数
 
 给定一个正整数数组 `w` ，其中 `w[i]` 代表下标 `i` 的权重（下标从 `0` 开始），请写一个函数 `pickIndex` ，它可以随机地获取下标 `i`，选取下标 `i` 的概率与 `w[i]` 成正比。
 
+例如，对于 `w = [1, 3]`，挑选下标 `0` 的概率为 `1 / (1 + 3) = 0.25` （即，25%），而选取下标 `1` 的概率为 `3 / (1 + 3) = 0.75`（即，75%）。
+
+也就是说，选取下标 `i` 的概率为 `w[i] / sum(w)` 。
+
+**示例 1：**
+
+```
+输入：
+inputs = ["Solution","pickIndex"]
+inputs = [[[1]],[]]
+输出：
+[null,0]
+解释：
+Solution solution = new Solution([1]);
+solution.pickIndex(); // 返回 0，因为数组中只有一个元素，所以唯一的选择是返回下标 0。
+```
+
+**示例 2：**
+
+```
+输入：
+inputs = ["Solution","pickIndex","pickIndex","pickIndex","pickIndex","pickIndex"]
+inputs = [[[1,3]],[],[],[],[],[]]
+输出：
+[null,1,1,1,1,0]
+解释：
+Solution solution = new Solution([1, 3]);
+solution.pickIndex(); // 返回 1，返回下标 1，返回该下标概率为 3/4 。
+solution.pickIndex(); // 返回 1
+solution.pickIndex(); // 返回 1
+solution.pickIndex(); // 返回 1
+solution.pickIndex(); // 返回 0，返回下标 0，返回该下标概率为 1/4 。
+
+由于这是一个随机问题，允许多个答案，因此下列输出都可以被认为是正确的:
+[null,1,1,1,1,0]
+[null,1,1,1,1,1]
+[null,1,1,1,0,0]
+[null,1,1,1,0,1]
+[null,1,0,1,0,0]
+......
+诸若此类。
+```
+
+**代码：**
+
 设数组 w 的权重之和为 total。根据题目的要求，我们可以看成将[1,total] 范围内的所有整数分成 n 个部分（其中 n 是数组 w 的长度），第 i个部分恰好包含 w[i] 个整数，并且这 n 个部分两两的交集为空。随后我们在 [1,total] 范围内随机选择一个整数 x，如果整数 x 被包含在第 i 个部分内，我们就返回 i。
-
-
 
 ```java
     private int[] preSum;
@@ -6882,7 +7024,7 @@ class RandomizedSet {
 
 
 
-### 13. 区间内查询数字的频率
+### 区间内查询数字的频率
 
 请你实现 `RangeFreqQuery` 类：
 
@@ -6954,13 +7096,9 @@ class RangeFreqQuery {
 
 
 
-
-
-
-
 # 五. 栈
 
-### 1. 出栈顺序的判断
+### 出栈顺序的判断
 
 思想：每次将入栈中的元素入栈，然后随即判断当前出栈列表中的第一个元素是不是入栈元素的栈顶元素，如果是就将出栈列表的元素下移动。
 
@@ -7130,6 +7268,31 @@ f(3) = 5   //即 123、132、213、321、231
   
 
 ### 最长有效括号
+
+给你一个只包含 `'('` 和 `')'` 的字符串，找出最长有效（格式正确且连续）括号子串的长度。
+
+**示例 1：**
+
+```
+输入：s = "(()"
+输出：2
+解释：最长有效括号子串是 "()"
+```
+
+**示例 2：**
+
+```
+输入：s = ")()())"
+输出：4
+解释：最长有效括号子串是 "()()"
+```
+
+**示例 3：**
+
+```
+输入：s = ""
+输出：0
+```
 
 难点在于，如何区分开最长的有效括号。设置标记一直留在栈底，具体做法是我们始终保持栈底元素为当前已经遍历过的元素中「最后一个没有被匹配的右括号的下标」，这样的做法主要是考虑了边界条件的处理，栈里其他元素维护左括号的下标。
 
@@ -7824,6 +7987,48 @@ class Solution {
 
 
 
+### 验证完全二叉树
+
+```java
+    public static void judge(Node<Integer> node){
+        Queue<Node<Integer>> queue = new LinkedList<>();
+        queue.add(node);
+        boolean flag = true;
+        while(!queue.isEmpty()){
+            //这里没有直接使用queue.poll()的原因是，如果最后那个节点没有左子树，但是有右子树，那么这个循环也会停止，
+            //而且那个节点也会从队列中弹出，如果刚好是那个节点就是问题节点，那最后的结果就是有问题的，所以这里使用peek
+            node = queue.peek();
+            //遇见为空的直接停止
+            if (node.left != null){
+                queue.add(node.left);
+            }else {
+                break;
+            }
+            //遇见为空直接停止
+            if (node.right != null){
+                queue.add(node.right);
+            }else {
+                break;
+            }
+            queue.poll();
+        }
+        //这里搞这个判断的原因，就是看一下暂停遍历的那个节点是不是有问题，因为上面的循环并没有把这个节点弹出
+        if (queue.peek().right == null){
+            queue.poll();
+        }
+        //这里判断队列中剩余的节点是不是都是叶子节点
+        while (!queue.isEmpty()){
+            node = queue.poll();
+            if (node.left != null || node.right != null){
+                flag = false;
+            }
+        }
+        System.out.println(flag);
+    }
+```
+
+
+
 ### 完全二叉树的节点个数
 
 思想：分别求出左右最远达到的高度，如果两个高度相等，那么就用公式计算返回节点个数即可，否则调用递归函数，递归求子树的节点个数。
@@ -8001,6 +8206,32 @@ BFS版本的好理解
 
 ### 恢复二叉搜索树
 
+给你二叉搜索树的根节点 `root` ，该树中的 **恰好** 两个节点的值被错误地交换。*请在不改变其结构的情况下，恢复这棵树* 。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/28/recover1.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [1,3,null,null,2]
+输出：[3,1,null,null,2]
+解释：3 不能是 1 的左孩子，因为 3 > 1 。交换 1 和 3 使二叉搜索树有效。
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/28/recover2.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [3,1,4,null,null,2]
+输出：[2,1,4,null,null,3]
+解释：2 不能在 3 的右子树中，因为 2 < 3 。交换 2 和 3 使二叉搜索树有效。
+```
+
+**代码：**
+
 具体来说，由于我们只关心中序遍历的值序列中每个相邻的位置的大小关系是否满足条件，且错误交换后最多两个位置不满足条件，因此在中序遍历的过程我们只需要维护当前中序遍历到的最后一个节点 `pred`，然后在遍历到下一个节点的时候，看两个节点的值是否满足前者小于后者即可，如果不满足说明找到了一个交换的节点，且在找到两次以后就可以终止遍历。
 
 这样我们就可以在中序遍历中直接找到被错误交换的两个节点 `x` 和 `y`，不用显式建立 `nums` 数组。
@@ -8038,7 +8269,7 @@ BFS版本的好理解
 
 
 
-### 19. 二叉树剪枝
+### 二叉树剪枝
 
 给定一个二叉树 **根节点** `root` ，树的每个节点的值要么是 `0`，要么是 `1`。请剪除该二叉树中所有节点的值为 `0` 的子树。
 
@@ -8069,7 +8300,46 @@ BFS版本的好理解
 
 
 
-### 20. 求根节点到叶节点数字之和
+### 求根节点到叶节点数字之和
+
+给定一个二叉树的根节点 `root` ，树中每个节点都存放有一个 `0` 到 `9` 之间的数字。
+
+每条从根节点到叶节点的路径都代表一个数字：
+
+- 例如，从根节点到叶节点的路径 `1 -> 2 -> 3` 表示数字 `123` 。
+
+计算从根节点到叶节点生成的 **所有数字之和** 。
+
+**叶节点** 是指没有子节点的节点。
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/02/19/num1tree.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [1,2,3]
+输出：25
+解释：
+从根到叶子节点路径 1->2 代表数字 12
+从根到叶子节点路径 1->3 代表数字 13
+因此，数字总和 = 12 + 13 = 25
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2021/02/19/num2tree.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [4,9,0,5,1]
+输出：1026
+解释：
+从根到叶子节点路径 4->9->5 代表数字 495
+从根到叶子节点路径 4->9->1 代表数字 491
+从根到叶子节点路径 4->0 代表数字 40
+因此，数字总和 = 495 + 491 + 40 = 1026
+```
+
+**代码：**
 
 递归法
 
@@ -8121,7 +8391,37 @@ BFS版本的好理解
 
 
 
-### 21. 二叉树的最大路径和
+### 二叉树的最大路径和
+
+**路径** 被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。同一个节点在一条路径序列中 **至多出现一次** 。该路径 **至少包含一个** 节点，且不一定经过根节点。
+
+**路径和** 是路径中各节点值的总和。
+
+给定一个二叉树的根节点 `root` ，返回其 **最大路径和**，即所有路径上节点值之和的最大值。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/13/exx1.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [1,2,3]
+输出：6
+解释：最优路径是 2 -> 1 -> 3 ，路径和为 2 + 1 + 3 = 6
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/13/exx2.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [-10,9,20,null,null,15,7]
+输出：42
+解释：最优路径是 15 -> 20 -> 7 ，路径和为 15 + 20 + 7 = 42
+```
+
+**代码：**
 
 思想：计算左右子树给根节点的最大贡献值，如果左子树或右子树给根节点的贡献值为负数，那么就将左右子树的贡献值设置为0。
 
@@ -8147,7 +8447,7 @@ BFS版本的好理解
 
 
 
-### 22. 展平二叉搜索树
+### 展平二叉搜索树
 
 给你一棵二叉搜索树，请 **按中序遍历** 将其重新排列为一棵递增顺序搜索树，使树中最左边的节点成为树的根节点，并且每个节点没有左子节点，只有一个右子节点。
 
@@ -8199,7 +8499,27 @@ class Solution {
 
 
 
-### 23. 二叉树的两数之和
+### 二叉树的两数之和
+
+给定一个二叉搜索树的 **根节点** `root` 和一个整数 `k` , 请判断该二叉搜索树中是否存在两个节点它们的值之和等于 `k` 。假设二叉搜索树中节点的值均唯一。
+
+**示例 1：**
+
+```
+输入: root = [8,6,10,5,7,9,11], k = 12
+输出: true
+解释: 节点 5 和节点 7 之和等于 12
+```
+
+**示例 2：**
+
+```
+输入: root = [8,6,10,5,7,9,11], k = 22
+输出: false
+解释: 不存在两个节点值之和为 22 的节点
+```
+
+**代码：**
 
  得借助`O(n)`的空间复杂度`set`或`list`。然后`DFS`或者`BFS`搜索，判断当前节点值是否在辅助空间里，在就返回，不在就将该节点插入到辅助空间里。
 
@@ -8222,6 +8542,26 @@ private boolean find(TreeNode root, int k, Set<Integer> set) {
 
 
 ### 不同的二叉搜索树
+
+给你一个整数 `n` ，求恰由 `n` 个节点组成且节点值从 `1` 到 `n` 互不相同的 **二叉搜索树** 有多少种？返回满足题意的二叉搜索树的种数。
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/01/18/uniquebstn3.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：n = 3
+输出：5
+```
+
+**示例 2：**
+
+```
+输入：n = 1
+输出：1
+```
+
+**代码：**
 
 假设 `n` 个节点存在二叉排序树的个数是 `G (n)`，令 `f(i)` 为以 `i` 为根的二叉搜索树的个数，则
 $$
@@ -8247,48 +8587,6 @@ $$
             }
         }
         return dp[n];
-    }
-```
-
-
-
-### 判断完全二叉树
-
-```java
-    public static void judge(Node<Integer> node){
-        Queue<Node<Integer>> queue = new LinkedList<>();
-        queue.add(node);
-        boolean flag = true;
-        while(!queue.isEmpty()){
-            //这里没有直接使用queue.poll()的原因是，如果最后那个节点没有左子树，但是有右子树，那么这个循环也会停止，
-            //而且那个节点也会从队列中弹出，如果刚好是那个节点就是问题节点，那最后的结果就是有问题的，所以这里使用peek
-            node = queue.peek();
-            //遇见为空的直接停止
-            if (node.left != null){
-                queue.add(node.left);
-            }else {
-                break;
-            }
-            //遇见为空直接停止
-            if (node.right != null){
-                queue.add(node.right);
-            }else {
-                break;
-            }
-            queue.poll();
-        }
-        //这里搞这个判断的原因，就是看一下暂停遍历的那个节点是不是有问题，因为上面的循环并没有把这个节点弹出
-        if (queue.peek().right == null){
-            queue.poll();
-        }
-        //这里判断队列中剩余的节点是不是都是叶子节点
-        while (!queue.isEmpty()){
-            node = queue.poll();
-            if (node.left != null || node.right != null){
-                flag = false;
-            }
-        }
-        System.out.println(flag);
     }
 ```
 
@@ -8827,7 +9125,7 @@ public int[][] pow(int[][] a, int n) {
 
 
 
-### 3. 数字 1 的个数
+### 数字 1 的个数
 
 输入一个整数 n ，求1～n这n个整数的十进制表示中1出现的次数。
 
@@ -8925,7 +9223,7 @@ while high != 0 or cur != 0: # 当 high 和 cur 同时为 0 时，说明已经�
 
 
 
-### 4. 第N位数字
+### 第N位数字
 
 给你一个整数 n ，请你在无限的整数序列 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...] 中找出并返回第 n 位上的数字。
 
@@ -8989,7 +9287,7 @@ class Solution {
 
 
 
-### 5. 约瑟夫环问题
+### 约瑟夫环问题
 
 问题描述：编号为 1-N 的 N 个士兵围坐在一起形成一个圆圈，从编号为 1 的士兵开始依次报数（1，2，3…这样依次报），数到 m 的 士兵会被杀死出列，之后的士兵再从 1 开始报数。直到最后剩下一士兵，求这个士兵的编号。
 
@@ -9101,7 +9399,7 @@ int f(int n, int m){
 
 
 
-### 6. 整数除法
+### 整数除法
 
 给定两个整数 `a` 和 `b` ，求它们的除法的商 `a/b` ，要求不得使用乘号 `'*'`、除号 `'/'` 以及求余符号 `'%'` 。
 
@@ -11152,6 +11450,63 @@ class Solution {
 
 
 
+### 14. 划分为k个相等的子集
+
+给定一个整数数组 `nums` 和一个正整数 `k`，找出是否有可能把这个数组分成 `k` 个非空子集，其总和都相等。
+
+**示例 1：**
+
+```
+输入： nums = [4, 3, 2, 3, 5, 2, 1], k = 4
+输出： True
+说明： 有可能将其分成 4 个子集（5），（1,4），（2,3），（2,3）等于总和。
+```
+
+**示例 2:**
+
+```
+输入: nums = [1,2,3,4], k = 3
+输出: false
+```
+
+```java
+    private boolean[] visited;
+    private int subsetSum;
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        // 既然要分成K个相等和的子集，那么nums所有元素的和应该能背K整除，不能整除的，肯定分不成相等和的子集。
+        if (sum % k != 0)
+            return false;
+        visited = new boolean[nums.length];
+        subsetSum = sum / k;
+        return backtracking(nums, k, 0, 0);
+    }
+
+    private boolean backtracking(int[] nums, int k, int curSubsetSum, int curIndex) {
+        // 当K为1时，说明前K-1个子集都已经凑成了。sum还能把K整除，所以剩下的这最后一个的K肯定能构成。
+        if (k == 1)
+            return true;
+        // 当前和等于子集和的时候，说明当前已经找到了一个子集，那么k--，其他变量重新开始进行搜索。
+        if (curSubsetSum == subsetSum)
+            return backtracking(nums,k - 1, 0, 0);
+        // 逐元素搜索，将符合条件的元素加到curSubsetSum中，进行递归。
+        for (int i = curIndex; i < nums.length; i++) {
+            if (!visited[i] && curSubsetSum + nums[i] <= subsetSum) {
+                visited[i] = true;
+                if (backtracking(nums, k, curSubsetSum + nums[i], i + 1))
+                    return true;
+                visited[i] = false;
+            }
+        }
+        return false;
+    }
+```
+
+
+
 # 十一. 排序算法
 
 ## 【1】基础算法
@@ -11498,4 +11853,42 @@ public boolean isStraight(int[] nums) {
 ```
 
 
+
+### 3. H 指数
+
+给你一个整数数组 `citations` ，其中 `citations[i]` 表示研究者的第 `i` 篇论文被引用的次数。计算并返回该研究者的 **`h` 指数**。
+
+根据维基百科上 [h 指数的定义](https://baike.baidu.com/item/h-index/3991452?fr=aladdin)：`h` 代表“高引用次数” ，一名科研人员的 `h` **指数** 是指他（她）至少发表了 `h` 篇论文，并且 **至少** 有 `h` 篇论文被引用次数大于等于 `h` 。如果 `h` 有多种可能的值，**`h` 指数** 是其中最大的那个。
+
+**示例 1：**
+
+```
+输入：citations = [3,0,6,1,5]
+输出：3 
+解释：给定数组表示研究者总共有 5 篇论文，每篇论文相应的被引用了 3, 0, 6, 1, 5 次。
+     由于研究者有 3 篇论文每篇 至少 被引用了 3 次，其余两篇论文每篇被引用 不多于 3 次，所以她的 h 指数是 3。
+```
+
+**示例 2：**
+
+```
+输入：citations = [1,3,1]
+输出：1
+```
+
+**代码：**
+
+首先我们可以将初始的 H指数 h设为 0，然后将引用次数排序，并且对排序后的数组从大到小遍历。
+
+根据 H指数的定义，如果当前 H指数为 h 并且在遍历过程中找到当前值 citations[i]>h，则说明我们找到了一篇被引用了至少 h+1次的论文，所以将现有的 h 值加 1。继续遍历直到 h无法继续增大。最后返回 h作为最终答案。
+
+```go
+func hIndex(citations []int) (h int) {
+    sort.Ints(citations)
+    for i := len(citations) - 1; i >= 0 && citations[i] > h; i-- {
+        h++
+    }
+    return
+}
+```
 
